@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" type="text/css" href="styles.css">
+  <script src="popup.js"></script>
+</head>
+
+<body>
+  <h1>Term Trimmer</h1>
+  <form id="myForm">
+    <label for="userInput">Please enter the terms:</label><br>
+    <input type="text" id="userInput" name="userInput"><br>
+    <input type="submit" value="Submit">
+  </form>
+
+  <!-- TODO: Make users name the policy they submit. Send domain, policy name, and pasted document to summarize route -->
+  <form id="manual-input-form" style="display: none;">
+    <textarea id="manual-input" placeholder="Paste the terms and conditions here..."></textarea>
+    <button type="submit">Summarize</button>
+  </form>
+
+
+  <!-- Container for dynamically added sections -->
+  <div id="summaries-container"></div>
+
+</body>
+
+</html>
