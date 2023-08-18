@@ -27,6 +27,7 @@ function findPotentialLabelForCheckbox(checkbox) {
 
 // find all the checkboxes on the page
 let checkboxes = document.querySelectorAll('input[type="checkbox"]');
+console.log(checkboxes);
 
 // Get the current domain
 let currentDomain = new URL(window.location.href).hostname;
