@@ -6,7 +6,7 @@ Source code for TermTrimmer chrome extension.
 
 - 2x EC2 Servers
 - At least 4x cores per server
-- 9 Gunicorn workers per server: (2 x cores) + 1
+- 9 Gunicorn workers per server: (2 x num_cores) + 1
 - Load balance traffic between the 2 servers
 - Setup autoscaling rules to account for usage spikes(?)
 
