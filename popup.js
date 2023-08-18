@@ -1,34 +1,40 @@
 document.addEventListener('DOMContentLoaded', function () {
-
-  // Get the current domain
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    let currentDomain = new URL(tabs[0].url).hostname;
-
-    // Check if the form should be shown for this domain
-    chrome.storage.local.get([currentDomain], function(data) {
-        if (data[currentDomain] && data[currentDomain].showForm) {
-            document.getElementById("manual-input-form").style.display = "block";
-        } else {
-            document.getElementById("manual-input-form").style.display = "none";
-        }
-    });
-
-    document.getElementById('myForm').onsubmit = function (e) {
-      e.preventDefault();
-      // send the user input to the content script
+  initPopup();
+  
+  // Event listener to handle storage changes
+  chrome.storage.onChanged.addListener(function(changes, namespace) {
+    for (let key in changes) {
+      let storageChange = changes[key];
+      if (key === "summaries" || key === "showForm") {
+        initPopup();
+      }
+    }
+  });
+  
+  document.getElementById('myForm').onsubmit = function (e) {
+    e.preventDefault();
+    // send the user input to the content script
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       chrome.tabs.sendMessage(tabs[0].id, { userInput: document.getElementById('userInput').value }, function (response) {
         console.log(response);
       });
+    });
+  };
+});
 
-      // Clear the showForm flag for this domain once the user submits the form
-      let domainData = {};
-      domainData[currentDomain] = { showForm: false };
-      chrome.storage.local.set(domainData);
-    };
-
-    chrome.storage.local.get(['summaries'], function (result) {
+function initPopup() {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    let currentDomain = new URL(tabs[0].url).hostname;
+    chrome.storage.local.get(['summaries', 'showForm'], function (result) {
       let summaries = result.summaries || {};
       let domainSummaries = summaries[currentDomain] || {};
+
+      // Update the display of the form based on the showForm flag
+      if (result.showForm) {
+        document.getElementById("manual-input-form").style.display = "block";
+      } else {
+        document.getElementById("manual-input-form").style.display = "none";
+      }
 
       console.log(domainSummaries);  // Log to debug
 
@@ -51,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   });
-});
+}
 
 function formatSummaryText(summaryData) {
   // If it's a string, try to parse it as JSON
