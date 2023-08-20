@@ -4,12 +4,12 @@ document.addEventListener('DOMContentLoaded', function () {
   // Event listener to handle storage changes
   chrome.storage.onChanged.addListener(function(changes, namespace) {
     for (let key in changes) {
-      let storageChange = changes[key];
-      if (key === "summaries" || key === "showForm") {
+      if (key === "summaries" || key === "showForm" || key === "domainForForm") {
         initPopup();
       }
     }
   });
+
   
   document.getElementById('myForm').onsubmit = function (e) {
     e.preventDefault();
@@ -25,12 +25,12 @@ document.addEventListener('DOMContentLoaded', function () {
 function initPopup() {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     let currentDomain = new URL(tabs[0].url).hostname;
-    chrome.storage.local.get(['summaries', 'showForm'], function (result) {
+    chrome.storage.local.get(['summaries', 'showForm', 'domainForForm'], function (result) {
       let summaries = result.summaries || {};
       let domainSummaries = summaries[currentDomain] || {};
 
-      // Update the display of the form based on the showForm flag
-      if (result.showForm) {
+      // Update the display of the form based on the showForm flag and the domain
+      if (result.showForm && result.domainForForm === currentDomain) {
         document.getElementById("manual-input-form").style.display = "block";
       } else {
         document.getElementById("manual-input-form").style.display = "none";

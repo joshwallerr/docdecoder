@@ -68,7 +68,7 @@ checkboxes.forEach(checkbox => {
       });
     } else if (detectedTermTypes.length) {
       // if there are no links but terms were detected, send a message to show the form in the popup
-      chrome.runtime.sendMessage({ showForm: true });
+      chrome.storage.local.set({ showForm: true, domainForForm: currentDomain });
     }
   }
 });
