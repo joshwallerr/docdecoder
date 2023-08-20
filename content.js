@@ -37,33 +37,38 @@ checkboxes.forEach(checkbox => {
   let label = document.querySelector(`label[for="${checkbox.id}"]`) || findPotentialLabelForCheckbox(checkbox);
   if (label) {
     let labelText = label.textContent.toLowerCase();
-    let detectedTermType = null;
+    let detectedTermTypes = [];
 
+    // Check for each term type
     if (labelText.includes("terms")) {
-        detectedTermType = "terms";
-    } else if (labelText.includes("conditions")) {
-        detectedTermType = "conditions";
-    } else if (labelText.includes("privacy")) {
-        detectedTermType = "privacy";
+        detectedTermTypes.push("terms");
+    } 
+    if (labelText.includes("conditions")) {
+        detectedTermTypes.push("conditions");
+    } 
+    if (labelText.includes("privacy")) {
+        detectedTermTypes.push("privacy");
     }
 
-    if (detectedTermType) {
-      // Notify the background script to show the notification
-      chrome.runtime.sendMessage({type: "showNotification", termType: detectedTermType});
-
-      // check if the label has a link
-      let link = label.querySelector('a');
-      if (link) {
+    // Check if the label has links
+    let links = Array.from(label.querySelectorAll('a'));
+    if (links.length) {
+      links.forEach(link => {
         let linkText = link.textContent;
-        chrome.runtime.sendMessage({ url: link.href, sectionTitle: linkText }, function (response) {
-            console.log(response);
-        });
-      } else {
-        // if there is no link or if the scraping fails, set the flag in storage to show the form in the popup for this domain
-        let domainData = {};
-        domainData[currentDomain] = { showForm: true };
-        chrome.storage.local.set(domainData);
-      }
+        let termType = detectedTermTypes.find(type => linkText.toLowerCase().includes(type)); // find the term type for this link
+
+        if (termType) {
+          // Notify the background script to show the notification for each link
+          chrome.runtime.sendMessage({type: "showNotification", termType: termType});
+
+          chrome.runtime.sendMessage({ url: link.href, sectionTitle: linkText }, function (response) {
+              console.log(response);
+          });
+        }
+      });
+    } else if (detectedTermTypes.length) {
+      // if there are no links but terms were detected, send a message to show the form in the popup
+      chrome.runtime.sendMessage({ showForm: true });
     }
   }
 });
