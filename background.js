@@ -74,7 +74,7 @@ function summarizeDocument(document, url, sectionTitle) {
   .catch(error => {
     if (error.message === 'RateLimitExceeded') {
       // Return the rate limit error message
-      return "Please slow down, you've made too many requests in a short amount of time. Please wait a minute and try again. If you're still seeing this message, please contact us at support@termtrimmer.com.";
+      return "Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@termtrimmer.com.";
     }
     throw error;  // For other errors, re-throw them so they can be caught and handled by the caller.
   });
