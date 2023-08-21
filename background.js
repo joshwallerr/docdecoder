@@ -64,7 +64,20 @@ function summarizeDocument(document, url, sectionTitle) {
       document_type: sectionTitle
     }),
   })
-  .then(response => response.text());
+  .then(response => {
+    // Check if the status code is 429
+    if (response.status === 429) {
+      throw new Error('RateLimitExceeded');
+    }
+    return response.text();
+  })
+  .catch(error => {
+    if (error.message === 'RateLimitExceeded') {
+      // Return the rate limit error message
+      return "Please slow down, you've made too many requests in a short amount of time. Please wait a minute and try again. If you're still seeing this message, please contact us at support@termtrimmer.com.";
+    }
+    throw error;  // For other errors, re-throw them so they can be caught and handled by the caller.
+  });
 }
 
 function storeSummary(url, summary, sectionTitle) {
