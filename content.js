@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener(
 function findPotentialLabelForCheckbox(checkbox) {
   let potentialLabels = Array.from(document.querySelectorAll('p, div')).filter(el => {
       let text = el.textContent.trim().toLowerCase();
-      return text.startsWith("i have read") || text.startsWith("i agree") || text.startsWith("i accept");
+      return text.includes("read") || text.includes("agree") || text.includes("accept") || text.includes("understand") || text.includes("acknowledge") || text.includes("consent") || text.includes("confirm") || text.includes("i have");
   });
 
   if (potentialLabels.length) {
@@ -38,30 +38,20 @@ function detectCheckboxes() {
       
       let label = document.querySelector(`label[for="${checkbox.id}"]`) || findPotentialLabelForCheckbox(checkbox);
       if (label) {
-          let labelText = label.textContent.toLowerCase();
-          let detectedTermTypes = [];
-
-          if (labelText.includes("term")) detectedTermTypes.push("term");
-          if (labelText.includes("condition")) detectedTermTypes.push("condition");
-          if (labelText.includes("privacy")) detectedTermTypes.push("privacy");
-
           let links = Array.from(label.querySelectorAll('a'));
           if (links.length) {
               links.forEach(link => {
                   let linkText = link.textContent;
                   console.log(linkText);
 
-                  let termType = detectedTermTypes.find(type => linkText.toLowerCase().includes(type));
-                  console.log(termType);
-
-                  if (termType) {
-                      chrome.runtime.sendMessage({ type: "showNotification", termType: termType });
+                  if (linkText) {
+                      chrome.runtime.sendMessage({ type: "showNotification"});
                       chrome.runtime.sendMessage({ url: link.href, sectionTitle: linkText }, function (response) {
                           console.log(response);
                       });
                   }
               });
-          } else if (detectedTermTypes.length) {
+          } else {
               let currentDomain = new URL(window.location.href).hostname;
               chrome.storage.local.set({ showForm: true, domainForForm: currentDomain });
           }

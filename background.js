@@ -5,9 +5,6 @@ chrome.runtime.onMessage.addListener(
     if (request.type === "showNotification") {
       // Determine the message based on the detected term
       let notificationMessage = "Open the TermTrimmer extension window for a summary.";
-      if (request.sectionTitle) {
-        notificationMessage = `A link titled "${request.sectionTitle}" was detected. Open the TermTrimmer extension window for a summary.`;
-      }
 
       // Display the notification to the user
       chrome.notifications.create({
