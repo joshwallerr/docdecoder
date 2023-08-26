@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener(
 function findPotentialLabelForCheckbox(checkbox) {
   let potentialLabels = Array.from(document.querySelectorAll('p, div')).filter(el => {
       let text = el.textContent.trim().toLowerCase();
-      return text.includes("read") || text.includes("agree") || text.includes("accept") || text.includes("understand") || text.includes("acknowledge") || text.includes("consent") || text.includes("confirm") || text.includes("i have");
+      return (text.startsWith("i ") || text.startsWith("you ")) && (text.includes("read") || text.includes("agree") || text.includes("accept") || text.includes("understand") || text.includes("acknowledge") || text.includes("consent") || text.includes("confirm") || text.includes("i have"));
   });
 
   if (potentialLabels.length) {
