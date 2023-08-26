@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
   initPopup();
-  
+
   // Event listener to handle storage changes
-  chrome.storage.onChanged.addListener(function(changes, namespace) {
+  chrome.storage.onChanged.addListener(function (changes, namespace) {
     for (let key in changes) {
       if (key === "summaries" || key === "showForm" || key === "domainForForm") {
         initPopup();
@@ -10,16 +10,27 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  
-  document.getElementById('myForm').onsubmit = function (e) {
-    e.preventDefault();
-    // send the user input to the content script
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, { userInput: document.getElementById('userInput').value }, function (response) {
+
+  document.getElementById('myForm').addEventListener('submit', function (e) {
+    e.preventDefault(); // To prevent the form from submitting the usual way
+
+    // Extracting the form data
+    let policyName = document.getElementById('policyName').value;
+    let policyURL = document.getElementById('policyURL').value;
+
+    // Get the current tab's URL
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      // Sending the form data to background.js
+      chrome.runtime.sendMessage({
+        url: policyURL, // This is the URL of the current tab
+        sectionTitle: policyName,
+        tabURL: tabs[0].url, // This is the URL of the current tab
+        fromPopup: true // Indicating this message comes from popup
+      }, function (response) {
         console.log(response);
       });
     });
-  };
+  });
 });
 
 function initPopup() {
@@ -46,11 +57,11 @@ function initPopup() {
         let section = document.createElement('div');
 
         let heading = document.createElement('h3');
-        heading.textContent = toCapitalizedCase(termType);  
+        heading.textContent = toCapitalizedCase(termType);
         section.appendChild(heading);
 
         let summaryText = document.createElement('p');
-        summaryText.innerHTML = formatSummaryText(domainSummaries[termType]); 
+        summaryText.innerHTML = formatSummaryText(domainSummaries[termType]);
         section.appendChild(summaryText);
 
         container.appendChild(section);

@@ -9,9 +9,13 @@
 <body>
   <h1>Term Trimmer</h1>
   <form id="myForm">
-    <label for="userInput">Please enter the terms:</label><br>
-    <input type="text" id="userInput" name="userInput"><br>
-    <input type="submit" value="Submit">
+    <label for="policyName">Policy Name:</label>
+    <input type="text" id="policyName" name="policyName" required>
+
+    <label for="policyURL">Policy URL:</label>
+    <input id="policyURL" name="policyURL" required>
+
+    <input type="submit" value="Create Summary">
   </form>
 
   <!-- TODO: Make users name the policy they submit. Send domain, policy name, and pasted document to summarize route -->

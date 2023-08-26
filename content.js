@@ -41,15 +41,18 @@ function detectCheckboxes() {
           let labelText = label.textContent.toLowerCase();
           let detectedTermTypes = [];
 
-          if (labelText.includes("terms")) detectedTermTypes.push("terms");
-          if (labelText.includes("conditions")) detectedTermTypes.push("conditions");
+          if (labelText.includes("term")) detectedTermTypes.push("term");
+          if (labelText.includes("condition")) detectedTermTypes.push("condition");
           if (labelText.includes("privacy")) detectedTermTypes.push("privacy");
 
           let links = Array.from(label.querySelectorAll('a'));
           if (links.length) {
               links.forEach(link => {
                   let linkText = link.textContent;
+                  console.log(linkText);
+
                   let termType = detectedTermTypes.find(type => linkText.toLowerCase().includes(type));
+                  console.log(termType);
 
                   if (termType) {
                       chrome.runtime.sendMessage({ type: "showNotification", termType: termType });
