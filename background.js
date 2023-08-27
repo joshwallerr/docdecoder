@@ -29,6 +29,17 @@ chrome.runtime.onMessage.addListener(
           console.error('Error:', error);
           chrome.runtime.sendMessage({ showForm: true });
         });
+    } else if (request.content) {  // New condition to check for policyContent
+      console.log("Received policy content:", request.content);
+      summarizeDocument(request.content, extractedURL, request.sectionTitle)
+        .then(summary => {
+          sendResponse({ summary: summary });
+          storeSummary(extractedURL, summary, request.sectionTitle);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          chrome.runtime.sendMessage({ showForm: true });
+        });
     } else if (request.showForm) {
       console.log("Received message to show form");
     }
@@ -40,6 +51,18 @@ function fetchPageHTML(url) {
   return fetch(url)
     .then(response => response.text());
 }
+
+// function fetchPageHTML(url) {
+//   return fetch('http://3.92.65.153/gethtml', {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//     },
+//     body: JSON.stringify({ url: url })
+//   })
+//     .then(response => response.json())
+//     .then(data => data.html);
+// }
 
 function summarizeDocument(document, url, sectionTitle) {
   let domain = new URL(url).hostname;

@@ -9,11 +9,16 @@
 <body>
   <h1>Term Trimmer</h1>
   <form id="myForm">
+    <p id="errorPrompt" style="display: none;">We've detected a checkbox, but can't find a policy associated with it. Please create a custom summary using the form below.</p>
+
+    <p>Step 1: Give the summary a name (e.g. Privacy Policy, Terms, User Agreement).</p>
     <label for="policyName">Policy Name:</label>
     <input type="text" id="policyName" name="policyName" required>
 
-    <label for="policyURL">Policy URL:</label>
-    <input id="policyURL" name="policyURL" required>
+    <p>Step 2: Open the page that contains the policy you want to summarize, and hit CTRL + A to copy the entire page contents.</p>
+    <p>Step 3: Paste the content in the box below and click "Create Summary".</p>
+    <label for="policyContent">Policy content:</label>
+    <textarea id="policyContent" name="policyContent" required></textarea>
 
     <input type="submit" value="Create Summary">
   </form>

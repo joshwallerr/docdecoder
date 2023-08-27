@@ -45,7 +45,7 @@ function detectCheckboxes() {
                   console.log(linkText);
 
                   if (linkText) {
-                      chrome.runtime.sendMessage({ type: "showNotification"});
+                    //   chrome.runtime.sendMessage({ type: "showNotification"});
                       chrome.runtime.sendMessage({ url: link.href, sectionTitle: linkText }, function (response) {
                           console.log(response);
                       });

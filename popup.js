@@ -16,13 +16,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Extracting the form data
     let policyName = document.getElementById('policyName').value;
-    let policyURL = document.getElementById('policyURL').value;
+    let policyContent = document.getElementById('policyContent').value;
 
     // Get the current tab's URL
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
       // Sending the form data to background.js
       chrome.runtime.sendMessage({
-        url: policyURL, // This is the URL of the current tab
+        content: policyContent, // This is the URL of the current tab
         sectionTitle: policyName,
         tabURL: tabs[0].url, // This is the URL of the current tab
         fromPopup: true // Indicating this message comes from popup
@@ -42,9 +42,9 @@ function initPopup() {
 
       // Update the display of the form based on the showForm flag and the domain
       if (result.showForm && result.domainForForm === currentDomain) {
-        document.getElementById("manual-input-form").style.display = "block";
+        document.getElementById("errorPrompt").style.display = "block";
       } else {
-        document.getElementById("manual-input-form").style.display = "none";
+        document.getElementById("errorPrompt").style.display = "none";
       }
 
       console.log(domainSummaries);  // Log to debug
