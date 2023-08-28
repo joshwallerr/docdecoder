@@ -9,20 +9,29 @@ body {
     line-height: 1.4;
     width: 500px;
     height: 200px;
-    -ms-overflow-style: none;  /* for Internet Explorer and Edge */
-    scrollbar-width: none;  /* for Firefox */
+    -ms-overflow-style: none;
+    /* for Internet Explorer and Edge */
+    scrollbar-width: none;
+    /* for Firefox */
 }
 
 body::-webkit-scrollbar {
-    display: none;  /* for Chrome, Safari, and newer versions of Opera */
+    display: none;
+    /* for Chrome, Safari, and newer versions of Opera */
 }
-aw
-h1, h2, h3, h4, h5, h6 {
+
+aw h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     margin: 0 0 10px 0;
 }
 
 h4 {
-    color: #007BFF; /* Changing color of h4 as per your request */
+    color: #007BFF;
+    /* Changing color of h4 as per your request */
     margin-top: 20px;
     border-bottom: 2px solid #007BFF;
     padding-bottom: 5px;
@@ -41,13 +50,13 @@ p {
 }
 
 /* Individual summary sections */
-#summaries-container > div {
+#summaries-container>div {
     padding: 10px;
     border-bottom: 1px solid #e0e0e0;
     margin-bottom: 10px;
 }
 
-#summaries-container > div:last-child {
+#summaries-container>div:last-child {
     border-bottom: none;
 }
 
@@ -71,7 +80,8 @@ p {
 /* Notification styles (if any) */
 .notification {
     padding: 10px;
-    background-color: #FFEB3B; /* Yellow color for notifications */
+    background-color: #FFEB3B;
+    /* Yellow color for notifications */
     color: #333;
     border-radius: 5px;
     margin-bottom: 20px;
@@ -90,4 +100,12 @@ button {
 
 button:hover {
     background-color: #0056b3;
+}
+
+
+.remove-icon {
+    /* position: absolute; */
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
 }
