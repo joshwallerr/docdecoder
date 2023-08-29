@@ -74,7 +74,6 @@ function initPopup() {
         /javascript.+required/i,
         /enable javascript/i,
         /bot detected/i,
-        // ... any other patterns that you find common
       ];
 
       let container = document.getElementById('summaries-container');
