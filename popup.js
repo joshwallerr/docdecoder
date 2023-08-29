@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let policyContent = document.getElementById('policyContent').value;
 
     // Get the current tab's URL
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       // Sending the form data to background.js
       chrome.runtime.sendMessage({
         content: policyContent, // This is the URL of the current tab
@@ -33,24 +33,24 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
-document.addEventListener("click", function(event) {
+document.addEventListener("click", function (event) {
   if (event.target.classList.contains("remove-icon")) {
-      const domain = event.target.getAttribute("data-domain");
-      const sectionTitle = event.target.getAttribute("data-section-title");
-      
-      // Remove the summary from Chrome storage
-      chrome.storage.local.get(['summaries'], function (result) {
-          if (result.summaries && result.summaries[domain]) {
-              delete result.summaries[domain][sectionTitle];
-              if (Object.keys(result.summaries[domain]).length === 0) {
-                  delete result.summaries[domain];
-              }
-              chrome.storage.local.set({ summaries: result.summaries });
+    const domain = event.target.getAttribute("data-domain");
+    const sectionTitle = event.target.getAttribute("data-section-title");
 
-              // Remove the summary from the UI
-              event.target.parentNode.remove();
-          }
-      });
+    // Remove the summary from Chrome storage
+    chrome.storage.local.get(['summaries'], function (result) {
+      if (result.summaries && result.summaries[domain]) {
+        delete result.summaries[domain][sectionTitle];
+        if (Object.keys(result.summaries[domain]).length === 0) {
+          delete result.summaries[domain];
+        }
+        chrome.storage.local.set({ summaries: result.summaries });
+
+        // Remove the summary from the UI
+        event.target.parentNode.remove();
+      }
+    });
   }
 });
 
@@ -70,13 +70,20 @@ function initPopup() {
 
       console.log(domainSummaries);  // Log to debug
 
+      const blockPatterns = [
+        /javascript.+required/i,
+        /enable javascript/i,
+        /bot detected/i,
+        // ... any other patterns that you find common
+      ];
+
       let container = document.getElementById('summaries-container');
       container.innerHTML = '';  // Clear the container
 
       // Dynamically create sections based on available summaries
       for (let termType in domainSummaries) {
         let section = document.createElement('div');
-        
+
         let removeIcon = document.createElement('span');
         removeIcon.textContent = "-";
         removeIcon.className = "remove-icon";
@@ -87,6 +94,13 @@ function initPopup() {
         let heading = document.createElement('h3');
         heading.textContent = toCapitalizedCase(termType);
         section.appendChild(heading);
+
+        if (blockPatterns.some(pattern => pattern.test(domainSummaries[termType]))) {
+          let warning = document.createElement('p');
+          warning.textContent = "Note: This summary may have failed due to the website's use of CAPTCHAs. If you cannot see the expected summary, please manually create one using the form above.";
+          warning.className = "warning";
+          section.appendChild(warning);
+        }
 
         let summaryText = document.createElement('p');
         summaryText.innerHTML = formatSummaryText(domainSummaries[termType]);
@@ -132,19 +146,19 @@ function removeSummary(domain, sectionTitle) {
   // Remove the summary from the UI
   const summaryElem = document.querySelector(`.summary [data-domain="${domain}"][data-section-title="${sectionTitle}"]`);
   if (summaryElem) {
-      summaryElem.parentElement.remove();
+    summaryElem.parentElement.remove();
   }
 
   // Remove the summary from chrome storage
-  chrome.storage.local.get(["summaries"], function(result) {
-      if (result.summaries && result.summaries[domain]) {
-          delete result.summaries[domain][sectionTitle];
-          // If there are no more summaries for this domain, remove the domain key as well
-          if (Object.keys(result.summaries[domain]).length === 0) {
-              delete result.summaries[domain];
-          }
-          chrome.storage.local.set({ summaries: result.summaries });
+  chrome.storage.local.get(["summaries"], function (result) {
+    if (result.summaries && result.summaries[domain]) {
+      delete result.summaries[domain][sectionTitle];
+      // If there are no more summaries for this domain, remove the domain key as well
+      if (Object.keys(result.summaries[domain]).length === 0) {
+        delete result.summaries[domain];
       }
+      chrome.storage.local.set({ summaries: result.summaries });
+    }
   });
 }
 
