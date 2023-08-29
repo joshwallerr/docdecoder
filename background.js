@@ -2,17 +2,16 @@ chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
     let extractedURL = request.fromPopup ? request.tabURL : sender.tab.url;
 
-    if (request.type === "showNotification") {
-      // Determine the message based on the detected term
-      let notificationMessage = "Open the TermTrimmer extension window for a summary.";
-
-      // Display the notification to the user
-      chrome.notifications.create({
-        type: 'basic',
-        iconUrl: 'detected.jpg',
-        title: 'Link Detected',
-        message: notificationMessage
-      });
+    if (request.type === "updateBadge") {
+      let tabId = parseInt(sender.tab.id, 10);
+      if (chrome.runtime.lastError) {
+        // Tab does not exist, possibly closed
+        console.error(chrome.runtime.lastError);
+      } else {
+        // Tab exists, update the badge
+        chrome.action.setBadgeText({ text: request.count.toString(), tabId: tabId });
+        chrome.action.setBadgeBackgroundColor({ color: [255, 0, 0, 255] });
+      }
     } else if (request.url) {
       fetchPageHTML(request.url)
         .then(html => {
@@ -46,6 +45,16 @@ chrome.runtime.onMessage.addListener(
     return true;
   }
 );
+
+// chrome.tabs.onRemoved.addListener(function (tabId) {
+//   chrome.action.setBadgeText({ text: "", tabId: tabId });
+// });
+
+// chrome.webNavigation.onCompleted.addListener(function (details) {
+//   if (details.frameId === 0) {  // Check if it's the main frame
+//     chrome.action.setBadgeText({ text: "", tabId: details.tabId });
+//   }
+// });
 
 function fetchPageHTML(url) {
   return fetch(url)
