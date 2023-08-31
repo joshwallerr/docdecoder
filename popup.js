@@ -33,6 +33,16 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  if (message.type === "showPreloader" && message.summaryName) {
+    console.log("adding preloader for" + message.summaryName);
+    addPreloaderForSummary(message.summaryName);
+  } else if (message.type === "removePreloader" && message.summaryName) {
+    console.log("removing preloader for" + message.summaryName);
+    removePreloaderForSummary(message.summaryName);
+  }
+});
+
 document.addEventListener("click", function (event) {
   if (event.target.classList.contains("remove-icon")) {
     const domain = event.target.getAttribute("data-domain");
@@ -81,6 +91,9 @@ function initPopup() {
 
       // Dynamically create sections based on available summaries
       for (let termType in domainSummaries) {
+        console.log("removing preloader for " + termType);
+        removePreloaderForSummary(termType);
+
         let section = document.createElement('div');
 
         let removeIcon = document.createElement('span');
@@ -165,4 +178,30 @@ function toCapitalizedCase(str) {
   return str.replace(/\w\S*/g, function (txt) {
     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
   });
+}
+
+function addPreloaderForSummary(summaryName) {
+  let container = document.getElementById('preloader-container');
+  let preloaderSection = document.createElement('div');
+  preloaderSection.className = "preloader-section";
+  preloaderSection.dataset.summaryName = summaryName;
+
+  let preloader = document.createElement('div');
+  preloader.className = "preloader";
+  preloaderSection.appendChild(preloader);
+
+  let preloaderText = document.createElement('p');
+  preloaderText.textContent = `Generating summary for ${summaryName}`;
+  preloaderSection.appendChild(preloaderText);
+
+  container.appendChild(preloaderSection);
+  console.log("preloader added for " + summaryName);
+}
+
+function removePreloaderForSummary(summaryName) {
+  let preloaderSection = document.querySelector(`.preloader-section[data-summary-name="${summaryName}"]`);
+  if (preloaderSection) {
+      preloaderSection.remove();
+  }
+  console.log("preloader removed for " + summaryName);
 }

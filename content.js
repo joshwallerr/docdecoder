@@ -50,6 +50,8 @@ function detectCheckboxes() {
                         count++;
                         console.log(count);
                         chrome.runtime.sendMessage({ type: "updateBadge", count: count });
+                        chrome.runtime.sendMessage({ type: "showPreloader", summaryName: linkText });
+
                         chrome.runtime.sendMessage({ url: link.href, sectionTitle: linkText }, function (response) {
                             console.log(response);
                         });

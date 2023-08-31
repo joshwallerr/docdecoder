@@ -23,10 +23,12 @@ chrome.runtime.onMessage.addListener(
         .then(summary => {
           sendResponse({ summary: summary });
           storeSummary(extractedURL, summary, request.sectionTitle);
+          chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle });
         })
         .catch(error => {
           console.error('Error:', error);
           chrome.runtime.sendMessage({ showForm: true });
+          chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle });
         });
     } else if (request.content) {  // New condition to check for policyContent
       console.log("Received policy content:", request.content);
@@ -34,10 +36,12 @@ chrome.runtime.onMessage.addListener(
         .then(summary => {
           sendResponse({ summary: summary });
           storeSummary(extractedURL, summary, request.sectionTitle);
+          chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle });
         })
         .catch(error => {
           console.error('Error:', error);
           chrome.runtime.sendMessage({ showForm: true });
+          chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle });
         });
     } else if (request.showForm) {
       console.log("Received message to show form");
