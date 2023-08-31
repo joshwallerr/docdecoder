@@ -24,11 +24,13 @@ chrome.runtime.onMessage.addListener(
           sendResponse({ summary: summary });
           storeSummary(extractedURL, summary, request.sectionTitle);
           chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle });
+          removeLoadingSummary(request.sectionTitle);
         })
         .catch(error => {
           console.error('Error:', error);
           chrome.runtime.sendMessage({ showForm: true });
           chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle });
+          removeLoadingSummary(request.sectionTitle);
         });
     } else if (request.content) {  // New condition to check for policyContent
       console.log("Received policy content:", request.content);
@@ -37,11 +39,13 @@ chrome.runtime.onMessage.addListener(
           sendResponse({ summary: summary });
           storeSummary(extractedURL, summary, request.sectionTitle);
           chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle });
+          removeLoadingSummary(request.sectionTitle);
         })
         .catch(error => {
           console.error('Error:', error);
           chrome.runtime.sendMessage({ showForm: true });
           chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle });
+          removeLoadingSummary(request.sectionTitle);
         });
     } else if (request.showForm) {
       console.log("Received message to show form");
@@ -63,6 +67,17 @@ chrome.runtime.onMessage.addListener(
 function fetchPageHTML(url) {
   return fetch(url)
     .then(response => response.text());
+}
+
+function removeLoadingSummary(summaryName) {
+  chrome.storage.local.get(['loadingSummaries'], function (data) {
+      let loadingSummaries = data.loadingSummaries || [];
+      let index = loadingSummaries.indexOf(summaryName);
+      if (index !== -1) {
+          loadingSummaries.splice(index, 1);
+          chrome.storage.local.set({ loadingSummaries: loadingSummaries });
+      }
+  });
 }
 
 // function fetchPageHTML(url) {

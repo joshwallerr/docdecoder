@@ -66,61 +66,68 @@ document.addEventListener("click", function (event) {
 
 function initPopup() {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    let currentDomain = new URL(tabs[0].url).hostname;
-    chrome.storage.local.get(['summaries', 'showForm', 'domainForForm'], function (result) {
-      let summaries = result.summaries || {};
-      let domainSummaries = summaries[currentDomain] || {};
+      let currentDomain = new URL(tabs[0].url).hostname;
 
-      // Update the display of the form based on the showForm flag and the domain
-      if (result.showForm && result.domainForForm === currentDomain) {
-        document.getElementById("errorPrompt").style.display = "block";
-      } else {
-        document.getElementById("errorPrompt").style.display = "none";
-      }
+      chrome.storage.local.get(['summaries', 'showForm', 'domainForForm', 'loadingSummaries'], function (result) {
+          let summaries = result.summaries || {};
+          let domainSummaries = summaries[currentDomain] || {};
+          let loadingSummaries = result.loadingSummaries || [];
 
-      console.log(domainSummaries);  // Log to debug
+          // Update the display of the form based on the showForm flag and the domain
+          if (result.showForm && result.domainForForm === currentDomain) {
+              document.getElementById("errorPrompt").style.display = "block";
+          } else {
+              document.getElementById("errorPrompt").style.display = "none";
+          }
 
-      const blockPatterns = [
-        /javascript.+required/i,
-        /enable javascript/i,
-        /bot detected/i,
-      ];
+          console.log(domainSummaries);  // Log to debug
 
-      let container = document.getElementById('summaries-container');
-      container.innerHTML = '';  // Clear the container
+          const blockPatterns = [
+              /javascript.+required/i,
+              /enable javascript/i,
+              /bot detected/i,
+          ];
 
-      // Dynamically create sections based on available summaries
-      for (let termType in domainSummaries) {
-        console.log("removing preloader for " + termType);
-        removePreloaderForSummary(termType);
+          let container = document.getElementById('summaries-container');
+          container.innerHTML = '';  // Clear the container
 
-        let section = document.createElement('div');
+          // Display preloaders for any loading summaries
+          loadingSummaries.forEach(summaryName => {
+              addPreloaderForSummary(summaryName);
+          });
 
-        let removeIcon = document.createElement('span');
-        removeIcon.textContent = "-";
-        removeIcon.className = "remove-icon";
-        removeIcon.setAttribute("data-domain", currentDomain);
-        removeIcon.setAttribute("data-section-title", termType);
-        section.appendChild(removeIcon);
+          // Dynamically create sections based on available summaries
+          for (let termType in domainSummaries) {
+              console.log("removing preloader for " + termType);
+              removePreloaderForSummary(termType);
 
-        let heading = document.createElement('h3');
-        heading.textContent = toCapitalizedCase(termType);
-        section.appendChild(heading);
+              let section = document.createElement('div');
 
-        if (blockPatterns.some(pattern => pattern.test(domainSummaries[termType]))) {
-          let warning = document.createElement('p');
-          warning.textContent = "Note: This summary may have failed due to the website's use of CAPTCHAs. If you cannot see the expected summary, please manually create one using the form above.";
-          warning.className = "warning";
-          section.appendChild(warning);
-        }
+              let removeIcon = document.createElement('span');
+              removeIcon.textContent = "-";
+              removeIcon.className = "remove-icon";
+              removeIcon.setAttribute("data-domain", currentDomain);
+              removeIcon.setAttribute("data-section-title", termType);
+              section.appendChild(removeIcon);
 
-        let summaryText = document.createElement('p');
-        summaryText.innerHTML = formatSummaryText(domainSummaries[termType]);
-        section.appendChild(summaryText);
+              let heading = document.createElement('h3');
+              heading.textContent = toCapitalizedCase(termType);
+              section.appendChild(heading);
 
-        container.appendChild(section);
-      }
-    });
+              if (blockPatterns.some(pattern => pattern.test(domainSummaries[termType]))) {
+                  let warning = document.createElement('p');
+                  warning.textContent = "Note: This summary may have failed due to the website's use of CAPTCHAs. If you cannot see the expected summary, please manually create one using the form above.";
+                  warning.className = "warning";
+                  section.appendChild(warning);
+              }
+
+              let summaryText = document.createElement('p');
+              summaryText.innerHTML = formatSummaryText(domainSummaries[termType]);
+              section.appendChild(summaryText);
+
+              container.appendChild(section);
+          }
+      });
   });
 }
 
