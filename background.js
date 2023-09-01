@@ -54,6 +54,13 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
+chrome.webNavigation.onCompleted.addListener(function(details) {
+  // Check if it's the main frame (not an iframe or subframe)
+  if (details.frameId === 0) {
+      clearPreloadersForDomain(details.url);
+  }
+});
+
 // chrome.tabs.onRemoved.addListener(function (tabId) {
 //   chrome.action.setBadgeText({ text: "", tabId: tabId });
 // });
@@ -132,5 +139,22 @@ function storeSummary(url, summary, sectionTitle) {
     summaries[domain][sectionTitle] = summary;
     // store the updated summaries
     chrome.storage.local.set({ summaries: summaries });
+  });
+}
+
+function clearPreloadersForDomain(url) {
+  let domain = new URL(url).hostname;
+
+  chrome.storage.local.get(['loadingSummaries'], function(data) {
+      let loadingSummaries = data.loadingSummaries || [];
+
+      // Filter out preloaders associated with the current domain
+      let updatedSummaries = loadingSummaries.filter(summary => {
+          let summaryDomain = new URL(summary.url).hostname;
+          return summaryDomain !== domain;
+      });
+
+      // Update storage
+      chrome.storage.local.set({ loadingSummaries: updatedSummaries });
   });
 }
