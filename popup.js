@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
         tabURL: tabs[0].url, // This is the URL of the current tab
         fromPopup: true // Indicating this message comes from popup
       }, function (response) {
-        console.log(response);
+        // console.log(response);
       });
     });
   });
@@ -35,11 +35,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.type === "showPreloader" && message.summaryName) {
-    console.log("adding preloader for" + message.summaryName);
     addPreloaderForSummary(message.summaryName);
-  } else if (message.type === "removePreloader" && message.summaryName) {
-    console.log("removing preloader for" + message.summaryName);
-    removePreloaderForSummary(message.summaryName);
+  } else if (message.type === "removePreloader" && message.summaryName && message.domain) {
+    removePreloaderForSummary(message.summaryName, message.domain);
   }
 });
 
@@ -80,7 +78,7 @@ function initPopup() {
               document.getElementById("errorPrompt").style.display = "none";
           }
 
-          console.log(domainSummaries);  // Log to debug
+          // console.log(domainSummaries);  // Log to debug
 
           const blockPatterns = [
               /javascript.+required/i,
@@ -91,15 +89,17 @@ function initPopup() {
           let container = document.getElementById('summaries-container');
           container.innerHTML = '';  // Clear the container
 
-          // Display preloaders for any loading summaries
-          loadingSummaries.forEach(summaryName => {
-              addPreloaderForSummary(summaryName);
-          });
+          // // Display preloaders for any loading summaries
+          // loadingSummaries.forEach(loadingSummaryObj => {
+          //   if (loadingSummaryObj.domain === currentDomain) {
+          //     addPreloaderForSummary(loadingSummaryObj.summaryName);
+          //   }
+          // });
 
           // Dynamically create sections based on available summaries
           for (let termType in domainSummaries) {
-              console.log("removing preloader for " + termType);
-              removePreloaderForSummary(termType);
+              // console.log("removing preloader for " + termType);
+              removePreloaderForSummary(termType, currentDomain);
 
               let section = document.createElement('div');
 
@@ -127,6 +127,8 @@ function initPopup() {
 
               container.appendChild(section);
           }
+          console.log(currentDomain);
+          clearPreloadersForDomain(currentDomain);
       });
   });
 }
@@ -161,23 +163,21 @@ function formatSummaryText(summaryData) {
   return text.length > 0 ? text : "Not found";
 }
 
-function removeSummary(domain, sectionTitle) {
-  // Remove the summary from the UI
-  const summaryElem = document.querySelector(`.summary [data-domain="${domain}"][data-section-title="${sectionTitle}"]`);
-  if (summaryElem) {
-    summaryElem.parentElement.remove();
-  }
-
-  // Remove the summary from chrome storage
-  chrome.storage.local.get(["summaries"], function (result) {
-    if (result.summaries && result.summaries[domain]) {
-      delete result.summaries[domain][sectionTitle];
-      // If there are no more summaries for this domain, remove the domain key as well
-      if (Object.keys(result.summaries[domain]).length === 0) {
-        delete result.summaries[domain];
+function removeLoadingSummary(summaryName, domain) {
+  // console.log("removing " + summaryName + " on " + domain);
+  chrome.storage.local.get(['loadingSummaries'], function (data) {
+      let loadingSummaries = data.loadingSummaries || [];
+      let indexToRemove = -1;
+      for (let i = 0; i < loadingSummaries.length; i++) {
+          if (loadingSummaries[i].summaryName === summaryName && loadingSummaries[i].domain === domain) {
+              indexToRemove = i;
+              break;
+          }
       }
-      chrome.storage.local.set({ summaries: result.summaries });
-    }
+      if (indexToRemove !== -1) {
+          loadingSummaries.splice(indexToRemove, 1);
+          chrome.storage.local.set({ loadingSummaries: loadingSummaries });
+      }
   });
 }
 
@@ -189,26 +189,55 @@ function toCapitalizedCase(str) {
 
 function addPreloaderForSummary(summaryName) {
   let container = document.getElementById('preloader-container');
+
+  // Check if preloader for this summaryName already exists
+  let existingPreloader = document.querySelector(`.preloader-section[data-summary-name="${summaryName}"]`);
+  if (existingPreloader) {
+      return;  // If it exists, don't add another one
+  }
+
   let preloaderSection = document.createElement('div');
   preloaderSection.className = "preloader-section";
   preloaderSection.dataset.summaryName = summaryName;
 
-  let preloader = document.createElement('div');
-  preloader.className = "preloader";
-  preloaderSection.appendChild(preloader);
-
-  let preloaderText = document.createElement('p');
-  preloaderText.textContent = `Generating summary for ${summaryName}`;
-  preloaderSection.appendChild(preloaderText);
-
-  container.appendChild(preloaderSection);
-  console.log("preloader added for " + summaryName);
+  // Get the current domain and set it as a data attribute
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      let currentDomain = new URL(tabs[0].url).hostname;
+      preloaderSection.setAttribute("data-domain", currentDomain);
+      
+      let preloader = document.createElement('div');
+      preloader.className = "preloader";
+      preloaderSection.appendChild(preloader);
+  
+      let preloaderText = document.createElement('p');
+      preloaderText.textContent = `Generating summary for ${summaryName}`;
+      preloaderSection.appendChild(preloaderText);
+  
+      container.appendChild(preloaderSection);
+  });
 }
 
-function removePreloaderForSummary(summaryName) {
-  let preloaderSection = document.querySelector(`.preloader-section[data-summary-name="${summaryName}"]`);
+function removePreloaderForSummary(summaryName, domain) {
+  // console.log(domain)
+  let preloaderSection = document.querySelector(`.preloader-section[data-summary-name="${summaryName}"][data-domain="${domain}"]`);
   if (preloaderSection) {
       preloaderSection.remove();
+      removeLoadingSummary(summaryName, domain);
   }
-  console.log("preloader removed for " + summaryName);
+}
+
+function clearPreloadersForDomain(url) {
+  // let domain = new URL(url).hostname;
+  let domain = url;
+  console.log("Clearing preloaders for domain: " + domain);
+
+  chrome.storage.local.get(['loadingSummaries'], function(data) {
+      let loadingSummaries = data.loadingSummaries || [];
+
+      // Filter out preloaders associated with the current domain
+      let updatedSummaries = loadingSummaries.filter(loadingSummaryObj => loadingSummaryObj.domain !== domain);
+
+      // Update storage
+      chrome.storage.local.set({ loadingSummaries: updatedSummaries });
+  });
 }
