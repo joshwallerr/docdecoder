@@ -52,25 +52,22 @@ function detectCheckboxes() {
                         chrome.runtime.sendMessage({ type: "updateBadge", count: count });
 
                         chrome.runtime.sendMessage({ type: "showPreloader", summaryName: linkText, domain: window.location.hostname });
-                        console.log("sending message to show preloader for " + linkText)
 
-                        chrome.storage.local.get(['loadingSummaries'], function (data) {
-                            let loadingSummaries = data.loadingSummaries || [];
-                            let currentDomain = new URL(window.location.href).hostname;
-                            let loadingSummaryObj = {
-                                domain: currentDomain,
-                                summaryName: linkText
-                            };
+                        // chrome.storage.local.get(['loadingSummaries'], function (data) {
+                        //     let loadingSummaries = data.loadingSummaries || [];
+                        //     let currentDomain = new URL(window.location.href).hostname;
+                        //     let loadingSummaryObj = {
+                        //         domain: currentDomain,
+                        //         summaryName: linkText
+                        //     };
                         
-                            // Check if summary is already in the array
-                            const existingSummary = loadingSummaries.find(summary => summary.domain === currentDomain && summary.summaryName === linkText);
-                            if (!existingSummary) {
-                                loadingSummaries.push(loadingSummaryObj);
-                                console.log("adding " + linkText + " to loadingSummaries");
-                                chrome.storage.local.set({ loadingSummaries: loadingSummaries });
-                                console.log("loadingSummaries is now " + loadingSummaries);
-                            }
-                        });
+                        //     // Check if summary is already in the array
+                        //     const existingSummary = loadingSummaries.find(summary => summary.domain === currentDomain && summary.summaryName === linkText);
+                        //     if (!existingSummary) {
+                        //         loadingSummaries.push(loadingSummaryObj);
+                        //         chrome.storage.local.set({ loadingSummaries: loadingSummaries });
+                        //     }
+                        // });
 
                         chrome.runtime.sendMessage({ url: link.href, sectionTitle: linkText }, function (response) {
                             // console.log(response);

@@ -54,12 +54,12 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
-chrome.webNavigation.onCompleted.addListener(function(details) {
-  // Check if it's the main frame (not an iframe or subframe)
-  if (details.frameId === 0 && details.transitionType === "reload") {
-      clearPreloadersForDomain(details.url);
-  }
-});
+// chrome.webNavigation.onCompleted.addListener(function(details) {
+//   // Check if it's the main frame (not an iframe or subframe)
+//   if (details.frameId === 0 && details.transitionType === "reload") {
+//       clearPreloadersForDomain(details.url);
+//   }
+// });
 
 // chrome.tabs.onRemoved.addListener(function (tabId) {
 //   chrome.action.setBadgeText({ text: "", tabId: tabId });

@@ -33,9 +33,12 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
+// LOOK HERE
+// Extra preloader is being added from background.js
+
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  if (message.type === "showPreloader" && message.summaryName) {
-    addPreloaderForSummary(message.summaryName);
+  if (message.type === "showPreloader" && message.summaryName && message.domain) {
+    addPreloaderForSummary(message.summaryName, message.domain);
   } else if (message.type === "removePreloader" && message.summaryName && message.domain) {
     removePreloaderForSummary(message.summaryName, message.domain);
   }
@@ -78,57 +81,65 @@ function initPopup() {
               document.getElementById("errorPrompt").style.display = "none";
           }
 
-          // console.log(domainSummaries);  // Log to debug
-
           const blockPatterns = [
               /javascript.+required/i,
               /enable javascript/i,
               /bot detected/i,
           ];
 
-          let container = document.getElementById('summaries-container');
-          container.innerHTML = '';  // Clear the container
+          // LOOK HERE
+          // THE SUMMARIES ARE DISAPPEARING BECAUSE THEY ARE BEING REMOVED FROM STORAGE WHEN THE POPUP OPENS, BUT ARE NOT BEING SHOWN WHEN OPENED AGAIN
+          // NEED TO ADD THEM BACK IN BELOW
 
-          // // Display preloaders for any loading summaries
-          // loadingSummaries.forEach(loadingSummaryObj => {
-          //   if (loadingSummaryObj.domain === currentDomain) {
-          //     addPreloaderForSummary(loadingSummaryObj.summaryName);
-          //   }
-          // });
+          // Display preloaders for any loading summaries on the current domain only
+          loadingSummaries.forEach(loadingSummaryObj => {
+            if (loadingSummaryObj.domain === currentDomain) {
+              console.log("Adding preloader for " + loadingSummaryObj.domain)
+              addPreloaderForSummary(loadingSummaryObj.summaryName);
+            }
+          });
+
+          let container = document.getElementById('summaries-container');
 
           // Dynamically create sections based on available summaries
           for (let termType in domainSummaries) {
-              // console.log("removing preloader for " + termType);
-              removePreloaderForSummary(termType, currentDomain);
 
-              let section = document.createElement('div');
+              // Only add the summary if it isn't already present
+              if (!document.querySelector(`.summary-section[data-summary-name="${termType}"]`)) {
+                  let section = document.createElement('div');
+                  section.className = "summary-section";  // Added class for identification
+                  section.dataset.summaryName = termType;  // Use data attributes to identify summaries
 
-              let removeIcon = document.createElement('span');
-              removeIcon.textContent = "-";
-              removeIcon.className = "remove-icon";
-              removeIcon.setAttribute("data-domain", currentDomain);
-              removeIcon.setAttribute("data-section-title", termType);
-              section.appendChild(removeIcon);
+                  let removeIcon = document.createElement('span');
+                  removeIcon.textContent = "-";
+                  removeIcon.className = "remove-icon";
+                  removeIcon.setAttribute("data-domain", currentDomain);
+                  removeIcon.setAttribute("data-section-title", termType);
+                  section.appendChild(removeIcon);
 
-              let heading = document.createElement('h3');
-              heading.textContent = toCapitalizedCase(termType);
-              section.appendChild(heading);
+                  let heading = document.createElement('h3');
+                  heading.textContent = toCapitalizedCase(termType);
+                  section.appendChild(heading);
 
-              if (blockPatterns.some(pattern => pattern.test(domainSummaries[termType]))) {
-                  let warning = document.createElement('p');
-                  warning.textContent = "Note: This summary may have failed due to the website's use of CAPTCHAs. If you cannot see the expected summary, please manually create one using the form above.";
-                  warning.className = "warning";
-                  section.appendChild(warning);
+                  if (blockPatterns.some(pattern => pattern.test(domainSummaries[termType]))) {
+                      let warning = document.createElement('p');
+                      warning.textContent = "Note: This summary may have failed due to the website's use of CAPTCHAs. If you cannot see the expected summary, please manually create one using the form above.";
+                      warning.className = "warning";
+                      section.appendChild(warning);
+                  }
+
+                  let summaryText = document.createElement('p');
+                  summaryText.innerHTML = formatSummaryText(domainSummaries[termType]);
+                  section.appendChild(summaryText);
+
+                  container.appendChild(section);
+
+                  // Remove the preloader for this summary
+                  removePreloaderForSummary(termType, currentDomain);
               }
-
-              let summaryText = document.createElement('p');
-              summaryText.innerHTML = formatSummaryText(domainSummaries[termType]);
-              section.appendChild(summaryText);
-
-              container.appendChild(section);
           }
-          console.log(currentDomain);
-          clearPreloadersForDomain(currentDomain);
+          // console.log(currentDomain);
+          // clearPreloadersForDomain(currentDomain);
       });
   });
 }
@@ -187,13 +198,13 @@ function toCapitalizedCase(str) {
   });
 }
 
-function addPreloaderForSummary(summaryName) {
+function addPreloaderForSummary(summaryName, domain) {
   let container = document.getElementById('preloader-container');
 
-  // Check if preloader for this summaryName already exists
-  let existingPreloader = document.querySelector(`.preloader-section[data-summary-name="${summaryName}"]`);
+  // Check if preloader for this summaryName already exists for the current domain
+  let existingPreloader = document.querySelector(`.preloader-section[data-summary-name="${summaryName}"][data-domain="${domain}"]`);
   if (existingPreloader) {
-      return;  // If it exists, don't add another one
+      return;
   }
 
   let preloaderSection = document.createElement('div');
