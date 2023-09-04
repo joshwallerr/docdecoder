@@ -51,8 +51,13 @@ function detectCheckboxes() {
                         // console.log(count);
                         chrome.runtime.sendMessage({ type: "updateBadge", count: count });
 
-                        chrome.runtime.sendMessage({ type: "showPreloader", summaryName: linkText, domain: window.location.hostname });
-
+                        chrome.runtime.sendMessage({
+                            type: "showPreloader",
+                            summaryName: linkText,
+                            domain: window.location.hostname,
+                            requestId: Date.now()
+                        });
+                        
                         // chrome.storage.local.get(['loadingSummaries'], function (data) {
                         //     let loadingSummaries = data.loadingSummaries || [];
                         //     let currentDomain = new URL(window.location.href).hostname;

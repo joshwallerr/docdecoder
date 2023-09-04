@@ -39,7 +39,9 @@ document.addEventListener('DOMContentLoaded', function () {
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.type === "showPreloader" && message.summaryName && message.domain) {
     addPreloaderForSummary(message.summaryName, message.domain);
+    console.log("SHFSDJKFHDJKSFHDKASJLFHASDJKFHASJKDFHASJKLHDJKLHASF")
   } else if (message.type === "removePreloader" && message.summaryName && message.domain) {
+    console.log(`Received removePreloader message for ${message.summaryName}`);
     removePreloaderForSummary(message.summaryName, message.domain);
   }
 });
@@ -87,16 +89,14 @@ function initPopup() {
               /bot detected/i,
           ];
 
-          // LOOK HERE
-          // THE SUMMARIES ARE DISAPPEARING BECAUSE THEY ARE BEING REMOVED FROM STORAGE WHEN THE POPUP OPENS, BUT ARE NOT BEING SHOWN WHEN OPENED AGAIN
-          // NEED TO ADD THEM BACK IN BELOW
-
           // Display preloaders for any loading summaries on the current domain only
-          loadingSummaries.forEach(loadingSummaryObj => {
-            if (loadingSummaryObj.domain === currentDomain) {
-              console.log("Adding preloader for " + loadingSummaryObj.domain)
-              addPreloaderForSummary(loadingSummaryObj.summaryName);
-            }
+          chrome.storage.local.get(['loadingSummaries'], function (result) {
+            let loadingSummaries = result.loadingSummaries || [];
+            loadingSummaries.forEach(loadingSummaryObj => {
+              if (loadingSummaryObj.domain === currentDomain) {
+                addPreloaderForSummary(loadingSummaryObj.summaryName, loadingSummaryObj.domain);
+              }
+            });
           });
 
           let container = document.getElementById('summaries-container');

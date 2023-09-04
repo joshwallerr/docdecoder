@@ -23,12 +23,14 @@ chrome.runtime.onMessage.addListener(
         .then(summary => {
           sendResponse({ summary: summary });
           storeSummary(extractedURL, summary, request.sectionTitle);
+          console.log(`Sending removePreloader message for ${request.sectionTitle}`);
           chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: new URL(extractedURL).hostname });
           removeLoadingSummary(request.sectionTitle, extractedURL);
         })
         .catch(error => {
           console.error('Error:', error);
           chrome.runtime.sendMessage({ showForm: true });
+          console.log(`Sending removePreloader message for ${request.sectionTitle}`);
           chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: new URL(extractedURL).hostname });
           removeLoadingSummary(request.sectionTitle, extractedURL);
         });
@@ -38,18 +40,28 @@ chrome.runtime.onMessage.addListener(
         .then(summary => {
           sendResponse({ summary: summary });
           storeSummary(extractedURL, summary, request.sectionTitle);
+          console.log(`Sending removePreloader message for ${request.sectionTitle}`);
           chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: new URL(extractedURL).hostname });
           removeLoadingSummary(request.sectionTitle, extractedURL);
         })
         .catch(error => {
           console.error('Error:', error);
           chrome.runtime.sendMessage({ showForm: true });
+          console.log(`Sending removePreloader message for ${request.sectionTitle}`);
           chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: new URL(extractedURL).hostname });
           removeLoadingSummary(request.sectionTitle, extractedURL);
         });
     } else if (request.showForm) {
       // console.log("Received message to show form");
-    }
+    } else if (request.type === "showPreloader") {
+      // Add the link to loadingSummaries
+      let loadingSummaryObj = {
+          domain: request.domain,
+          summaryName: request.summaryName,
+          requestId: request.requestId
+      };
+      addToLoadingSummaries(loadingSummaryObj);
+    }  
     return true;
   }
 );
@@ -161,5 +173,17 @@ function clearPreloadersForDomain(url) {
 
       // Update storage
       chrome.storage.local.set({ loadingSummaries: updatedSummaries });
+  });
+}
+
+function addToLoadingSummaries(loadingSummaryObj) {
+  chrome.storage.local.get(['loadingSummaries'], function(data) {
+      let loadingSummaries = data.loadingSummaries || [];
+      // Check if summary is already in the array
+      const existingSummary = loadingSummaries.find(summary => summary.domain === loadingSummaryObj.domain && summary.summaryName === loadingSummaryObj.summaryName);
+      if (!existingSummary) {
+          loadingSummaries.push(loadingSummaryObj);
+          chrome.storage.local.set({ loadingSummaries: loadingSummaries });
+      }
   });
 }
