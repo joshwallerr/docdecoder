@@ -1,6 +1,8 @@
 chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
     let extractedURL = request.fromPopup ? request.tabURL : sender.tab.url;
+    extractedURL = new URL(extractedURL).hostname;
+    console.log(extractedURL);
 
     if (request.type === "updateBadge") {
       let tabId = parseInt(sender.tab.id, 10);
@@ -23,16 +25,24 @@ chrome.runtime.onMessage.addListener(
         .then(summary => {
           sendResponse({ summary: summary });
           storeSummary(extractedURL, summary, request.sectionTitle);
-          console.log(`Sending removePreloader message for ${request.sectionTitle}`);
-          chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: new URL(extractedURL).hostname });
+          console.log(`Sending removePreloader message for ${request.sectionTitle} on ${extractedURL}`);
           removeLoadingSummary(request.sectionTitle, extractedURL);
+          chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: extractedURL }, function (response) {
+            if (chrome.runtime.lastError) {
+              console.warn(chrome.runtime.lastError.message);
+            }
+          });
         })
         .catch(error => {
           console.error('Error:', error);
           chrome.runtime.sendMessage({ showForm: true });
-          console.log(`Sending removePreloader message for ${request.sectionTitle}`);
-          chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: new URL(extractedURL).hostname });
+          console.log(`Sending removePreloader message for ${request.sectionTitle} on ${extractedURL}`);
           removeLoadingSummary(request.sectionTitle, extractedURL);
+          chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: extractedURL }, function (response) {
+            if (chrome.runtime.lastError) {
+              console.warn(chrome.runtime.lastError.message);
+            }
+          });
         });
     } else if (request.content) {  // New condition to check for policyContent
       // console.log("Received policy content:", request.content);
@@ -40,16 +50,24 @@ chrome.runtime.onMessage.addListener(
         .then(summary => {
           sendResponse({ summary: summary });
           storeSummary(extractedURL, summary, request.sectionTitle);
-          console.log(`Sending removePreloader message for ${request.sectionTitle}`);
-          chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: new URL(extractedURL).hostname });
+          console.log(`Sending removePreloader message for ${request.sectionTitle} on ${extractedURL}`);
           removeLoadingSummary(request.sectionTitle, extractedURL);
+          chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: extractedURL }, function (response) {
+            if (chrome.runtime.lastError) {
+              console.warn(chrome.runtime.lastError.message);
+            }
+          });
         })
         .catch(error => {
           console.error('Error:', error);
           chrome.runtime.sendMessage({ showForm: true });
-          console.log(`Sending removePreloader message for ${request.sectionTitle}`);
-          chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: new URL(extractedURL).hostname });
+          console.log(`Sending removePreloader message for ${request.sectionTitle} on ${extractedURL}`);
           removeLoadingSummary(request.sectionTitle, extractedURL);
+          chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: extractedURL }, function (response) {
+            if (chrome.runtime.lastError) {
+              console.warn(chrome.runtime.lastError.message);
+            }
+          });
         });
     } else if (request.showForm) {
       // console.log("Received message to show form");
@@ -61,6 +79,10 @@ chrome.runtime.onMessage.addListener(
           requestId: request.requestId
       };
       addToLoadingSummaries(loadingSummaryObj);
+      console.log(`Sending showPreloader message for ${request.summaryName}`);
+      chrome.storage.local.get('loadingSummaries', function(data) {
+        console.log("storage from background.js after adding to storage: \n" + data.loadingSummaries);
+      });
     }  
     return true;
   }
@@ -119,7 +141,7 @@ function removeLoadingSummary(summaryName, domain) {
 // }
 
 function summarizeDocument(document, url, sectionTitle) {
-  let domain = new URL(url).hostname;
+  let domain = url;
   return fetch('http://3.92.65.153/summarize', {
     method: 'POST',
     headers: {
@@ -148,7 +170,7 @@ function summarizeDocument(document, url, sectionTitle) {
 }
 
 function storeSummary(url, summary, sectionTitle) {
-  let domain = new URL(url).hostname;
+  let domain = url;
   // get the stored summaries
   chrome.storage.local.get(['summaries'], function (result) {
     let summaries = result.summaries || {};
@@ -162,7 +184,7 @@ function storeSummary(url, summary, sectionTitle) {
 }
 
 function clearPreloadersForDomain(url) {
-  let domain = new URL(url).hostname;
+  let domain = url;
   // console.log("Clearing preloaders for domain: " + domain);
 
   chrome.storage.local.get(['loadingSummaries'], function(data) {

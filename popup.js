@@ -70,6 +70,15 @@ document.addEventListener("click", function (event) {
 function initPopup() {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       let currentDomain = new URL(tabs[0].url).hostname;
+      console.log("domain in popup.js: " + currentDomain);
+
+      chrome.storage.local.get('loadingSummaries', function(data) {
+        console.log(data.loadingSummaries);
+      });
+
+      // Clear the preloader container first
+      let preloaderContainer = document.getElementById('preloader-container');
+      preloaderContainer.innerHTML = '';
 
       chrome.storage.local.get(['summaries', 'showForm', 'domainForForm', 'loadingSummaries'], function (result) {
           let summaries = result.summaries || {};
@@ -94,6 +103,7 @@ function initPopup() {
             let loadingSummaries = result.loadingSummaries || [];
             loadingSummaries.forEach(loadingSummaryObj => {
               if (loadingSummaryObj.domain === currentDomain) {
+                console.log("POPUP.JS: Adding preloader for " + loadingSummaryObj.summaryName + " on " + loadingSummaryObj.domain);
                 addPreloaderForSummary(loadingSummaryObj.summaryName, loadingSummaryObj.domain);
               }
             });

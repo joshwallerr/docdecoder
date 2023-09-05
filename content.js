@@ -51,16 +51,21 @@ function detectCheckboxes() {
                         // console.log(count);
                         chrome.runtime.sendMessage({ type: "updateBadge", count: count });
 
+                        let currentDomain = new URL(window.location.href).hostname;
+
                         chrome.runtime.sendMessage({
                             type: "showPreloader",
                             summaryName: linkText,
-                            domain: window.location.hostname,
+                            domain: currentDomain,
                             requestId: Date.now()
                         });
+
+                        console.log(`Sending showPreloader message for ${linkText} on ${currentDomain}`);
                         
                         // chrome.storage.local.get(['loadingSummaries'], function (data) {
                         //     let loadingSummaries = data.loadingSummaries || [];
                         //     let currentDomain = new URL(window.location.href).hostname;
+                        //     console.log("domain in content.js: " + currentDomain);
                         //     let loadingSummaryObj = {
                         //         domain: currentDomain,
                         //         summaryName: linkText
@@ -73,6 +78,7 @@ function detectCheckboxes() {
                         //         chrome.storage.local.set({ loadingSummaries: loadingSummaries });
                         //     }
                         // });
+
 
                         chrome.runtime.sendMessage({ url: link.href, sectionTitle: linkText }, function (response) {
                             // console.log(response);
