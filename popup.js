@@ -94,7 +94,21 @@ document.addEventListener('DOMContentLoaded', function () {
         alert(data.message);
       }
     });
-  });  
+  });
+
+  document.getElementById('logoutButton').addEventListener('click', function() {
+    fetch('http://3.92.65.153/logout', {
+        method: 'GET',
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            document.getElementById('loggedIn').style.display = 'none';
+            document.getElementById('loggedOut').style.display = 'block';
+            chrome.storage.local.remove(['first_name']);
+        }
+    });
+  });
 });
 
 // LOOK HERE
