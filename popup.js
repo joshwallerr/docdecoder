@@ -10,6 +10,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
+  chrome.storage.local.get(['first_name'], function(result) {
+    if(result.first_name) {
+      document.getElementById('loggedOut').style.display = 'none';
+      document.getElementById('loggedIn').style.display = 'block';
+      document.getElementById('nameDisplay').textContent = result.first_name;
+    }
+  });
+
 
   document.getElementById('myForm').addEventListener('submit', function (e) {
     e.preventDefault(); // To prevent the form from submitting the usual way
@@ -31,6 +39,62 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
   });
+
+  document.getElementById('signup').addEventListener('click', function() {
+    const firstName = document.getElementById('firstName').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+  
+    fetch('http://3.92.65.153/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        first_name: firstName,
+        email: email,
+        password: password,
+      }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if(data.success) {
+        document.getElementById('loggedOut').style.display = 'none';
+        document.getElementById('loggedIn').style.display = 'block';
+        document.getElementById('nameDisplay').textContent = firstName;
+        chrome.storage.local.set({first_name: firstName});
+      } else {
+        alert(data.message);
+      }
+    });
+  });
+  
+  document.getElementById('login').addEventListener('click', function() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+  
+    fetch('http://3.92.65.153/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password,
+      }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if(data.success) {
+        document.getElementById('loggedOut').style.display = 'none';
+        document.getElementById('loggedIn').style.display = 'block';
+        document.getElementById('nameDisplay').textContent = data.first_name;
+        chrome.storage.local.set({first_name: data.first_name});
+      } else {
+        alert(data.message);
+      }
+    });
+  });  
 });
 
 // LOOK HERE

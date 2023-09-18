@@ -7,34 +7,48 @@
 </head>
 
 <body>
-  <h1>Term Trimmer</h1>
-  <form id="myForm">
-    <p id="errorPrompt" style="display: none;">We've detected a checkbox, but can't find a policy associated with it. Please create a custom summary using the form below.</p>
 
-    <p>Step 1: Give the summary a name (e.g. Privacy Policy, Terms, User Agreement).</p>
-    <label for="policyName">Policy Name:</label>
-    <input type="text" id="policyName" name="policyName" required>
-
-    <p>Step 2: Open the page that contains the policy you want to summarize, and hit CTRL + A to copy the entire page contents.</p>
-    <p>Step 3: Paste the content in the box below and click "Create Summary".</p>
-    <label for="policyContent">Policy content:</label>
-    <textarea id="policyContent" name="policyContent" required></textarea>
-
-    <input type="submit" value="Create Summary">
-  </form>
-
-  <!-- TODO: Make users name the policy they submit. Send domain, policy name, and pasted document to summarize route -->
-  <form id="manual-input-form" style="display: none;">
-    <textarea id="manual-input" placeholder="Paste the terms and conditions here..."></textarea>
-    <button type="submit">Summarize</button>
-  </form>
-
-
-  <div id="content-container">
-    <div id="preloader-container"></div>
-    <!-- Container for dynamically added sections -->
-    <div id="summaries-container"></div>
+  <div id="loggedOut">
+    <input type="text" id="firstName" placeholder="First Name">
+    <input type="text" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button id="signup">Sign Up</button>
+    <button id="login">Log In</button>
   </div>
+
+  <div id="loggedIn" style="display: none;">
+    <h1>Term Trimmer</h1>
+    <h2>Welcome <span id="nameDisplay"></span>!</h2>
+    <form id="myForm">
+      <p id="errorPrompt" style="display: none;">We've detected a checkbox, but can't find a policy associated with it. Please create a custom summary using the form below.</p>
+
+      <p>Step 1: Give the summary a name (e.g. Privacy Policy, Terms, User Agreement).</p>
+      <label for="policyName">Policy Name:</label>
+      <input type="text" id="policyName" name="policyName" required>
+
+      <p>Step 2: Open the page that contains the policy you want to summarize, and hit CTRL + A to copy the entire page contents.</p>
+      <p>Step 3: Paste the content in the box below and click "Create Summary".</p>
+      <label for="policyContent">Policy content:</label>
+      <textarea id="policyContent" name="policyContent" required></textarea>
+
+      <input type="submit" value="Create Summary">
+    </form>
+
+    <!-- TODO: Make users name the policy they submit. Send domain, policy name, and pasted document to summarize route -->
+    <form id="manual-input-form" style="display: none;">
+      <textarea id="manual-input" placeholder="Paste the terms and conditions here..."></textarea>
+      <button type="submit">Summarize</button>
+    </form>
+
+
+    <div id="content-container">
+      <div id="preloader-container"></div>
+      <!-- Container for dynamically added sections -->
+      <div id="summaries-container"></div>
+    </div>
+  </div>
+
+
 
 </body>
 
