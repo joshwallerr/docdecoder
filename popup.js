@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('loggedIn').style.display = 'block';
         document.getElementById('nameDisplay').textContent = firstName;
         chrome.storage.local.set({first_name: firstName});
+        chrome.storage.local.set({token: data.token});
       } else {
         alert(data.message);
       }
@@ -90,6 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('loggedIn').style.display = 'block';
         document.getElementById('nameDisplay').textContent = data.first_name;
         chrome.storage.local.set({first_name: data.first_name});
+        chrome.storage.local.set({token: data.token});
       } else {
         alert(data.message);
       }
@@ -97,19 +99,84 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById('logoutButton').addEventListener('click', function() {
-    fetch('http://3.92.65.153/logout', {
-        method: 'GET',
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.success) {
-            document.getElementById('loggedIn').style.display = 'none';
-            document.getElementById('loggedOut').style.display = 'block';
-            chrome.storage.local.remove(['first_name']);
-        }
-    });
+    document.getElementById('loggedIn').style.display = 'none';
+    document.getElementById('loggedOut').style.display = 'block';
+    chrome.storage.local.remove(['first_name', 'token']);
+  });
+
+  document.getElementById('accountButton').addEventListener('click', function() {
+    function fetchUserPlan() {
+      chrome.storage.local.get(['token'], function(result) {
+        const userToken = result.token;
+        console.log(userToken);
+        fetch(`http://3.92.65.153/get-plan`, {
+            headers: {
+                'Authorization': userToken,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('current-plan').innerText = data.plan;
+            if (data.plan === "FREE") {
+                document.getElementById('usage-info').innerText = `You've used ${data.summariesCount} of 10 summaries this month.`;
+            }
+        })
+      });
+    }
+    fetchUserPlan();
+
+    document.getElementById('main-extension-content').style.display = 'none';
+    document.getElementById('plan-info').style.display = 'block';
+  });
+
+  document.getElementById('exit-account').addEventListener('click', function() {
+    document.getElementById('plan-info').style.display = 'none';
+    document.getElementById('main-extension-content').style.display = 'block';
+  });
+
+  // Function to show the upgrade modal
+  document.getElementById('upgrade-btn').addEventListener('click', function() {
+    document.getElementById('upgrade-modal').style.display = 'block';
   });
 });
+
+function closeModal() {
+  document.getElementById('upgrade-modal').style.display = 'none';
+}
+
+function updatePlan(plan) {
+  chrome.storage.local.get(['token'], function(result) {
+  const userToken = result.token;
+
+  fetch('http://3.92.65.153/update-plan', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'Authorization': userToken,
+      },
+      body: JSON.stringify({ plan: plan })
+  })
+  .then(response => response.json())
+  .then(data => {
+      if (data.success) {
+          alert(data.message);
+          fetchUserPlan(); // Refresh the displayed plan
+          closeModal();    // Close the modal
+      } else {
+          alert(data.message);
+      }
+    })
+  });
+}
+
+
+
+
+
+
+
+
+
 
 // LOOK HERE
 // Extra preloader is being added from background.js

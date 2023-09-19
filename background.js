@@ -142,31 +142,41 @@ function removeLoadingSummary(summaryName, domain) {
 
 function summarizeDocument(document, url, sectionTitle) {
   let domain = url;
-  return fetch('http://3.92.65.153/summarize', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      document: document,
-      domain: domain,
-      document_type: sectionTitle
-    }),
-  })
-    .then(response => {
-      // Check if the status code is 429
-      if (response.status === 429) {
-        throw new Error('RateLimitExceeded');
-      }
-      return response.text();
-    })
-    .catch(error => {
-      if (error.message === 'RateLimitExceeded') {
-        // Return the rate limit error message
-        return "Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@termtrimmer.com.";
-      }
-      throw error;  // For other errors, re-throw them so they can be caught and handled by the caller.
+
+  return new Promise((resolve, reject) => {
+    // Fetch the token from chrome.storage
+    chrome.storage.local.get(['token'], function(result) {
+      const userToken = result.token;
+
+      fetch('http://3.92.65.153/summarize', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': userToken,
+        },
+        body: JSON.stringify({
+          document: document,
+          domain: domain,
+          document_type: sectionTitle
+        }),
+      })
+      .then(response => {
+        // Check if the status code is 429
+        if (response.status === 429) {
+          throw new Error('RateLimitExceeded');
+        }
+        return response.text();
+      })
+      .then(data => resolve(data))
+      .catch(error => {
+        if (error.message === 'RateLimitExceeded') {
+          // Return the rate limit error message
+          reject("Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@termtrimmer.com.");
+        }
+        reject(error);  // For other errors, re-throw them so they can be caught and handled by the caller.
+      });
     });
+  });
 }
 
 function storeSummary(url, summary, sectionTitle) {
