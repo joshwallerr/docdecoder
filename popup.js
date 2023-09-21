@@ -169,23 +169,16 @@ function initiateStripeCheckout(plan_type) {
       })
       .then(response => response.json())
       .then(data => {
-        const sessionId = data.id;
-        
-        // Make sure Stripe is defined before using it
-        if (typeof Stripe !== "undefined") {
-            var stripe = Stripe('pk_live_51NsPztEPjxnF2wKkqeCpqfLul4cr1toxG4y7PBcgjZHxZCQazhpJjJCoAEh9btZlBj6IzmycyrlGQVlb6krtkP5Y00QUjR5cnG');
-            stripe.redirectToCheckout({ sessionId: sessionId })
-            .then(function (result) {
-                // If `redirectToCheckout` fails due to a browser or network
-                // error, you should display the localized error message to your
-                // customer using `error.message`.
-                if (result.error) {
-                    console.error(result.error.message);
-                }
-            });
-        } else {
-            console.error("Stripe SDK not loaded");
-        }
+          const sessionId = data.id;
+
+          // Send a message to content.js to initiate the Stripe checkout
+          chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+              chrome.tabs.sendMessage(tabs[0].id, {
+                  action: "startStripeCheckout",
+                  sessionId: sessionId
+              });
+          });
+
       })
       .catch(error => {
           console.error("Error starting Stripe checkout:", error);

@@ -17,7 +17,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "js": ["stripe-v3.js", "content.js"]
     }
   ],
   "web_accessible_resources": [
