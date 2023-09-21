@@ -3,6 +3,7 @@
 
 <head>
   <link rel="stylesheet" type="text/css" href="styles.css">
+  <script src="stripe-v3.js"></script>
   <script src="popup.js"></script>
 </head>
 
@@ -62,16 +63,12 @@
       <!-- Upgrade Modal -->
       <div id="upgrade-container" style="display: none;">
           <h2>Choose Your Plan</h2>
-          <button onclick="updatePlan('MONTHLY')">Monthly Plan</button>
-          <button onclick="updatePlan('YEARLY')">Yearly Plan</button>
-          <button onclick="updatePlan('FREE')">Free Plan</button>
-          <button onclick="closeModal()">Close</button>
+          <button id="monthly">Monthly Plan ($3.99)</button>
+          <button id="yearly">Yearly Plan ($39.99)</button>
+          <button id="close-upgrade">Close</button>
       </div>
     </div>
   </div>
-
-
-
 </body>
 
 </html>

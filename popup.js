@@ -136,38 +136,63 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Function to show the upgrade modal
   document.getElementById('upgrade-btn').addEventListener('click', function() {
-    document.getElementById('upgrade-modal').style.display = 'block';
+    document.getElementById('upgrade-container').style.display = 'block';
+  });
+
+  // Function to hide the upgrade modal
+  document.getElementById('close-upgrade').addEventListener('click', function() {
+    document.getElementById('upgrade-container').style.display = 'none';
+  });
+
+  document.getElementById("monthly").addEventListener("click", function() {
+    initiateStripeCheckout("MONTHLY");
+  });
+
+  document.getElementById("yearly").addEventListener("click", function() {
+      initiateStripeCheckout("YEARLY");
   });
 });
 
-function closeModal() {
-  document.getElementById('upgrade-modal').style.display = 'none';
-}
-
-function updatePlan(plan) {
+function initiateStripeCheckout(plan_type) {
+  // Get the token from chrome storage
   chrome.storage.local.get(['token'], function(result) {
-  const userToken = result.token;
+      const userToken = result.token;
 
-  fetch('http://3.92.65.153/update-plan', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-          'Authorization': userToken,
-      },
-      body: JSON.stringify({ plan: plan })
-  })
-  .then(response => response.json())
-  .then(data => {
-      if (data.success) {
-          alert(data.message);
-          fetchUserPlan(); // Refresh the displayed plan
-          closeModal();    // Close the modal
-      } else {
-          alert(data.message);
-      }
-    })
+      // Make an AJAX call to your Flask server to get the Stripe session ID
+      fetch('http://3.92.65.153/create-checkout-session', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': userToken // Use the JWT token here
+          },
+          body: JSON.stringify({plan_type: plan_type})
+      })
+      .then(response => response.json())
+      .then(data => {
+        const sessionId = data.id;
+        
+        // Make sure Stripe is defined before using it
+        if (typeof Stripe !== "undefined") {
+            var stripe = Stripe('pk_live_51NsPztEPjxnF2wKkqeCpqfLul4cr1toxG4y7PBcgjZHxZCQazhpJjJCoAEh9btZlBj6IzmycyrlGQVlb6krtkP5Y00QUjR5cnG');
+            stripe.redirectToCheckout({ sessionId: sessionId })
+            .then(function (result) {
+                // If `redirectToCheckout` fails due to a browser or network
+                // error, you should display the localized error message to your
+                // customer using `error.message`.
+                if (result.error) {
+                    console.error(result.error.message);
+                }
+            });
+        } else {
+            console.error("Stripe SDK not loaded");
+        }
+      })
+      .catch(error => {
+          console.error("Error starting Stripe checkout:", error);
+      });
   });
 }
+
 
 
 
