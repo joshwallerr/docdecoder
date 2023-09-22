@@ -129,7 +129,7 @@ function removeLoadingSummary(summaryName, domain) {
 }
 
 // function fetchPageHTML(url) {
-//   return fetch('http://3.92.65.153/gethtml', {
+//   return fetch('https://docdecoder.app/gethtml', {
 //     method: 'POST',
 //     headers: {
 //       'Content-Type': 'application/json',
@@ -148,7 +148,7 @@ function summarizeDocument(document, url, sectionTitle) {
     chrome.storage.local.get(['token'], function(result) {
       const userToken = result.token;
 
-      fetch('http://3.92.65.153/summarize', {
+      fetch('https://docdecoder.app/summarize', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

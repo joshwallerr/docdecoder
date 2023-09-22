@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
   
-    fetch('http://3.92.65.153/signup', {
+    fetch('https://docdecoder.app/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
   
-    fetch('http://3.92.65.153/login', {
+    fetch('https://docdecoder.app/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
       chrome.storage.local.get(['token'], function(result) {
         const userToken = result.token;
         console.log(userToken);
-        fetch(`http://3.92.65.153/get-plan`, {
+        fetch(`https://docdecoder.app/get-plan`, {
             headers: {
                 'Authorization': userToken,
             }
@@ -159,7 +159,7 @@ function initiateStripeCheckout(plan_type) {
       const userToken = result.token;
 
       // Make an AJAX call to your Flask server to get the Stripe session ID
-      fetch('http://3.92.65.153/create-checkout-session', {
+      fetch('https://docdecoder.app/create-checkout-session', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
