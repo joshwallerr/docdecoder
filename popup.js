@@ -158,7 +158,7 @@ function initiateStripeCheckout(plan_type) {
   chrome.storage.local.get(['token'], function(result) {
       const userToken = result.token;
 
-      // Make an AJAX call to your Flask server to get the Stripe session ID
+      // Make an AJAX call to your Flask server to start the checkout
       fetch('https://docdecoder.app/create-checkout-session', {
           method: 'POST',
           headers: {
@@ -167,18 +167,14 @@ function initiateStripeCheckout(plan_type) {
           },
           body: JSON.stringify({plan_type: plan_type})
       })
-      .then(response => response.json())
+      .then(response => response.json()) // Parse the JSON response
       .then(data => {
-          const sessionId = data.id;
-
-          // Send a message to content.js to initiate the Stripe checkout
-          chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-              chrome.tabs.sendMessage(tabs[0].id, {
-                  action: "startStripeCheckout",
-                  sessionId: sessionId
-              });
-          });
-
+          // Open the Stripe Checkout URL in a new tab
+          if (data.checkout_url) {
+              window.open(data.checkout_url, '_blank');
+          } else {
+              console.error("Error starting Stripe checkout:", data.error);
+          }
       })
       .catch(error => {
           console.error("Error starting Stripe checkout:", error);

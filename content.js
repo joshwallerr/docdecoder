@@ -7,22 +7,6 @@ chrome.runtime.onMessage.addListener(
             });
             sendResponse({ message: "User input received" });
         }
-
-        // Listener for Stripe checkout
-        if (request.action === "startStripeCheckout" && request.sessionId) {
-            // Make sure Stripe is defined before using it
-            if (typeof Stripe !== "undefined") {
-                var stripe = Stripe('pk_test_51NsPztEPjxnF2wKk7xc6YBVBtw4dloFcOkZRmN8uyFvagODP6EwxOg4TeOuCiDMbPsdfG5cCwW9zSo0Jc9r2N5ci00iayV8tUC');
-                stripe.redirectToCheckout({ sessionId: request.sessionId })
-                .then(function (result) {
-                    if (result.error) {
-                        console.error(result.error.message);
-                    }
-                });
-            } else {
-                console.error("Stripe SDK not loaded");
-            }
-        }
     }
 );
 
