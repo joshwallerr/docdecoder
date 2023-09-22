@@ -24,6 +24,10 @@
       <button id="logoutButton">Logout</button>
       <button id="accountButton">Account</button>
       <form id="myForm">
+        <div id="premiumFeatureMessage" style="display: none;">
+          <p>This is a premium feature. Please subscribe to access it.</p>
+        </div>
+
         <p id="errorPrompt" style="display: none;">We've detected a checkbox, but can't find a policy associated with it. Please create a custom summary using the form below.</p>
 
         <p>Step 1: Give the summary a name (e.g. Privacy Policy, Terms, User Agreement).</p>
@@ -67,6 +71,8 @@
           <button id="yearly">Yearly Plan ($39.99)</button>
           <button id="close-upgrade">Close</button>
       </div>
+
+      <button id="manage-subscription-btn" style="display: none;">Manage Subscription</button>
     </div>
   </div>
 </body>

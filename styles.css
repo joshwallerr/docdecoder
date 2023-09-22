@@ -133,3 +133,8 @@ button:hover {
     animation: spin 1s linear infinite;
     display: inline-block;
 }
+
+.greyed-out {
+    pointer-events: none;
+    opacity: 0.5;
+}

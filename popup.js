@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
   initPopup();
+  updatePremiumFeaturesVisibility();
 
   // Event listener to handle storage changes
   chrome.storage.onChanged.addListener(function (changes, namespace) {
@@ -10,8 +11,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  chrome.storage.local.get(['first_name'], function(result) {
-    if(result.first_name) {
+  chrome.storage.local.get(['first_name'], function (result) {
+    if (result.first_name) {
       document.getElementById('loggedOut').style.display = 'none';
       document.getElementById('loggedIn').style.display = 'block';
       document.getElementById('nameDisplay').textContent = result.first_name;
@@ -40,11 +41,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  document.getElementById('signup').addEventListener('click', function() {
+  document.getElementById('signup').addEventListener('click', function () {
     const firstName = document.getElementById('firstName').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-  
+
     fetch('https://docdecoder.app/signup', {
       method: 'POST',
       headers: {
@@ -56,24 +57,37 @@ document.addEventListener('DOMContentLoaded', function () {
         password: password,
       }),
     })
-    .then(response => response.json())
-    .then(data => {
-      if(data.success) {
-        document.getElementById('loggedOut').style.display = 'none';
-        document.getElementById('loggedIn').style.display = 'block';
-        document.getElementById('nameDisplay').textContent = firstName;
-        chrome.storage.local.set({first_name: firstName});
-        chrome.storage.local.set({token: data.token});
-      } else {
-        alert(data.message);
-      }
-    });
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('loggedOut').style.display = 'none';
+          document.getElementById('loggedIn').style.display = 'block';
+          document.getElementById('nameDisplay').textContent = firstName;
+          chrome.storage.local.set({ first_name: firstName });
+          chrome.storage.local.set({ token: data.token });
+
+          // Fetch and store userPlan and summariesCount
+          fetch('https://docdecoder.app/get-plan', {
+            headers: {
+              'Authorization': data.token,
+            }
+          })
+            .then(response => response.json())
+            .then(planData => {
+              chrome.storage.local.set({ userPlan: planData.plan, summariesCount: planData.summariesCount });
+              updatePremiumFeaturesVisibility();
+            });
+        } else {
+          alert(data.message);
+        }
+      });
   });
-  
-  document.getElementById('login').addEventListener('click', function() {
+
+
+  document.getElementById('login').addEventListener('click', function () {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-  
+
     fetch('https://docdecoder.app/login', {
       method: 'POST',
       headers: {
@@ -84,103 +98,188 @@ document.addEventListener('DOMContentLoaded', function () {
         password: password,
       }),
     })
-    .then(response => response.json())
-    .then(data => {
-      if(data.success) {
-        document.getElementById('loggedOut').style.display = 'none';
-        document.getElementById('loggedIn').style.display = 'block';
-        document.getElementById('nameDisplay').textContent = data.first_name;
-        chrome.storage.local.set({first_name: data.first_name});
-        chrome.storage.local.set({token: data.token});
-      } else {
-        alert(data.message);
-      }
-    });
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('loggedOut').style.display = 'none';
+          document.getElementById('loggedIn').style.display = 'block';
+          document.getElementById('nameDisplay').textContent = data.first_name;
+          chrome.storage.local.set({ first_name: data.first_name });
+          chrome.storage.local.set({ token: data.token });
+
+          // Fetch and store userPlan and summariesCount
+          fetch('https://docdecoder.app/get-plan', {
+            headers: {
+              'Authorization': data.token,
+            }
+          })
+            .then(response => response.json())
+            .then(planData => {
+              chrome.storage.local.set({ userPlan: planData.plan, summariesCount: planData.summariesCount });
+              updatePremiumFeaturesVisibility();
+            });
+        } else {
+          alert(data.message);
+        }
+      });
   });
 
-  document.getElementById('logoutButton').addEventListener('click', function() {
+  document.getElementById('logoutButton').addEventListener('click', function () {
     document.getElementById('loggedIn').style.display = 'none';
     document.getElementById('loggedOut').style.display = 'block';
-    chrome.storage.local.remove(['first_name', 'token']);
+    chrome.storage.local.remove(['first_name', 'token', 'userPlan', 'summariesCount']);
   });
 
-  document.getElementById('accountButton').addEventListener('click', function() {
-    function fetchUserPlan() {
-      chrome.storage.local.get(['token'], function(result) {
+  document.getElementById('accountButton').addEventListener('click', function () {
+    function updateUserAccountInfo() {
+      chrome.storage.local.get(['token'], function (result) {
         const userToken = result.token;
-        console.log(userToken);
-        fetch(`https://docdecoder.app/get-plan`, {
-            headers: {
-                'Authorization': userToken,
-            }
+  
+        fetch('https://docdecoder.app/get-plan', {
+          headers: {
+            'Authorization': userToken,
+          }
         })
         .then(response => response.json())
         .then(data => {
-            document.getElementById('current-plan').innerText = data.plan;
-            if (data.plan === "FREE") {
-                document.getElementById('usage-info').innerText = `You've used ${data.summariesCount} of 10 summaries this month.`;
-            }
+          chrome.storage.local.set({userPlan: data.plan, summariesCount: data.summariesCount});
+  
+          document.getElementById('current-plan').innerText = data.plan;
+          if (data.plan === "FREE") {
+            document.getElementById('usage-info').innerText = `You've used ${data.summariesCount} of 10 summaries this month.`;
+          } else {
+            document.getElementById('usage-info').innerText = `You've generated ${data.summariesCount} summaries so far this month.`;
+          }
         })
+        .catch(error => {
+          console.error('Error updating user account info:', error);
+        });
       });
     }
-    fetchUserPlan();
-
+    updateUserAccountInfo();
+  
     document.getElementById('main-extension-content').style.display = 'none';
     document.getElementById('plan-info').style.display = 'block';
   });
 
-  document.getElementById('exit-account').addEventListener('click', function() {
+  document.getElementById('exit-account').addEventListener('click', function () {
     document.getElementById('plan-info').style.display = 'none';
     document.getElementById('main-extension-content').style.display = 'block';
   });
 
   // Function to show the upgrade modal
-  document.getElementById('upgrade-btn').addEventListener('click', function() {
+  document.getElementById('upgrade-btn').addEventListener('click', function () {
     document.getElementById('upgrade-container').style.display = 'block';
   });
 
   // Function to hide the upgrade modal
-  document.getElementById('close-upgrade').addEventListener('click', function() {
+  document.getElementById('close-upgrade').addEventListener('click', function () {
     document.getElementById('upgrade-container').style.display = 'none';
   });
 
-  document.getElementById("monthly").addEventListener("click", function() {
+  document.getElementById("monthly").addEventListener("click", function () {
     initiateStripeCheckout("MONTHLY");
   });
 
-  document.getElementById("yearly").addEventListener("click", function() {
-      initiateStripeCheckout("YEARLY");
+  document.getElementById("yearly").addEventListener("click", function () {
+    initiateStripeCheckout("YEARLY");
+  });
+
+  // Fetch the user token from storage
+  chrome.storage.local.get(['token'], function (result) {
+    const userToken = result.token;
+
+    // Make a fetch request to the /get-plan endpoint
+    fetch('https://docdecoder.app/get-plan', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': userToken
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        // Store the received plan and summariesCount in local storage
+        chrome.storage.local.set({ userPlan: data.plan, summariesCount: data.summariesCount }, function () {
+          // Update the UI based on the user's plan by calling the function
+          updatePremiumFeaturesVisibility();
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching user plan:', error);
+      });
+  });
+
+  document.getElementById('manage-subscription-btn').addEventListener('click', function() {
+    chrome.storage.local.get(['token'], function(result) {
+      const userToken = result.token;
+      fetch('https://docdecoder.app/create-portal-session', {
+          method: 'POST',
+          headers: {
+              'Authorization': userToken,  // Pass the user's token for authentication
+          }
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.url) {
+              // Redirect the user to the Customer Portal
+              window.open(data.url, '_blank');
+          } else {
+              console.error('Failed to create portal session:', data.error);
+          }
+      })
+      .catch(error => {
+          console.error('Error creating portal session:', error);
+      });
+    });
   });
 });
 
 function initiateStripeCheckout(plan_type) {
   // Get the token from chrome storage
-  chrome.storage.local.get(['token'], function(result) {
-      const userToken = result.token;
+  chrome.storage.local.get(['token'], function (result) {
+    const userToken = result.token;
 
-      // Make an AJAX call to your Flask server to start the checkout
-      fetch('https://docdecoder.app/create-checkout-session', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              'Authorization': userToken // Use the JWT token here
-          },
-          body: JSON.stringify({plan_type: plan_type})
-      })
-      .then(response => response.json()) // Parse the JSON response
-      .then(data => {
-          // Open the Stripe Checkout URL in a new tab
-          if (data.checkout_url) {
-              window.open(data.checkout_url, '_blank');
-          } else {
-              console.error("Error starting Stripe checkout:", data.error);
-          }
-      })
-      .catch(error => {
-          console.error("Error starting Stripe checkout:", error);
-      });
+    // Make an AJAX call to your Flask server to start the checkout
+    fetch('https://docdecoder.app/create-checkout-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': userToken // Use the JWT token here
+      },
+      body: JSON.stringify({ plan_type: plan_type })
+    })
+    .then(response => response.json()) // Parse the JSON response
+    .then(data => {
+      // Open the Stripe Checkout URL in a new tab
+      if (data.checkout_url) {
+        window.open(data.checkout_url, '_blank');
+      } else {
+        console.error("Error starting Stripe checkout:", data.error);
+      }
+    })
+    .catch(error => {
+      console.error("Error starting Stripe checkout:", error);
+    });
   });
 }
+
+function updatePremiumFeaturesVisibility() {
+  chrome.storage.local.get(['userPlan'], function (result) {
+    const userPlan = result.userPlan;
+    const isPremiumUser = userPlan === 'MONTHLY' || userPlan === 'YEARLY';
+    if (isPremiumUser) {
+      document.getElementById('myForm').classList.remove('greyed-out');
+      document.getElementById('premiumFeatureMessage').style.display = 'none';
+      document.getElementById('manage-subscription-btn').style.display = 'block';
+    } else {
+      document.getElementById('myForm').classList.add('greyed-out');
+      document.getElementById('premiumFeatureMessage').style.display = 'block';
+      document.getElementById('manage-subscription-btn').style.display = 'none';
+    }
+  });
+}
+
 
 
 
@@ -228,88 +327,88 @@ document.addEventListener("click", function (event) {
 
 function initPopup() {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      let currentDomain = new URL(tabs[0].url).hostname;
-      console.log("domain in popup.js: " + currentDomain);
+    let currentDomain = new URL(tabs[0].url).hostname;
+    console.log("domain in popup.js: " + currentDomain);
 
-      chrome.storage.local.get('loadingSummaries', function(data) {
-        console.log(data.loadingSummaries);
+    chrome.storage.local.get('loadingSummaries', function (data) {
+      console.log(data.loadingSummaries);
+    });
+
+    // Clear the preloader container first
+    let preloaderContainer = document.getElementById('preloader-container');
+    preloaderContainer.innerHTML = '';
+
+    chrome.storage.local.get(['summaries', 'showForm', 'domainForForm', 'loadingSummaries'], function (result) {
+      let summaries = result.summaries || {};
+      let domainSummaries = summaries[currentDomain] || {};
+      let loadingSummaries = result.loadingSummaries || [];
+
+      // Update the display of the form based on the showForm flag and the domain
+      if (result.showForm && result.domainForForm === currentDomain) {
+        document.getElementById("errorPrompt").style.display = "block";
+      } else {
+        document.getElementById("errorPrompt").style.display = "none";
+      }
+
+      const blockPatterns = [
+        /javascript.+required/i,
+        /enable javascript/i,
+        /bot detected/i,
+      ];
+
+      // Display preloaders for any loading summaries on the current domain only
+      chrome.storage.local.get(['loadingSummaries'], function (result) {
+        let loadingSummaries = result.loadingSummaries || [];
+        loadingSummaries.forEach(loadingSummaryObj => {
+          if (loadingSummaryObj.domain === currentDomain) {
+            console.log("POPUP.JS: Adding preloader for " + loadingSummaryObj.summaryName + " on " + loadingSummaryObj.domain);
+            addPreloaderForSummary(loadingSummaryObj.summaryName, loadingSummaryObj.domain);
+          }
+        });
       });
 
-      // Clear the preloader container first
-      let preloaderContainer = document.getElementById('preloader-container');
-      preloaderContainer.innerHTML = '';
+      let container = document.getElementById('summaries-container');
 
-      chrome.storage.local.get(['summaries', 'showForm', 'domainForForm', 'loadingSummaries'], function (result) {
-          let summaries = result.summaries || {};
-          let domainSummaries = summaries[currentDomain] || {};
-          let loadingSummaries = result.loadingSummaries || [];
+      // Dynamically create sections based on available summaries
+      for (let termType in domainSummaries) {
 
-          // Update the display of the form based on the showForm flag and the domain
-          if (result.showForm && result.domainForForm === currentDomain) {
-              document.getElementById("errorPrompt").style.display = "block";
-          } else {
-              document.getElementById("errorPrompt").style.display = "none";
+        // Only add the summary if it isn't already present
+        if (!document.querySelector(`.summary-section[data-summary-name="${termType}"]`)) {
+          let section = document.createElement('div');
+          section.className = "summary-section";  // Added class for identification
+          section.dataset.summaryName = termType;  // Use data attributes to identify summaries
+
+          let removeIcon = document.createElement('span');
+          removeIcon.textContent = "-";
+          removeIcon.className = "remove-icon";
+          removeIcon.setAttribute("data-domain", currentDomain);
+          removeIcon.setAttribute("data-section-title", termType);
+          section.appendChild(removeIcon);
+
+          let heading = document.createElement('h3');
+          heading.textContent = toCapitalizedCase(termType);
+          section.appendChild(heading);
+
+          if (blockPatterns.some(pattern => pattern.test(domainSummaries[termType]))) {
+            let warning = document.createElement('p');
+            warning.textContent = "Note: This summary may have failed due to the website's use of CAPTCHAs. If you cannot see the expected summary, please manually create one using the form above.";
+            warning.className = "warning";
+            section.appendChild(warning);
           }
 
-          const blockPatterns = [
-              /javascript.+required/i,
-              /enable javascript/i,
-              /bot detected/i,
-          ];
+          let summaryText = document.createElement('p');
+          summaryText.innerHTML = formatSummaryText(domainSummaries[termType]);
+          section.appendChild(summaryText);
 
-          // Display preloaders for any loading summaries on the current domain only
-          chrome.storage.local.get(['loadingSummaries'], function (result) {
-            let loadingSummaries = result.loadingSummaries || [];
-            loadingSummaries.forEach(loadingSummaryObj => {
-              if (loadingSummaryObj.domain === currentDomain) {
-                console.log("POPUP.JS: Adding preloader for " + loadingSummaryObj.summaryName + " on " + loadingSummaryObj.domain);
-                addPreloaderForSummary(loadingSummaryObj.summaryName, loadingSummaryObj.domain);
-              }
-            });
-          });
+          container.appendChild(section);
 
-          let container = document.getElementById('summaries-container');
-
-          // Dynamically create sections based on available summaries
-          for (let termType in domainSummaries) {
-
-              // Only add the summary if it isn't already present
-              if (!document.querySelector(`.summary-section[data-summary-name="${termType}"]`)) {
-                  let section = document.createElement('div');
-                  section.className = "summary-section";  // Added class for identification
-                  section.dataset.summaryName = termType;  // Use data attributes to identify summaries
-
-                  let removeIcon = document.createElement('span');
-                  removeIcon.textContent = "-";
-                  removeIcon.className = "remove-icon";
-                  removeIcon.setAttribute("data-domain", currentDomain);
-                  removeIcon.setAttribute("data-section-title", termType);
-                  section.appendChild(removeIcon);
-
-                  let heading = document.createElement('h3');
-                  heading.textContent = toCapitalizedCase(termType);
-                  section.appendChild(heading);
-
-                  if (blockPatterns.some(pattern => pattern.test(domainSummaries[termType]))) {
-                      let warning = document.createElement('p');
-                      warning.textContent = "Note: This summary may have failed due to the website's use of CAPTCHAs. If you cannot see the expected summary, please manually create one using the form above.";
-                      warning.className = "warning";
-                      section.appendChild(warning);
-                  }
-
-                  let summaryText = document.createElement('p');
-                  summaryText.innerHTML = formatSummaryText(domainSummaries[termType]);
-                  section.appendChild(summaryText);
-
-                  container.appendChild(section);
-
-                  // Remove the preloader for this summary
-                  removePreloaderForSummary(termType, currentDomain);
-              }
-          }
-          // console.log(currentDomain);
-          // clearPreloadersForDomain(currentDomain);
-      });
+          // Remove the preloader for this summary
+          removePreloaderForSummary(termType, currentDomain);
+        }
+      }
+      // console.log(currentDomain);
+      // clearPreloadersForDomain(currentDomain);
+    });
   });
 }
 
@@ -346,18 +445,18 @@ function formatSummaryText(summaryData) {
 function removeLoadingSummary(summaryName, domain) {
   // console.log("removing " + summaryName + " on " + domain);
   chrome.storage.local.get(['loadingSummaries'], function (data) {
-      let loadingSummaries = data.loadingSummaries || [];
-      let indexToRemove = -1;
-      for (let i = 0; i < loadingSummaries.length; i++) {
-          if (loadingSummaries[i].summaryName === summaryName && loadingSummaries[i].domain === domain) {
-              indexToRemove = i;
-              break;
-          }
+    let loadingSummaries = data.loadingSummaries || [];
+    let indexToRemove = -1;
+    for (let i = 0; i < loadingSummaries.length; i++) {
+      if (loadingSummaries[i].summaryName === summaryName && loadingSummaries[i].domain === domain) {
+        indexToRemove = i;
+        break;
       }
-      if (indexToRemove !== -1) {
-          loadingSummaries.splice(indexToRemove, 1);
-          chrome.storage.local.set({ loadingSummaries: loadingSummaries });
-      }
+    }
+    if (indexToRemove !== -1) {
+      loadingSummaries.splice(indexToRemove, 1);
+      chrome.storage.local.set({ loadingSummaries: loadingSummaries });
+    }
   });
 }
 
@@ -373,7 +472,7 @@ function addPreloaderForSummary(summaryName, domain) {
   // Check if preloader for this summaryName already exists for the current domain
   let existingPreloader = document.querySelector(`.preloader-section[data-summary-name="${summaryName}"][data-domain="${domain}"]`);
   if (existingPreloader) {
-      return;
+    return;
   }
 
   let preloaderSection = document.createElement('div');
@@ -382,18 +481,18 @@ function addPreloaderForSummary(summaryName, domain) {
 
   // Get the current domain and set it as a data attribute
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      let currentDomain = new URL(tabs[0].url).hostname;
-      preloaderSection.setAttribute("data-domain", currentDomain);
-      
-      let preloader = document.createElement('div');
-      preloader.className = "preloader";
-      preloaderSection.appendChild(preloader);
-  
-      let preloaderText = document.createElement('p');
-      preloaderText.textContent = `Generating summary for ${summaryName}`;
-      preloaderSection.appendChild(preloaderText);
-  
-      container.appendChild(preloaderSection);
+    let currentDomain = new URL(tabs[0].url).hostname;
+    preloaderSection.setAttribute("data-domain", currentDomain);
+
+    let preloader = document.createElement('div');
+    preloader.className = "preloader";
+    preloaderSection.appendChild(preloader);
+
+    let preloaderText = document.createElement('p');
+    preloaderText.textContent = `Generating summary for ${summaryName}`;
+    preloaderSection.appendChild(preloaderText);
+
+    container.appendChild(preloaderSection);
   });
 }
 
@@ -401,8 +500,8 @@ function removePreloaderForSummary(summaryName, domain) {
   // console.log(domain)
   let preloaderSection = document.querySelector(`.preloader-section[data-summary-name="${summaryName}"][data-domain="${domain}"]`);
   if (preloaderSection) {
-      preloaderSection.remove();
-      removeLoadingSummary(summaryName, domain);
+    preloaderSection.remove();
+    removeLoadingSummary(summaryName, domain);
   }
 }
 
@@ -411,13 +510,13 @@ function clearPreloadersForDomain(url) {
   let domain = url;
   console.log("Clearing preloaders for domain: " + domain);
 
-  chrome.storage.local.get(['loadingSummaries'], function(data) {
-      let loadingSummaries = data.loadingSummaries || [];
+  chrome.storage.local.get(['loadingSummaries'], function (data) {
+    let loadingSummaries = data.loadingSummaries || [];
 
-      // Filter out preloaders associated with the current domain
-      let updatedSummaries = loadingSummaries.filter(loadingSummaryObj => loadingSummaryObj.domain !== domain);
+    // Filter out preloaders associated with the current domain
+    let updatedSummaries = loadingSummaries.filter(loadingSummaryObj => loadingSummaryObj.domain !== domain);
 
-      // Update storage
-      chrome.storage.local.set({ loadingSummaries: updatedSummaries });
+    // Update storage
+    chrome.storage.local.set({ loadingSummaries: updatedSummaries });
   });
 }
