@@ -131,6 +131,7 @@ function removeLoadingSummary(summaryName, domain) {
 // function fetchPageHTML(url) {
 //   return fetch('https://docdecoder.app/gethtml', {
 //     method: 'POST',
+//     credentials: 'include',
 //     headers: {
 //       'Content-Type': 'application/json',
 //     },
@@ -144,37 +145,35 @@ function summarizeDocument(document, url, sectionTitle) {
   let domain = url;
 
   return new Promise((resolve, reject) => {
-    // Fetch the token from chrome.storage
-    chrome.storage.local.get(['token'], function(result) {
-      const userToken = result.token;
+    fetch('https://docdecoder.app/summarize', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        document: document,
+        domain: domain,
+        document_type: sectionTitle
+      }),
+    })
+    .then(response => {
+      // Check if the status code is 429
+      if (response.status === 429) {
+        throw new Error('RateLimitExceeded');
+      } else if (response.status === 403) {
+        chrome.runtime.sendMessage({ type: "logUserOut" });
+      }
 
-      fetch('https://docdecoder.app/summarize', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': userToken,
-        },
-        body: JSON.stringify({
-          document: document,
-          domain: domain,
-          document_type: sectionTitle
-        }),
-      })
-      .then(response => {
-        // Check if the status code is 429
-        if (response.status === 429) {
-          throw new Error('RateLimitExceeded');
-        }
-        return response.text();
-      })
-      .then(data => resolve(data))
-      .catch(error => {
-        if (error.message === 'RateLimitExceeded') {
-          // Return the rate limit error message
-          reject("Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@termtrimmer.com.");
-        }
-        reject(error);  // For other errors, re-throw them so they can be caught and handled by the caller.
-      });
+      return response.text();
+    })
+    .then(data => resolve(data))
+    .catch(error => {
+      if (error.message === 'RateLimitExceeded') {
+        // Return the rate limit error message
+        reject("Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@termtrimmer.com.");
+      }
+      reject(error);  // For other errors, re-throw them so they can be caught and handled by the caller.
     });
   });
 }

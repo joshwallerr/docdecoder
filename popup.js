@@ -56,31 +56,39 @@ document.addEventListener('DOMContentLoaded', function () {
         email: email,
         password: password,
       }),
+      credentials: 'include',
     })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          document.getElementById('loggedOut').style.display = 'none';
-          document.getElementById('loggedIn').style.display = 'block';
-          document.getElementById('nameDisplay').textContent = firstName;
-          chrome.storage.local.set({ first_name: firstName });
-          chrome.storage.local.set({ token: data.token });
+    .then(response => {
+      if (response.status === 403) {
+        logUserOut();
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.success) {
+        document.getElementById('loggedOut').style.display = 'none';
+        document.getElementById('loggedIn').style.display = 'block';
+        document.getElementById('nameDisplay').textContent = firstName;
+        chrome.storage.local.set({ first_name: firstName });
 
-          // Fetch and store userPlan and summariesCount
-          fetch('https://docdecoder.app/get-plan', {
-            headers: {
-              'Authorization': data.token,
-            }
-          })
-            .then(response => response.json())
-            .then(planData => {
-              chrome.storage.local.set({ userPlan: planData.plan, summariesCount: planData.summariesCount });
-              updatePremiumFeaturesVisibility();
-            });
-        } else {
-          alert(data.message);
-        }
-      });
+        // Fetch and store userPlan and summariesCount
+        fetch('https://docdecoder.app/get-plan', {
+          credentials: 'include',
+        })
+        .then(response => {
+          if (response.status === 403) {
+            logUserOut();
+          }
+          return response.json();
+        })
+          .then(planData => {
+            chrome.storage.local.set({ userPlan: planData.plan, summariesCount: planData.summariesCount });
+            updatePremiumFeaturesVisibility();
+          });
+      } else {
+        alert(data.message);
+      }
+    });
   });
 
 
@@ -97,63 +105,83 @@ document.addEventListener('DOMContentLoaded', function () {
         email: email,
         password: password,
       }),
+      credentials: 'include',
     })
-      .then(response => response.json())
+    .then(response => {
+      if (response.status === 403) {
+        logUserOut();
+      }
+      return response.json();
+    })
       .then(data => {
         if (data.success) {
           document.getElementById('loggedOut').style.display = 'none';
           document.getElementById('loggedIn').style.display = 'block';
           document.getElementById('nameDisplay').textContent = data.first_name;
           chrome.storage.local.set({ first_name: data.first_name });
-          chrome.storage.local.set({ token: data.token });
 
           // Fetch and store userPlan and summariesCount
           fetch('https://docdecoder.app/get-plan', {
-            headers: {
-              'Authorization': data.token,
-            }
+            credentials: 'include',
           })
-            .then(response => response.json())
-            .then(planData => {
-              chrome.storage.local.set({ userPlan: planData.plan, summariesCount: planData.summariesCount });
-              updatePremiumFeaturesVisibility();
-            });
-        } else {
-          alert(data.message);
-        }
-      });
+          .then(response => {
+            if (response.status === 403) {
+              logUserOut();
+            }
+            return response.json();
+          })
+          .then(planData => {
+            chrome.storage.local.set({ userPlan: planData.plan, summariesCount: planData.summariesCount });
+            updatePremiumFeaturesVisibility();
+          });
+      } else {
+        alert(data.message);
+      }
+    });
   });
 
   document.getElementById('logoutButton').addEventListener('click', function () {
-    document.getElementById('loggedIn').style.display = 'none';
-    document.getElementById('loggedOut').style.display = 'block';
-    chrome.storage.local.remove(['first_name', 'token', 'userPlan', 'summariesCount']);
+    // Make a request to the logout endpoint
+    fetch('https://docdecoder.app/logout', {
+      method: 'GET',
+      credentials: 'include', // Include credentials
+    })
+      .then(response => {
+        if (response.ok) {
+          // If logout is successful, update the UI and clear local storage
+          logUserOut();
+        } else {
+          console.error('Failed to logout');
+        }
+      })
+      .catch(error => {
+        console.error('Error during logout:', error);
+      });
   });
 
   document.getElementById('accountButton').addEventListener('click', function () {
     function updateUserAccountInfo() {
-      chrome.storage.local.get(['token'], function (result) {
-        const userToken = result.token;
-  
-        fetch('https://docdecoder.app/get-plan', {
-          headers: {
-            'Authorization': userToken,
-          }
-        })
-        .then(response => response.json())
-        .then(data => {
-          chrome.storage.local.set({userPlan: data.plan, summariesCount: data.summariesCount});
-  
-          document.getElementById('current-plan').innerText = data.plan;
-          if (data.plan === "FREE") {
-            document.getElementById('usage-info').innerText = `You've used ${data.summariesCount} of 10 summaries this month.`;
-          } else {
-            document.getElementById('usage-info').innerText = `You've generated ${data.summariesCount} summaries so far this month.`;
-          }
-        })
-        .catch(error => {
-          console.error('Error updating user account info:', error);
-        });
+      fetch('https://docdecoder.app/get-plan', {
+        credentials: 'include',
+      })
+      .then(response => {
+        if (response.status === 403) {
+          logUserOut();
+        }
+        return response.json();
+      })
+      .then(data => {
+        chrome.storage.local.set({userPlan: data.plan, summariesCount: data.summariesCount});
+
+        document.getElementById('current-plan').innerText = data.plan;
+        if (data.plan === "FREE") {
+          document.getElementById('usage-info').innerText = `You've used ${data.summariesCount} of 10 summaries this month.`;
+        } else {
+          document.getElementById('usage-info').innerText = `You've generated ${data.summariesCount} summaries so far this month.`;
+        }
+      })
+      .catch(error => {
+        console.error('Error updating user account info:', error);
       });
     }
     updateUserAccountInfo();
@@ -185,82 +213,82 @@ document.addEventListener('DOMContentLoaded', function () {
     initiateStripeCheckout("YEARLY");
   });
 
-  // Fetch the user token from storage
-  chrome.storage.local.get(['token'], function (result) {
-    const userToken = result.token;
-
-    // Make a fetch request to the /get-plan endpoint
-    fetch('https://docdecoder.app/get-plan', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': userToken
-      }
-    })
-      .then(response => response.json())
-      .then(data => {
-        // Store the received plan and summariesCount in local storage
-        chrome.storage.local.set({ userPlan: data.plan, summariesCount: data.summariesCount }, function () {
-          // Update the UI based on the user's plan by calling the function
-          updatePremiumFeaturesVisibility();
-        });
-      })
-      .catch(error => {
-        console.error('Error fetching user plan:', error);
+  // Make a fetch request to the /get-plan endpoint
+  fetch('https://docdecoder.app/get-plan', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  })
+  .then(response => {
+    if (response.status === 403) {
+      logUserOut();
+    }
+    return response.json();
+  })
+    .then(data => {
+      // Store the received plan and summariesCount in local storage
+      chrome.storage.local.set({ userPlan: data.plan, summariesCount: data.summariesCount }, function () {
+        // Update the UI based on the user's plan by calling the function
+        updatePremiumFeaturesVisibility();
       });
-  });
+    })
+    .catch(error => {
+      console.error('Error fetching user plan:', error);
+    });
 
   document.getElementById('manage-subscription-btn').addEventListener('click', function() {
-    chrome.storage.local.get(['token'], function(result) {
-      const userToken = result.token;
-      fetch('https://docdecoder.app/create-portal-session', {
-          method: 'POST',
-          headers: {
-              'Authorization': userToken,  // Pass the user's token for authentication
-          }
-      })
-      .then(response => response.json())
-      .then(data => {
-          if (data.url) {
-              // Redirect the user to the Customer Portal
-              window.open(data.url, '_blank');
-          } else {
-              console.error('Failed to create portal session:', data.error);
-          }
-      })
-      .catch(error => {
-          console.error('Error creating portal session:', error);
-      });
+    fetch('https://docdecoder.app/create-portal-session', {
+        method: 'POST',
+        credentials: 'include',
+    })
+    .then(response => {
+      if (response.status === 403) {
+        logUserOut();
+      }
+      return response.json();
+    })
+    .then(data => {
+        if (data.url) {
+            // Redirect the user to the Customer Portal
+            window.open(data.url, '_blank');
+        } else {
+            console.error('Failed to create portal session:', data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error creating portal session:', error);
     });
   });
 });
 
 function initiateStripeCheckout(plan_type) {
-  // Get the token from chrome storage
-  chrome.storage.local.get(['token'], function (result) {
-    const userToken = result.token;
-
-    // Make an AJAX call to your Flask server to start the checkout
-    fetch('https://docdecoder.app/create-checkout-session', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': userToken // Use the JWT token here
-      },
-      body: JSON.stringify({ plan_type: plan_type })
-    })
-    .then(response => response.json()) // Parse the JSON response
-    .then(data => {
-      // Open the Stripe Checkout URL in a new tab
-      if (data.checkout_url) {
-        window.open(data.checkout_url, '_blank');
-      } else {
-        console.error("Error starting Stripe checkout:", data.error);
-      }
-    })
-    .catch(error => {
-      console.error("Error starting Stripe checkout:", error);
-    });
+  // Make an AJAX call to your Flask server to start the checkout
+  fetch('https://docdecoder.app/create-checkout-session', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ plan_type: plan_type }),
+    credentials: 'include',
+  })
+  .then(response => {
+    if (response.status === 403) {
+      logUserOut();
+    }
+    return response.json();
+  })
+  .then(data => {
+    // Open the Stripe Checkout URL in a new tab
+    if (data.checkout_url) {
+      window.open(data.checkout_url, '_blank');
+    } else {
+      console.error("Error starting Stripe checkout:", data.error);
+    }
+  })
+  .catch(error => {
+    console.error("Error starting Stripe checkout:", error);
   });
 }
 
@@ -280,7 +308,11 @@ function updatePremiumFeaturesVisibility() {
   });
 }
 
-
+function logUserOut() {
+  document.getElementById('loggedIn').style.display = 'none';
+  document.getElementById('loggedOut').style.display = 'block';
+  chrome.storage.local.remove(['first_name', 'userPlan', 'summariesCount']);
+}
 
 
 
@@ -301,6 +333,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   } else if (message.type === "removePreloader" && message.summaryName && message.domain) {
     console.log(`Received removePreloader message for ${message.summaryName}`);
     removePreloaderForSummary(message.summaryName, message.domain);
+  } else if (message.type === "logUserOut") {
+    logUserOut();
   }
 });
 
