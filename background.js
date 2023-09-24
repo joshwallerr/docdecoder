@@ -164,7 +164,6 @@ function summarizeDocument(document, url, sectionTitle) {
       } else if (response.status === 403) {
         chrome.runtime.sendMessage({ type: "logUserOut" });
       }
-
       return response.text();
     })
     .then(data => resolve(data))

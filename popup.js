@@ -58,12 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }),
       credentials: 'include',
     })
-    .then(response => {
-      if (response.status === 403) {
-        logUserOut();
-      }
-      return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
       if (data.success) {
         document.getElementById('loggedOut').style.display = 'none';
@@ -107,12 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }),
       credentials: 'include',
     })
-    .then(response => {
-      if (response.status === 403) {
-        logUserOut();
-      }
-      return response.json();
-    })
+    .then(response => response.json())
       .then(data => {
         if (data.success) {
           document.getElementById('loggedOut').style.display = 'none';
@@ -261,6 +251,10 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Error creating portal session:', error);
     });
   });
+
+  document.querySelector('.close-popup-btn').addEventListener('click', function() {
+    document.getElementById('aiResponsePopup').style.display = 'none';
+  });  
 });
 
 function initiateStripeCheckout(plan_type) {
@@ -296,12 +290,28 @@ function updatePremiumFeaturesVisibility() {
   chrome.storage.local.get(['userPlan'], function (result) {
     const userPlan = result.userPlan;
     const isPremiumUser = userPlan === 'MONTHLY' || userPlan === 'YEARLY';
+
+    // Get all AI question form containers by class name
+    let aiQuestionFormContainers = document.getElementsByClassName('aiQuestionFormContainer');
+
+    for (let i = 0; i < aiQuestionFormContainers.length; i++) {
+      if (isPremiumUser) {
+        aiQuestionFormContainers[i].classList.remove('greyed-out');
+        // aiQuestionFormContainers[i].removeAttribute('title', 'This is a premium feature. Please subscribe to access it.');
+      } else {
+        aiQuestionFormContainers[i].classList.add('greyed-out');
+        // aiQuestionFormContainers[i].setAttribute('title', 'This is a premium feature. Please subscribe to access it.');
+      }
+    }
+
     if (isPremiumUser) {
       document.getElementById('myForm').classList.remove('greyed-out');
+      // document.getElementById('myForm').removeAttribute('title');
       document.getElementById('premiumFeatureMessage').style.display = 'none';
       document.getElementById('manage-subscription-btn').style.display = 'block';
     } else {
       document.getElementById('myForm').classList.add('greyed-out');
+      // document.getElementById('myForm').setAttribute('title', 'This is a premium feature. Please subscribe to access it.');
       document.getElementById('premiumFeatureMessage').style.display = 'block';
       document.getElementById('manage-subscription-btn').style.display = 'none';
     }
@@ -368,7 +378,6 @@ function initPopup() {
       console.log(data.loadingSummaries);
     });
 
-    // Clear the preloader container first
     let preloaderContainer = document.getElementById('preloader-container');
     preloaderContainer.innerHTML = '';
 
@@ -377,7 +386,6 @@ function initPopup() {
       let domainSummaries = summaries[currentDomain] || {};
       let loadingSummaries = result.loadingSummaries || [];
 
-      // Update the display of the form based on the showForm flag and the domain
       if (result.showForm && result.domainForForm === currentDomain) {
         document.getElementById("errorPrompt").style.display = "block";
       } else {
@@ -390,7 +398,6 @@ function initPopup() {
         /bot detected/i,
       ];
 
-      // Display preloaders for any loading summaries on the current domain only
       chrome.storage.local.get(['loadingSummaries'], function (result) {
         let loadingSummaries = result.loadingSummaries || [];
         loadingSummaries.forEach(loadingSummaryObj => {
@@ -403,14 +410,11 @@ function initPopup() {
 
       let container = document.getElementById('summaries-container');
 
-      // Dynamically create sections based on available summaries
       for (let termType in domainSummaries) {
-
-        // Only add the summary if it isn't already present
         if (!document.querySelector(`.summary-section[data-summary-name="${termType}"]`)) {
           let section = document.createElement('div');
-          section.className = "summary-section";  // Added class for identification
-          section.dataset.summaryName = termType;  // Use data attributes to identify summaries
+          section.className = "summary-section";
+          section.dataset.summaryName = termType;
 
           let removeIcon = document.createElement('span');
           removeIcon.textContent = "-";
@@ -434,17 +438,57 @@ function initPopup() {
           summaryText.innerHTML = formatSummaryText(domainSummaries[termType]);
           section.appendChild(summaryText);
 
-          container.appendChild(section);
+          // New Code: Add a text box and a "send" button for AI questions
+          let aiQuestionFormContainer = document.createElement('div');
+          aiQuestionFormContainer.className = 'aiQuestionFormContainer';
 
-          // Remove the preloader for this summary
+          let aiQuestionInput = document.createElement('input');
+          aiQuestionInput.type = 'text';
+          aiQuestionInput.placeholder = 'Ask AI about this summary';
+          aiQuestionFormContainer.appendChild(aiQuestionInput);
+
+          let sendButton = document.createElement('button');
+          sendButton.textContent = 'Send';
+          sendButton.addEventListener('click', function () {
+            let userQuestion = aiQuestionInput.value;
+            fetch('https://docdecoder.app/askai', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                question: userQuestion,
+                summaryName: termType,
+                domain: currentDomain,
+              }),
+              credentials: 'include',
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.error) {
+                alert(data.error);
+              } else {
+                // Update and show the AI response popup
+                document.getElementById('aiResponseText').textContent = data.answer; // Assuming the AI response is in a 'response' key.
+                document.getElementById('aiResponsePopup').style.display = 'block';
+              }
+            })
+            .catch(error => {
+              console.error('Error asking AI:', error);
+            });
+          });
+          aiQuestionFormContainer.appendChild(sendButton);
+
+          section.appendChild(aiQuestionFormContainer);
+
+          container.appendChild(section);
           removePreloaderForSummary(termType, currentDomain);
         }
       }
-      // console.log(currentDomain);
-      // clearPreloadersForDomain(currentDomain);
     });
   });
 }
+
 
 function formatSummaryText(summaryData) {
   // If it's a string, try to parse it as JSON
