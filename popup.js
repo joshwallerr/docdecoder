@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('signup-prompt').style.display = 'block';
     document.getElementById('signup').style.display = 'none';
     document.getElementById('signin').style.display = 'inline-block';
+    document.getElementById('resetpword-txt').style.display = 'flex';
   });
 
   document.getElementById('signup-prompt').addEventListener('click', function () {
@@ -59,7 +60,37 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('signup-prompt').style.display = 'none';
     document.getElementById('signup').style.display = 'inline-block';
     document.getElementById('signin').style.display = 'none';
+    document.getElementById('resetpword-txt').style.display = 'none';
   });
+
+  document.getElementById('resetpword-txt').addEventListener('click', function () {
+    document.getElementById('signup-h').style.display = 'none';
+    document.getElementById('signin-h').style.display = 'none';
+    document.getElementById('firstname-div').style.display = 'none';
+    document.getElementById('pword-div').style.display = 'none';
+    document.getElementById('signin-prompt').style.display = 'none';
+    document.getElementById('signup-prompt').style.display = 'none';
+    document.getElementById('signup').style.display = 'none';
+    document.getElementById('signin').style.display = 'none';
+    document.getElementById('reset-div').style.display = 'block';
+    document.getElementById('remembered-prompt').style.display = 'block';
+    document.getElementById('remandforgot').style.display = 'none';
+    document.getElementById('resetbtn').style.display = 'inline-block';
+    document.getElementById('email-label').style.display = 'none';
+  });
+
+  document.getElementById('remembered-prompt').addEventListener('click', function () {
+    document.getElementById('signin-h').style.display = 'block';
+    document.getElementById('pword-div').style.display = 'block';
+    document.getElementById('signup-prompt').style.display = 'block';
+    document.getElementById('signin').style.display = 'inline-block';
+    document.getElementById('reset-div').style.display = 'none';
+    document.getElementById('remembered-prompt').style.display = 'none';
+    document.getElementById('remandforgot').style.display = 'flex';
+    document.getElementById('resetbtn').style.display = 'none';
+    document.getElementById('email-label').style.display = 'block';
+  });
+
   document.getElementById('signup').addEventListener('click', function () {
     const firstName = document.getElementById('firstname').value;
     const email = document.getElementById('email').value;
@@ -273,7 +304,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.querySelector('.close-popup-btn').addEventListener('click', function() {
     document.getElementById('aiResponsePopup').style.display = 'none';
-  });  
+  });
+
+  document.getElementById('resetbtn').addEventListener('click', function (e) {
+    // Get the email address entered by the user
+    const email = document.getElementById('email').value;
+  
+    // Send a POST request to the server’s /reset-password endpoint with the email address
+    fetch('https://docdecoder.app/reset-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email: email }),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      // Handle the server’s response
+      if (data.success) {
+        alert('Password reset email has been sent! Remember to check your spam folder.');
+      } else {
+        alert('Error: ' + data.message);
+      }
+    })
+    .catch((error) => {
+      // Handle errors in sending the request or receiving the response
+      console.error('Error:', error);
+    });
+  });
 });
 
 function initiateStripeCheckout(plan_type) {

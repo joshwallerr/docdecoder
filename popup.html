@@ -31,20 +31,30 @@
                 <h1 id="signin-h" style="display: none;" class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl !mt-0">
                   Sign in to your account
                 </h1>
+                <div id="reset-div" style="display: none;" class="!mt-0">
+                  <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl !mt-0">
+                    Reset your password
+                  </h1>
+                  <p class="text-sm font-light text-gray-500 mt-1">
+                    Enter your email below and we'll send you a link to reset your password.
+                  </p>
+                </div>
                 <div class="space-y-4 md:space-y-6">
                     <div id="firstname-div">
                       <label for="firstname" class="block mb-2 text-sm font-medium text-gray-900">Your first name</label>
                       <input type="text" name="firstname" id="firstname" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="first name" required="">
                     </div>
                     <div>
-                        <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Your email</label>
+                        <label id="email-label" for="email" class="block mb-2 text-sm font-medium text-gray-900">Your email</label>
                         <input type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="name@example.com" required="">
                     </div>
-                    <div>
-                        <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Password</label>
-                        <input type="password" name="password" id="password" placeholder="password" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" required="">
+                    <div id="pword-div">
+                      <div>
+                          <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Password</label>
+                          <input type="password" name="password" id="password" placeholder="password" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" required="">
+                      </div>
                     </div>
-                    <div class="flex items-center justify-between">
+                    <div id="remandforgot" class="flex items-center justify-between">
                         <div class="flex items-start">
                             <div class="flex items-center h-5">
                               <input id="remember" aria-describedby="remember" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300" required="">
@@ -53,15 +63,19 @@
                               <label for="remember" class="text-gray-500">Remember me</label>
                             </div>
                         </div>
-                        <a href="#" class="text-sm font-medium text-primary-600 hover:underline hover:text-custom-blue">Forgot password?</a>
+                        <a id="resetpword-txt" style="display: none;" href="#" class="text-sm font-medium text-primary-600 hover:underline hover:text-custom-blue">Forgot password?</a>
                     </div>
                     <button id="signup" type="submit" class="w-full text-white bg-custom-blue hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Sign up</button>
                     <button id="signin" type="submit" style="display: none;" class="w-full text-white bg-custom-blue hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Sign in</button>
+                    <button id="resetbtn" type="submit" style="display: none;" class="w-full text-white bg-custom-blue hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Reset password</button>
                     <p id="signin-prompt" class="text-sm font-light text-gray-500">
                         Already have an account? <a href="#" class="font-medium text-primary-600 hover:underline hover:text-custom-blue">Sign in</a>
                     </p>
                     <p id="signup-prompt" style="display: none;" class="text-sm font-light text-gray-500">
                       New here? <a href="#" class="font-medium text-primary-600 hover:underline hover:text-custom-blue">Create an account</a>
+                    </p>
+                    <p style="display: none;" id="remembered-prompt" style="display: none;" class="text-sm font-light text-gray-500">
+                      Remembered it? <a href="#" class="font-medium text-primary-600 hover:underline hover:text-custom-blue">Sign in</a>
                     </p>
                   </div>
               </div>
