@@ -1,3 +1,8 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+
 /* General styling */
 body {
     font-family: Arial, sans-serif;
@@ -168,4 +173,43 @@ button:hover {
     right: 10px;
     font-size: 24px;
     cursor: pointer;
+}
+
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+    line-height: 14px;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 150px;
+    background-color: black;
+    opacity: 0.8;
+    color: white;
+    text-align: left;
+    border-radius: 6px;
+    padding: 5px 7px;
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 120%;
+    border: 1px solid black;
+}
+
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 10%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent black transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
 }

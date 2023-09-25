@@ -41,8 +41,27 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  document.getElementById('signin-prompt').addEventListener('click', function () {
+    document.getElementById('signup-h').style.display = 'none';
+    document.getElementById('signin-h').style.display = 'block';
+    document.getElementById('firstname-div').style.display = 'none';
+    document.getElementById('signin-prompt').style.display = 'none';
+    document.getElementById('signup-prompt').style.display = 'block';
+    document.getElementById('signup').style.display = 'none';
+    document.getElementById('signin').style.display = 'inline-block';
+  });
+
+  document.getElementById('signup-prompt').addEventListener('click', function () {
+    document.getElementById('signup-h').style.display = 'flex';
+    document.getElementById('signin-h').style.display = 'none';
+    document.getElementById('firstname-div').style.display = 'block';
+    document.getElementById('signin-prompt').style.display = 'block';
+    document.getElementById('signup-prompt').style.display = 'none';
+    document.getElementById('signup').style.display = 'inline-block';
+    document.getElementById('signin').style.display = 'none';
+  });
   document.getElementById('signup').addEventListener('click', function () {
-    const firstName = document.getElementById('firstName').value;
+    const firstName = document.getElementById('firstname').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
@@ -87,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
 
-  document.getElementById('login').addEventListener('click', function () {
+  document.getElementById('signin').addEventListener('click', function () {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
