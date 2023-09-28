@@ -614,12 +614,19 @@ video {
 .clear-none {
   clear: none;
 }
+.m-0 {
+  margin: 0px;
+}
 .m-1 {
   margin: 0.25rem;
 }
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
+}
+.my-auto {
+  margin-top: auto;
+  margin-bottom: auto;
 }
 .\!mt-0 {
   margin-top: 0px !important;
@@ -657,6 +664,9 @@ video {
 .ml-4 {
   margin-left: 1rem;
 }
+.ml-auto {
+  margin-left: auto;
+}
 .mr-2 {
   margin-right: 0.5rem;
 }
@@ -668,6 +678,9 @@ video {
 }
 .mt-2 {
   margin-top: 0.5rem;
+}
+.mt-2\.5 {
+  margin-top: 0.625rem;
 }
 .mt-4 {
   margin-top: 1rem;
@@ -1648,6 +1661,12 @@ video {
   -o-object-fit: scale-down;
      object-fit: scale-down;
 }
+.p-0 {
+  padding: 0px;
+}
+.p-0\.5 {
+  padding: 0.125rem;
+}
 .p-2 {
   padding: 0.5rem;
 }
@@ -1678,6 +1697,10 @@ video {
 .py-2\.5 {
   padding-top: 0.625rem;
   padding-bottom: 0.625rem;
+}
+.py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 .pb-8 {
   padding-bottom: 2rem;
@@ -1741,6 +1764,10 @@ video {
 .text-base {
   font-size: 1rem;
   line-height: 1.5rem;
+}
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
 }
 .text-sm {
   font-size: 0.875rem;
@@ -1846,6 +1873,14 @@ video {
 .text-gray-900 {
   --tw-text-opacity: 1;
   color: rgb(17 24 39 / var(--tw-text-opacity));
+}
+.text-green-500 {
+  --tw-text-opacity: 1;
+  color: rgb(34 197 94 / var(--tw-text-opacity));
+}
+.text-red-500 {
+  --tw-text-opacity: 1;
+  color: rgb(239 68 68 / var(--tw-text-opacity));
 }
 .text-white {
   --tw-text-opacity: 1;
@@ -2163,23 +2198,6 @@ p {
     border-bottom: none;
 }
 
-/* User input form styles */
-#myForm {
-    margin-top: 20px;
-    border: 1px solid #e0e0e0;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 20px;
-}
-
-#userInput {
-    width: 95%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-}
-
 /* Notification styles (if any) */
 .notification {
     padding: 10px;
@@ -2333,6 +2351,14 @@ button:hover {
 
   .DDLogoAccount {
     line-height: 1.4rem;
+  }
+
+  .text-green-500 {
+    color: rgb(34 197 94);
+  }
+
+  .text-red-500 {
+    color: rgb(244 63 94);
   }
 
   @media (min-width: 640px) {

@@ -332,6 +332,18 @@ document.addEventListener('DOMContentLoaded', function () {
       console.error('Error:', error);
     });
   });
+
+  document.getElementById('openCreateSummary').addEventListener('click', function() {
+    document.getElementById('closeCreateSummary').style.display = 'contents';
+    document.getElementById('openCreateSummary').style.display = 'none';
+    document.getElementById('createSummaryForm').style.display = 'block';
+  });
+
+  document.getElementById('closeCreateSummary').addEventListener('click', function() {
+    document.getElementById('closeCreateSummary').style.display = 'none';
+    document.getElementById('openCreateSummary').style.display = 'contents';
+    document.getElementById('createSummaryForm').style.display = 'none';
+  });    
 });
 
 function initiateStripeCheckout(plan_type) {
@@ -407,37 +419,42 @@ function logUserOut() {
 
 
 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-  const currentTab = tabs[0];
-  const url = new URL(currentTab.url);
-  const domain = url.hostname;
-  updateDomainText(domain);
-  updateDomainTop(domain);
-
-  const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}`;
-  updateFavicon(faviconUrl);
-
-  // Update the checkbox count for the current domain when the popup is opened
   chrome.storage.local.get(['domainCheckboxCounts'], function(data) {
+    const currentTab = tabs[0];
+    const url = new URL(currentTab.url);
+    const domain = url.hostname;
+
     const counts = data.domainCheckboxCounts || {};
     const checkboxCount = counts[domain] || 'No';
+
+    const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}`;
+
+    updateDomainText(domain);
+    updateDomainTop(domain);
+
+    updateFavicon(faviconUrl);
+
     updateCheckboxCount(checkboxCount);
   });
 });
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   if (changeInfo.status === 'complete' && tab.active) {
-    const url = new URL(tab.url);
-    const domain = url.hostname;
-    updateDomainText(domain);
-    updateDomainTop(domain);
-
-    const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}`;
-    updateFavicon(faviconUrl);
-
-    // Fetch the updated checkbox count for the current domain from chrome.storage.local
     chrome.storage.local.get(['domainCheckboxCounts'], function(data) {
+      const url = new URL(tab.url);
+      const domain = url.hostname;
+
       const counts = data.domainCheckboxCounts || {};
       const checkboxCount = counts[domain] || 'No';
+
+      const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}`;
+
+      updateDomainText(domain);
+      updateDomainTop(domain);
+
+      updateFavicon(faviconUrl);
+
+
       updateCheckboxCount(checkboxCount);
     });
   }
@@ -463,9 +480,18 @@ function updateDomainTop(domain) {
 }
 
 function updateCheckboxCount(checkboxCount) {
-  // Update the checkbox count in the popup
   const checkboxCountElement = document.getElementById('checkbox-count');
-  checkboxCountElement.textContent = `${checkboxCount}`;
+  if (checkboxCount === 'No') {
+    checkboxCountElement.textContent = `No consent checkboxes detected`;
+    checkboxCountElement.classList.add('text-red-500');
+  } else if (checkboxCount === 1) {
+    checkboxCountElement.textContent = `${checkboxCount} consent checkbox detected`;
+    checkboxCountElement.classList.add('text-green-500');
+
+  } else {
+    checkboxCountElement.textContent = `${checkboxCount} consent checkboxes detected`;
+    checkboxCountElement.classList.add('text-green-500');
+  }
 }
 
 

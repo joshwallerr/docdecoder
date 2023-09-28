@@ -85,22 +85,79 @@
   </div>
 
 
-
   <div id="loggedIn" style="display: none;">
-    <section id="main-extension-content">
-      <div class="border-b-gray-300 mb-2.5" style="border-bottom-width: 1px;">
-        <div class="flex flex-row items-center mb-3 font-semibold text-gray-900">
-          <img id="site-favicon" class="w-5 h-5 mr-2" src="docdecoderlogo.png" alt="logo">
-          <span class="flex-col">
-            <p id="domain-top" class="text-base font-semibold mb-0 DDLogoAccount"></p>
-          </span>
+  <section id="main-extension-content">
+    <div class="border-b-gray-300 mb-2.5" style="border-bottom-width: 1px;">
+      <div class="flex flex-row items-center mb-3 font-semibold text-gray-900">
+        <img id="site-favicon" class="w-5 h-5 mr-2" src="docdecoderlogo.png" alt="logo">
+        <span class="flex-col">
+          <p id="domain-top" class="text-base font-semibold mb-0 DDLogoAccount"></p>
+        </span>
+        <div class="ml-auto bg-white rounded-lg shadow p-0.5">
+          <a href="#">
+            <img title="account" src="account-icon.png" alt="account" id="accountButton" class="w-5 h-5">
+          </a>
         </div>
       </div>
-      <div class="flex justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 p-6">
-        <h4 class="text-xl font-semibold"><span id="checkbox-count">0</span> consent checkboxes detected on <span id="checkbox-domain">domain.com</span></h4>
-      </div>
-    </section>
+    </div>
+    <div
+      class="flex justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
+      <h4 class="text-lg font-semibold m-0"><span id="checkbox-count">0 consent checkboxes detected</span> on <span id="checkbox-domain">domain.com</span></h4>
+    </div>
+    <div class="flex flex-col font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
+      <div class="flex flex-row">
+        <a href="#" class="contents" id="openCreateSummary">
+          <h4 class="text-lg font-semibold mb-0">Create summary</h4>
+          <img title="create summary" src="plus-icon.png" alt="open create summary" class="ml-auto my-auto w-5 h-5">
+        </a>
 
+        <a href="#" style="display: none;" id="closeCreateSummary">
+          <h4 class="text-lg font-semibold mb-0">Create summary</h4>
+          <img title="cancel" src="minus-icon.png" alt="close create summary" class="ml-auto my-auto w-5 h-5">
+        </a>
+      </div>
+      <div id="createSummaryForm" class="mt-2.5" style="display: none;">
+        <form id="myForm">
+          <p class="mb-2">Step 1: Give the summary a name (e.g. Privacy Policy).</p>
+          <label for="policyName" class="block text-sm font-semibold text-gray-700">Policy Name:</label>
+          <input type="text" id="policyName" name="policyName" required class="mt-1 p-2 w-full border rounded-md">
+
+          <p class="mb-2 mt-4">Step 2: Open the page that contains the policy you want to summarize, and hit CTRL + A to
+            copy the entire page contents.</p>
+          <p class="mb-2">Step 3: Paste the content in the box below and click "Create Summary".</p>
+          <label for="policyContent" class="block text-sm font-semibold text-gray-700">Policy content:</label>
+          <textarea id="policyContent" name="policyContent" required
+            class="mt-1 p-2 w-full h-40 border rounded-md"></textarea>
+
+          <input type="submit" value="Create Summary" class="btn-primary mt-4">
+        </form>
+      </div>
+    </div>
+  </section>
+
+
+    <!-- <form id="myForm" class="mt-8">
+      <div id="premiumFeatureMessage" class="hidden mb-4 p-4 border-l-4 border-red-500 bg-red-100">
+        <p>This is a premium feature. Please subscribe to access it.</p>
+      </div>
+
+      <p id="errorPrompt" class="hidden mb-4 p-4 border-l-4 border-yellow-500 bg-yellow-100">We've detected a checkbox, but can't find a policy associated with it. Please create a custom summary using the form below.</p>
+
+      <div class="mb-4">
+        <p class="mb-2">Step 1: Give the summary a name (e.g. Privacy Policy, Terms, User Agreement).</p>
+        <label for="policyName" class="block text-sm font-medium text-gray-700">Policy Name:</label>
+        <input type="text" id="policyName" name="policyName" required class="mt-1 p-2 w-full border rounded-md">
+      </div>
+
+      <div class="mb-4">
+        <p class="mb-2">Step 2: Open the page that contains the policy you want to summarize, and hit CTRL + A to copy the entire page contents.</p>
+        <p class="mb-2">Step 3: Paste the content in the box below and click "Create Summary".</p>
+        <label for="policyContent" class="block text-sm font-medium text-gray-700">Policy content:</label>
+        <textarea id="policyContent" name="policyContent" required class="mt-1 p-2 w-full h-40 border rounded-md"></textarea>
+      </div>
+
+      <input type="submit" value="Create Summary" class="btn-primary"> -->
+    </form>
 
 
     <section id="plan-info" style="display: none;">
@@ -111,6 +168,7 @@
           <p class="-mb-1 text-xs font-normal">AI-Powered Policy Summariser</p>
         </span>
       </div>
+      <h2 class="text-2xl mb-4">Welcome <span id="nameDisplay" class="font-medium"></span>!</h2>
     </section>
 
 
