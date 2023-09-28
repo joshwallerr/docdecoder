@@ -419,7 +419,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
   // Update the checkbox count for the current domain when the popup is opened
   chrome.storage.local.get(['domainCheckboxCounts'], function(data) {
     const counts = data.domainCheckboxCounts || {};
-    const checkboxCount = counts[domain] || 0;
+    const checkboxCount = counts[domain] || 'No';
     updateCheckboxCount(checkboxCount);
   });
 });
@@ -437,7 +437,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     // Fetch the updated checkbox count for the current domain from chrome.storage.local
     chrome.storage.local.get(['domainCheckboxCounts'], function(data) {
       const counts = data.domainCheckboxCounts || {};
-      const checkboxCount = counts[domain] || 0;
+      const checkboxCount = counts[domain] || 'No';
       updateCheckboxCount(checkboxCount);
     });
   }
