@@ -102,8 +102,9 @@
     </div>
     <div
       class="flex justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
-      <h4 class="text-lg font-semibold m-0"><span id="checkbox-count">0 consent checkboxes detected</span> on <span id="checkbox-domain">domain.com</span></h4>
+      <h4 class="text-lg font-semibold m-0"><span id="checkbox-count">0 consent checkboxes detected</span> on this page</h4>
     </div>
+    <p id="errorPrompt" style="display: none;" class="mt-2.5 p-3 border-l-4 border-yellow-500 bg-yellow-100 rounded-r-lg">We've detected a checkbox, but can't find a policy associated with it. Please create a custom summary using the form below.</p>
     <div class="flex flex-col font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
       <div class="flex flex-row">
         <a href="#" class="contents" id="openCreateSummary">
@@ -131,6 +132,14 @@
 
           <input type="submit" value="Create Summary" class="btn-primary mt-4">
         </form>
+      </div>
+    </div>
+    <div class="flex justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
+      <div id="content-container" class="mr-auto">
+        <div id="preloader-container"></div>
+        <div id="summaries-container">
+          <h4 class="text-base font-semibold mb-0">Summaries will be displayed here.</h4>
+        </div>
       </div>
     </div>
   </section>

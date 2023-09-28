@@ -425,11 +425,10 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     const domain = url.hostname;
 
     const counts = data.domainCheckboxCounts || {};
-    const checkboxCount = counts[domain] || 'No';
+    const checkboxCount = counts[url] || 'No';
 
     const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}`;
 
-    updateDomainText(domain);
     updateDomainTop(domain);
 
     updateFavicon(faviconUrl);
@@ -449,7 +448,6 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
       const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}`;
 
-      updateDomainText(domain);
       updateDomainTop(domain);
 
       updateFavicon(faviconUrl);
@@ -459,13 +457,6 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
     });
   }
 });
-
-
-function updateDomainText(domain) {
-  // Update the text in the popup with the domain and checkbox count
-  const domainElement = document.getElementById('checkbox-domain');
-  domainElement.textContent = `${domain}`;
-}
 
 function updateFavicon(faviconUrl) {
   // Update the favicon image in the popup
@@ -577,7 +568,9 @@ function initPopup() {
       let container = document.getElementById('summaries-container');
 
       for (let termType in domainSummaries) {
-        if (!document.querySelector(`.summary-section[data-summary-name="${termType}"]`)) {
+        let sanitizedTermType = termType.trim();
+
+        if (!document.querySelector(`.summary-section[data-summary-name="${sanitizedTermType}"]`)) {
           let section = document.createElement('div');
           section.className = "summary-section";
           section.dataset.summaryName = termType;

@@ -1447,6 +1447,10 @@ video {
   border-top-right-radius: 0.25rem;
   border-bottom-right-radius: 0.25rem;
 }
+.rounded-r-lg {
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+}
 .rounded-s {
   border-start-start-radius: 0.25rem;
   border-end-start-radius: 0.25rem;
@@ -1540,10 +1544,6 @@ video {
 .border-yellow-500 {
   --tw-border-opacity: 1;
   border-color: rgb(234 179 8 / var(--tw-border-opacity));
-}
-.border-b-gray-300 {
-  --tw-border-opacity: 1;
-  border-bottom-color: rgb(209 213 219 / var(--tw-border-opacity));
 }
 .bg-\[rgb\(255\2c 0\2c 0\)\] {
   --tw-bg-opacity: 1;
@@ -1672,6 +1672,9 @@ video {
 }
 .p-2\.5 {
   padding: 0.625rem;
+}
+.p-3 {
+  padding: 0.75rem;
 }
 .p-4 {
   padding: 1rem;
@@ -2177,18 +2180,18 @@ p {
 }
 
 /* Container for summaries */
-#content-container {
+/* #content-container {
     border: 1px solid #e0e0e0;
     padding: 10px;
     border-radius: 5px;
-}
+} */
 
 /* #summaries-container {
     padding: 10px;
 } */
 
 /* Individual summary sections */
-#summaries-container>div {
+/* #summaries-container>div {
     padding: 10px;
     border-bottom: 1px solid #e0e0e0;
     margin-bottom: 10px;
@@ -2196,7 +2199,7 @@ p {
 
 #summaries-container>div:last-child {
     border-bottom: none;
-}
+} */
 
 /* Notification styles (if any) */
 .notification {

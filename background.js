@@ -36,6 +36,7 @@ chrome.runtime.onMessage.addListener(
         .catch(error => {
           console.error('Error:', error);
           chrome.runtime.sendMessage({ showForm: true });
+          console.log(`Showing form for ${request.sectionTitle}`);
           console.log(`Sending removePreloader message for ${request.sectionTitle} on ${extractedURL}`);
           removeLoadingSummary(request.sectionTitle, extractedURL);
           chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: extractedURL }, function (response) {
@@ -61,6 +62,7 @@ chrome.runtime.onMessage.addListener(
         .catch(error => {
           console.error('Error:', error);
           chrome.runtime.sendMessage({ showForm: true });
+          console.log(`Showing form for ${request.sectionTitle}`);
           console.log(`Sending removePreloader message for ${request.sectionTitle} on ${extractedURL}`);
           removeLoadingSummary(request.sectionTitle, extractedURL);
           chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: extractedURL }, function (response) {

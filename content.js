@@ -52,12 +52,13 @@ function detectCheckboxes() {
                         chrome.runtime.sendMessage({ type: "updateBadge", count: count });
 
                         let currentDomain = new URL(window.location.href).hostname;
+                        let currentPage = window.location.href;
                         
                         chrome.storage.local.get(['domainCheckboxCounts'], function(data) {
                             let counts = data.domainCheckboxCounts || {};
                             
                             // Update the count for the current domain
-                            counts[currentDomain] = count;
+                            counts[currentPage] = count;
                     
                             // Store the updated counts object
                             chrome.storage.local.set({ domainCheckboxCounts: counts });
