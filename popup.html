@@ -11,7 +11,7 @@
   <div id="loggedOut">
     <section class="bg-gray-50">
       <div class="flex flex-col items-center justify-center px-6 pb-8 pt-4 mx-auto md:h-screen lg:py-0">
-        <div class="flex flex-row items-center mb-6 font-semibold text-gray-900">
+        <div class="flex flex-row items-center mb-6 font-semibold text-gray-900 mr-auto">
           <img class="w-11 h-11 mr-2" src="docdecoderlogo.png" alt="logo">
           <span class="flex-col">
             <p class="text-2xl font-semibold -mb-1">DocDecoder</p>
@@ -86,76 +86,114 @@
 
 
 
-
-
-
-
   <div id="loggedIn" style="display: none;">
-    <div id="main-extension-content">
-      <h1>Term Trimmer</h1>
-      <h2>Welcome <span id="nameDisplay"></span>!</h2>
-      <button id="logoutButton">Logout</button>
-      <button id="accountButton">Account</button>
-      <form id="myForm">
-        <div id="premiumFeatureMessage" style="display: none;">
-          <p>This is a premium feature. Please subscribe to access it.</p>
+    <section id="main-extension-content">
+      <div class="border-b-gray-300 mb-2.5" style="border-bottom-width: 1px;">
+        <div class="flex flex-row items-center mb-3 font-semibold text-gray-900">
+          <img id="site-favicon" class="w-5 h-5 mr-2" src="docdecoderlogo.png" alt="logo">
+          <span class="flex-col">
+            <p id="domain-top" class="text-base font-semibold mb-0 DDLogoAccount"></p>
+          </span>
         </div>
-
-        <p id="errorPrompt" style="display: none;">We've detected a checkbox, but can't find a policy associated with it. Please create a custom summary using the form below.</p>
-
-        <p>Step 1: Give the summary a name (e.g. Privacy Policy, Terms, User Agreement).</p>
-        <label for="policyName">Policy Name:</label>
-        <input type="text" id="policyName" name="policyName" required>
-
-        <p>Step 2: Open the page that contains the policy you want to summarize, and hit CTRL + A to copy the entire page contents.</p>
-        <p>Step 3: Paste the content in the box below and click "Create Summary".</p>
-        <label for="policyContent">Policy content:</label>
-        <textarea id="policyContent" name="policyContent" required></textarea>
-
-        <input type="submit" value="Create Summary">
-      </form>
-
-      <!-- TODO: Make users name the policy they submit. Send domain, policy name, and pasted document to summarize route -->
-      <form id="manual-input-form" style="display: none;">
-        <textarea id="manual-input" placeholder="Paste the terms and conditions here..."></textarea>
-        <button type="submit">Summarize</button>
-      </form>
-
-
-      <div id="content-container">
-        <div id="preloader-container"></div>
-        <!-- Container for dynamically added sections -->
-        <div id="summaries-container"></div>
       </div>
-    </div>
-
-    <div id="plan-info" style="display: none;">
-      <button id="exit-account">X</button>
-      <p>Your current plan: <span id="current-plan"></span></p>
-      <p id="usage-info"></p>
-
-      <!-- Upgrade Button -->
-      <button id="upgrade-btn">Upgrade Plan</button>
-
-      <!-- Upgrade Modal -->
-      <div id="upgrade-container" style="display: none;">
-          <h2>Choose Your Plan</h2>
-          <button id="monthly">Monthly Plan ($3.99)</button>
-          <button id="yearly">Yearly Plan ($39.99)</button>
-          <button id="close-upgrade">Close</button>
+      <div class="flex justify-center font-mono">
+        <h4 class="text-xl font-semibold"><span id="checkbox-count">0</span> consent checkboxes detected on <span id="checkbox-domain">domain.com</span></h4>
       </div>
+    </section>
 
-      <button id="manage-subscription-btn" style="display: none;">Manage Subscription</button>
-    </div>
 
-    <div id="aiResponsePopup" class="ai-response-popup">
+
+    <section id="plan-info" style="display: none;">
+      <div class="flex flex-row items-start mb-2 font-semibold text-gray-900">
+        <img class="w-8 h-8 mr-2" src="docdecoderlogo.png" alt="logo">
+        <span class="flex-col">
+          <p class="text-base font-semibold -mb-1 DDLogoAccount">DocDecoder</p>
+          <p class="-mb-1 text-xs font-normal">AI-Powered Policy Summariser</p>
+        </span>
+      </div>
+    </section>
+
+
+
+    <section id="aiResponsePopup" style="display: none;" class="ai-response-popup">
       <div class="ai-response-content">
         <span class="close-popup-btn">&times;</span>
         <h2>AI says:</h2>
         <p id="aiResponseText"></p>
       </div>
-    </div>    
+    </section>
   </div>
+
+
+
+  
+
+  <!-- <div id="loggedIn" style="display: none;">
+    <section class="bg-white">
+      <div id="main-extension-content" class="max-w-2xl mx-auto">
+        <h1 class="text-4xl font-semibold mb-4">Term Trimmer</h1>
+        <h2 class="text-2xl mb-4">Welcome <span id="nameDisplay" class="font-medium"></span>!</h2>
+        <button id="logoutButton" class="btn-primary">Logout</button>
+        <button id="accountButton" class="btn-primary ml-4">Account</button>
+        <form id="myForm" class="mt-8">
+          <div id="premiumFeatureMessage" class="hidden mb-4 p-4 border-l-4 border-red-500 bg-red-100">
+            <p>This is a premium feature. Please subscribe to access it.</p>
+          </div>
+    
+          <p id="errorPrompt" class="hidden mb-4 p-4 border-l-4 border-yellow-500 bg-yellow-100">We've detected a checkbox, but can't find a policy associated with it. Please create a custom summary using the form below.</p>
+    
+          <div class="mb-4">
+            <p class="mb-2">Step 1: Give the summary a name (e.g. Privacy Policy, Terms, User Agreement).</p>
+            <label for="policyName" class="block text-sm font-medium text-gray-700">Policy Name:</label>
+            <input type="text" id="policyName" name="policyName" required class="mt-1 p-2 w-full border rounded-md">
+          </div>
+    
+          <div class="mb-4">
+            <p class="mb-2">Step 2: Open the page that contains the policy you want to summarize, and hit CTRL + A to copy the entire page contents.</p>
+            <p class="mb-2">Step 3: Paste the content in the box below and click "Create Summary".</p>
+            <label for="policyContent" class="block text-sm font-medium text-gray-700">Policy content:</label>
+            <textarea id="policyContent" name="policyContent" required class="mt-1 p-2 w-full h-40 border rounded-md"></textarea>
+          </div>
+    
+          <input type="submit" value="Create Summary" class="btn-primary">
+        </form>
+    
+        <form id="manual-input-form" class="hidden mt-8">
+          <textarea id="manual-input" placeholder="Paste the terms and conditions here..." class="p-2 w-full h-40 border rounded-md"></textarea>
+          <button type="submit" class="btn-primary mt-4">Summarize</button>
+        </form>
+    
+        <div id="content-container" class="mt-8">
+          <div id="preloader-container"></div>
+          <div id="summaries-container"></div>
+        </div>
+      </div>
+    
+      <div id="plan-info" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg">
+          <button id="exit-account" class="absolute top-4 right-4 btn-primary">X</button>
+          <p class="mb-4">Your current plan: <span id="current-plan" class="font-medium"></span></p>
+          <p id="usage-info" class="mb-4"></p>
+          <button id="upgrade-btn" class="btn-primary">Upgrade Plan</button>
+          <div id="upgrade-container" class="hidden mt-8">
+            <h2 class="text-2xl mb-4">Choose Your Plan</h2>
+            <button id="monthly" class="btn-primary mb-4">Monthly Plan ($3.99)</button>
+            <button id="yearly" class="btn-primary">Yearly Plan ($39.99)</button>
+            <button id="close-upgrade" class="btn-secondary mt-4">Close</button>
+          </div>
+          <button id="manage-subscription-btn" class="hidden btn-secondary mt-4">Manage Subscription</button>
+        </div>
+      </div>
+    
+      <div id="aiResponsePopup" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg">
+          <span class="absolute top-4 right-4 btn-primary cursor-pointer close-popup-btn">&times;</span>
+          <h2 class="text-2xl mb-4">AI says:</h2>
+          <p id="aiResponseText"></p>
+        </div>
+      </div>
+    </div>
+  </section> -->
 </body>
 
 </html>

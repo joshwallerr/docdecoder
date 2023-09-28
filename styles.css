@@ -34,14 +34,13 @@ h6 {
     margin: 0 0 10px 0;
 }
 
-h4 {
+/* h4 {
     color: #007BFF;
-    /* Changing color of h4 as per your request */
     margin-top: 20px;
     border-bottom: 2px solid #007BFF;
     padding-bottom: 5px;
     margin-bottom: -5px;
-}
+} */
 
 p {
     margin: 0 0 10px 0;
@@ -213,3 +212,30 @@ button:hover {
 .tooltip:hover .tooltiptext {
     visibility: visible;
 }
+
+.btn-primary {
+    background-color: #2563EB;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .btn-primary:hover {
+    background-color: #1D4ED8;
+  }
+  .btn-secondary {
+    background-color: #E5E7EB;
+    color: #1F2937;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .btn-secondary:hover {
+    background-color: #D1D5DB;
+  }
+
+  .DDLogoAccount {
+    line-height: 1.4rem;
+  }

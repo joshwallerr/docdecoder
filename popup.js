@@ -406,6 +406,69 @@ function logUserOut() {
 
 
 
+chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+  const currentTab = tabs[0];
+  const url = new URL(currentTab.url);
+  const domain = url.hostname;
+  updateDomainText(domain);
+  updateDomainTop(domain);
+
+  const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}`;
+  updateFavicon(faviconUrl);
+
+  // Update the checkbox count for the current domain when the popup is opened
+  chrome.storage.local.get(['domainCheckboxCounts'], function(data) {
+    const counts = data.domainCheckboxCounts || {};
+    const checkboxCount = counts[domain] || 0;
+    updateCheckboxCount(checkboxCount);
+  });
+});
+
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  if (changeInfo.status === 'complete' && tab.active) {
+    const url = new URL(tab.url);
+    const domain = url.hostname;
+    updateDomainText(domain);
+    updateDomainTop(domain);
+
+    const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}`;
+    updateFavicon(faviconUrl);
+
+    // Fetch the updated checkbox count for the current domain from chrome.storage.local
+    chrome.storage.local.get(['domainCheckboxCounts'], function(data) {
+      const counts = data.domainCheckboxCounts || {};
+      const checkboxCount = counts[domain] || 0;
+      updateCheckboxCount(checkboxCount);
+    });
+  }
+});
+
+
+function updateDomainText(domain) {
+  // Update the text in the popup with the domain and checkbox count
+  const domainElement = document.getElementById('checkbox-domain');
+  domainElement.textContent = `${domain}`;
+}
+
+function updateFavicon(faviconUrl) {
+  // Update the favicon image in the popup
+  const faviconElement = document.getElementById('site-favicon');
+  faviconElement.src = faviconUrl;
+}
+
+function updateDomainTop(domain) {
+  // Update the domain in the popup
+  const domainTopElement = document.getElementById('domain-top');
+  domainTopElement.textContent = `${domain}`;
+}
+
+function updateCheckboxCount(checkboxCount) {
+  // Update the checkbox count in the popup
+  const checkboxCountElement = document.getElementById('checkbox-count');
+  checkboxCountElement.textContent = `${checkboxCount}`;
+}
+
+
 
 
 
