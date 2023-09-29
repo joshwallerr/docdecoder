@@ -19,166 +19,343 @@
           </span>
         </div>
         <div class="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
-            <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-                <div id="signup-h" class="flex flex-row items-baseline">
-                  <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                    Create an account
-                  </h1>
-                  <p class="tooltip mb-0 ml-1.5">Why?
-                    <span class="tooltiptext">An account is necessary so we can track your free usage, prevent spam, and allows you to sync your summaries across devices.</span>
-                  </p>
-                </div>
-                <h1 id="signin-h" style="display: none;" class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl !mt-0">
-                  Sign in to your account
-                </h1>
-                <div id="reset-div" style="display: none;" class="!mt-0">
-                  <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl !mt-0">
-                    Reset your password
-                  </h1>
-                  <p class="text-sm font-light text-gray-500 mt-1">
-                    Enter your email below and we'll send you a link to reset your password.
-                  </p>
-                </div>
-                <div class="space-y-4 md:space-y-6">
-                    <div id="firstname-div">
-                      <label for="firstname" class="block mb-2 text-sm font-medium text-gray-900">Your first name</label>
-                      <input type="text" name="firstname" id="firstname" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="first name" required="">
-                    </div>
-                    <div>
-                        <label id="email-label" for="email" class="block mb-2 text-sm font-medium text-gray-900">Your email</label>
-                        <input type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="name@example.com" required="">
-                    </div>
-                    <div id="pword-div">
-                      <div>
-                          <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Password</label>
-                          <input type="password" name="password" id="password" placeholder="password" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" required="">
-                      </div>
-                    </div>
-                    <div id="remandforgot" class="flex items-center justify-between">
-                        <div class="flex items-start">
-                            <div class="flex items-center h-5">
-                              <input id="remember" aria-describedby="remember" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300" required="">
-                            </div>
-                            <div class="ml-3 text-sm">
-                              <label for="remember" class="text-gray-500">Remember me</label>
-                            </div>
-                        </div>
-                        <a id="resetpword-txt" style="display: none;" href="#" class="text-sm font-medium text-primary-600 hover:underline hover:text-custom-blue">Forgot password?</a>
-                    </div>
-                    <button id="signup" type="submit" class="w-full text-white bg-custom-blue hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Sign up</button>
-                    <button id="signin" type="submit" style="display: none;" class="w-full text-white bg-custom-blue hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Sign in</button>
-                    <button id="resetbtn" type="submit" style="display: none;" class="w-full text-white bg-custom-blue hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Reset password</button>
-                    <p id="signin-prompt" class="text-sm font-light text-gray-500">
-                        Already have an account? <a href="#" class="font-medium text-primary-600 hover:underline hover:text-custom-blue">Sign in</a>
-                    </p>
-                    <p id="signup-prompt" style="display: none;" class="text-sm font-light text-gray-500">
-                      New here? <a href="#" class="font-medium text-primary-600 hover:underline hover:text-custom-blue">Create an account</a>
-                    </p>
-                    <p style="display: none;" id="remembered-prompt" style="display: none;" class="text-sm font-light text-gray-500">
-                      Remembered it? <a href="#" class="font-medium text-primary-600 hover:underline hover:text-custom-blue">Sign in</a>
-                    </p>
-                  </div>
+          <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+            <div id="signup-h" class="flex flex-row items-baseline">
+              <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
+                Create an account
+              </h1>
+              <p class="tooltip mb-0 ml-1.5">Why?
+                <span class="tooltiptext">An account is necessary so we can track your free usage, prevent spam, and
+                  allows you to sync your summaries across devices.</span>
+              </p>
+            </div>
+            <h1 id="signin-h" style="display: none;"
+              class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl !mt-0">
+              Sign in to your account
+            </h1>
+            <div id="reset-div" style="display: none;" class="!mt-0">
+              <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl !mt-0">
+                Reset your password
+              </h1>
+              <p class="text-sm font-light text-gray-500 mt-1">
+                Enter your email below and we'll send you a link to reset your password.
+              </p>
+            </div>
+            <div class="space-y-4 md:space-y-6">
+              <div id="firstname-div">
+                <label for="firstname" class="block mb-2 text-sm font-medium text-gray-900">Your first name</label>
+                <input type="text" name="firstname" id="firstname"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                  placeholder="first name" required="">
               </div>
+              <div>
+                <label id="email-label" for="email" class="block mb-2 text-sm font-medium text-gray-900">Your
+                  email</label>
+                <input type="email" name="email" id="email"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                  placeholder="name@example.com" required="">
+              </div>
+              <div id="pword-div">
+                <div>
+                  <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Password</label>
+                  <input type="password" name="password" id="password" placeholder="password"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
+                    required="">
+                </div>
+              </div>
+              <div id="remandforgot" class="flex items-center justify-between">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <input id="remember" aria-describedby="remember" type="checkbox"
+                      class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300"
+                      required="">
+                  </div>
+                  <div class="ml-3 text-sm">
+                    <label for="remember" class="text-gray-500">Remember me</label>
+                  </div>
+                </div>
+                <a id="resetpword-txt" style="display: none;" href="#"
+                  class="text-sm font-medium text-primary-600 hover:underline hover:text-custom-blue">Forgot
+                  password?</a>
+              </div>
+              <button id="signup" type="submit"
+                class="w-full text-white bg-custom-blue hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Sign
+                up</button>
+              <button id="signin" type="submit" style="display: none;"
+                class="w-full text-white bg-custom-blue hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Sign
+                in</button>
+              <button id="resetbtn" type="submit" style="display: none;"
+                class="w-full text-white bg-custom-blue hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Reset
+                password</button>
+              <p id="signin-prompt" class="text-sm font-light text-gray-500">
+                Already have an account? <a href="#"
+                  class="font-medium text-primary-600 hover:underline hover:text-custom-blue">Sign in</a>
+              </p>
+              <p id="signup-prompt" style="display: none;" class="text-sm font-light text-gray-500">
+                New here? <a href="#" class="font-medium text-primary-600 hover:underline hover:text-custom-blue">Create
+                  an account</a>
+              </p>
+              <p style="display: none;" id="remembered-prompt" style="display: none;"
+                class="text-sm font-light text-gray-500">
+                Remembered it? <a href="#"
+                  class="font-medium text-primary-600 hover:underline hover:text-custom-blue">Sign in</a>
+              </p>
+            </div>
           </div>
+        </div>
       </div>
     </section>
   </div>
 
 
   <div id="loggedIn" style="display: none;">
-  <section id="main-extension-content">
-    <div class="mb-2.5">
-      <div class="flex flex-row items-center mb-3 font-semibold text-gray-900">
-        <img id="site-favicon" class="w-5 h-5 mr-2" src="docdecoderlogo.png" alt="logo">
-        <span class="flex-col">
-          <p id="domain-top" class="text-base font-semibold mb-0 DDLogoAccount"></p>
-        </span>
-        <div class="ml-auto bg-white rounded-lg shadow p-0.5">
-          <a href="#">
-            <img title="account" src="account-icon.png" alt="account" id="accountButton" class="w-5 h-5">
+    <section id="main-extension-content" class="pb-2">
+      <div class="mb-2.5">
+        <div class="flex flex-row items-center mb-3 font-semibold text-gray-900">
+          <img id="site-favicon" class="w-5 h-5 mr-2" src="docdecoderlogo.png" alt="logo">
+          <span class="flex-col">
+            <p id="domain-top" class="text-base font-semibold mb-0 DDLogoAccount"></p>
+          </span>
+          <div class="ml-auto flex flex-row">
+            <div class=" bg-white rounded-lg shadow p-0.5 mr-1.5 animated-bg-container">
+              <a href="#" class="text-white flex-row flex items-baseline" style="padding-right: 0.2rem;">
+                <p class="m-auto px-1 z-10">Get premium</p>
+                <img title="premium" src="premium-logo.png" alt="account" id="premiumButton" class="w-5 h-5 invert" style="margin-top: -1px;">
+              </a>
+            </div>
+            <div class="bg-white rounded-lg shadow p-0.5">
+              <a href="#">
+                <img title="account" src="account-icon.png" alt="account" id="accountButton" class="w-5 h-5">
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="flex justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
+        <h4 class="text-lg font-semibold m-0"><span id="checkbox-count">0 consent checkboxes detected</span> on this
+          page</h4>
+      </div>
+      <p id="errorPrompt" style="display: none;"
+        class="mt-2.5 p-3 border-l-4 border-yellow-500 bg-yellow-100 rounded-r-lg">We've detected a checkbox, but can't
+        find a policy associated with it. Please create a custom summary using the form below.</p>
+      <div
+        class="flex flex-col font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
+        <div class="flex flex-row">
+          <a href="#" class="contents" id="openCreateSummary">
+            <h4 class="text-lg font-semibold mb-0">Create summary</h4>
+            <img title="create summary" src="plus-icon.png" alt="open create summary" class="ml-auto my-auto w-5 h-5">
+          </a>
+
+          <a href="#" style="display: none;" id="closeCreateSummary">
+            <h4 class="text-lg font-semibold mb-0">Create summary</h4>
+            <img title="cancel" src="minus-icon.png" alt="close create summary" class="ml-auto my-auto w-5 h-5">
           </a>
         </div>
-      </div>
-    </div>
-    <div
-      class="flex justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
-      <h4 class="text-lg font-semibold m-0"><span id="checkbox-count">0 consent checkboxes detected</span> on this page</h4>
-    </div>
-    <p id="errorPrompt" style="display: none;" class="mt-2.5 p-3 border-l-4 border-yellow-500 bg-yellow-100 rounded-r-lg">We've detected a checkbox, but can't find a policy associated with it. Please create a custom summary using the form below.</p>
-    <div class="flex flex-col font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
-      <div class="flex flex-row">
-        <a href="#" class="contents" id="openCreateSummary">
-          <h4 class="text-lg font-semibold mb-0">Create summary</h4>
-          <img title="create summary" src="plus-icon.png" alt="open create summary" class="ml-auto my-auto w-5 h-5">
-        </a>
+        <div id="createSummaryForm" class="mt-2.5" style="display: none;">
+          <div id="premiumFeatureMessage" style="display: none;" class="mb-4 p-4 border-l-4 border-red-500 bg-red-100">
+            <p>This is a premium feature. Please subscribe to access it.</p>
+          </div>
+          <form id="myForm">
+            <p class="mb-2">Step 1: Give the summary a name (e.g. Privacy Policy).</p>
+            <label for="policyName" class="block text-sm font-semibold text-gray-700">Policy Name:</label>
+            <input type="text" id="policyName" name="policyName" required class="mt-1 p-2 w-full border rounded-md">
 
-        <a href="#" style="display: none;" id="closeCreateSummary">
-          <h4 class="text-lg font-semibold mb-0">Create summary</h4>
-          <img title="cancel" src="minus-icon.png" alt="close create summary" class="ml-auto my-auto w-5 h-5">
-        </a>
-      </div>
-      <div id="createSummaryForm" class="mt-2.5" style="display: none;">
-        <form id="myForm">
-          <p class="mb-2">Step 1: Give the summary a name (e.g. Privacy Policy).</p>
-          <label for="policyName" class="block text-sm font-semibold text-gray-700">Policy Name:</label>
-          <input type="text" id="policyName" name="policyName" required class="mt-1 p-2 w-full border rounded-md">
+            <p class="mb-2 mt-4">Step 2: Open the page that contains the policy you want to summarize, and hit CTRL + A
+              to
+              copy the entire page contents.</p>
+            <p class="mb-2">Step 3: Paste the content in the box below and click "Create Summary".</p>
+            <label for="policyContent" class="block text-sm font-semibold text-gray-700">Policy content:</label>
+            <textarea id="policyContent" name="policyContent" required
+              class="mt-1 p-2 w-full h-40 border rounded-md"></textarea>
 
-          <p class="mb-2 mt-4">Step 2: Open the page that contains the policy you want to summarize, and hit CTRL + A to
-            copy the entire page contents.</p>
-          <p class="mb-2">Step 3: Paste the content in the box below and click "Create Summary".</p>
-          <label for="policyContent" class="block text-sm font-semibold text-gray-700">Policy content:</label>
-          <textarea id="policyContent" name="policyContent" required
-            class="mt-1 p-2 w-full h-40 border rounded-md"></textarea>
-
-          <input type="submit" value="Create Summary" class="btn-primary mt-4">
-        </form>
-      </div>
-    </div>
-    <div class="flex justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
-      <div id="content-container" class="mr-auto">
-        <div id="preloader-container"></div>
-        <div id="summaries-container">
-          <h4 class="text-base font-semibold mb-0">Summaries will be displayed here.</h4>
+            <input type="submit" value="Create Summary" class="btn-primary mt-4">
+          </form>
         </div>
       </div>
-    </div>
-  </section>
-
-
-    <!-- <form id="myForm" class="mt-8">
-      <div id="premiumFeatureMessage" class="hidden mb-4 p-4 border-l-4 border-red-500 bg-red-100">
+      <div
+        class="flex justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
+        <div id="content-container" class="mr-auto">
+          <div id="preloader-container"></div>
+          <div id="summaries-container">
+            <h4 class="text-base font-semibold mb-0">Summaries will be displayed here.</h4>
+          </div>
+        </div>
+      </div>
+      <div id="premiumFeatureMessage" style="display: none;" class="mb-4 p-4 border-l-4 border-red-500 bg-red-100">
         <p>This is a premium feature. Please subscribe to access it.</p>
       </div>
+    </section>
 
-      <p id="errorPrompt" class="hidden mb-4 p-4 border-l-4 border-yellow-500 bg-yellow-100">We've detected a checkbox, but can't find a policy associated with it. Please create a custom summary using the form below.</p>
-
-      <div class="mb-4">
-        <p class="mb-2">Step 1: Give the summary a name (e.g. Privacy Policy, Terms, User Agreement).</p>
-        <label for="policyName" class="block text-sm font-medium text-gray-700">Policy Name:</label>
-        <input type="text" id="policyName" name="policyName" required class="mt-1 p-2 w-full border rounded-md">
-      </div>
-
-      <div class="mb-4">
-        <p class="mb-2">Step 2: Open the page that contains the policy you want to summarize, and hit CTRL + A to copy the entire page contents.</p>
-        <p class="mb-2">Step 3: Paste the content in the box below and click "Create Summary".</p>
-        <label for="policyContent" class="block text-sm font-medium text-gray-700">Policy content:</label>
-        <textarea id="policyContent" name="policyContent" required class="mt-1 p-2 w-full h-40 border rounded-md"></textarea>
-      </div>
-
-      <input type="submit" value="Create Summary" class="btn-primary"> -->
-    </form>
-
-
-    <section id="plan-info" style="display: none;">
+    <section id="plan-info" style="display: none;" class="pb-2">
       <div class="flex flex-row items-start mb-2 font-semibold text-gray-900">
         <img class="w-8 h-8 mr-2" src="docdecoderlogo.png" alt="logo">
         <span class="flex-col">
           <p class="text-base font-semibold -mb-1 DDLogoAccount">DocDecoder</p>
           <p class="-mb-1 text-xs font-normal">AI-Powered Policy Summariser</p>
         </span>
+        <div class="ml-auto bg-white rounded-lg shadow p-0.5">
+          <a href="#">
+            <img title="account" src="back-arrow.png" alt="account" id="exit-account" class="w-5 h-5 p-0.5">
+          </a>
+        </div>
       </div>
-      <h2 class="text-2xl mb-4">Welcome <span id="nameDisplay" class="font-medium"></span>!</h2>
+
+      <div
+        class="flex flex-col justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5 mt-4">
+        <h2 class="text-2xl mb-4">Welcome <span id="nameDisplay" class="font-medium"></span></h2>
+
+        <p class="mb-4">Your current plan: <span id="current-plan" class="font-semibold"></span></p>
+        <p id="usage-info" class="mb-4"></p>
+      </div>
+
+
+      <div class="flex space-y-8 lg:grid lg:grid-cols-3 sm:gap-6 xl:gap-10 lg:space-y-0 mt-4">
+        <!-- Pricing Card -->
+        <div
+          class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-l-lg border border-gray-100 shadow">
+          <h3 class="mb-4 text-2xl font-semibold">Monthly</h3>
+          <p class="font-light text-gray-500 sm:text-lg">Access to all features of premium, <span class="font-semibold">billed monthly</span>.</p>
+          <div class="flex justify-center items-baseline my-8">
+            <span class="mr-2 text-3xl font-extrabold font-mono">$3.99</span>
+            <span class="text-gray-500">/month</span>
+          </div>
+          <!-- List -->
+          <ul role="list" class="mb-8 space-y-4 text-left">
+            <li class="flex items-center space-x-3">
+              <!-- Icon -->
+              <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              <span><span class="font-semibold">Unlimited</span> summary creation</span>
+            </li>
+            <li class="flex items-center space-x-3">
+              <!-- Icon -->
+              <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              <span>Access to AI assistant</span>
+            </li>
+            <li class="flex items-center space-x-3">
+              <!-- Icon -->
+              <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              <span>Create manual summaries</span>
+            </li>
+            <li class="flex items-center space-x-3">
+              <!-- Icon -->
+              <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              <span><span class="font-semibold">Priority requests</span> - faster response times</span>
+            </li>
+          </ul>
+          <a href="#"
+            class="text-black bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Get
+            started</a>
+        </div>
+        <!-- Pricing Card -->
+        <div
+          class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-r-lg border border-gray-100 shadow !mt-0">
+          <h3 class="mb-4 text-2xl font-semibold">Yearly</h3>
+          <p class="font-light text-gray-500 sm:text-lg">Access to all features of premium, <span class="font-semibold">billed yearly</span>.</p>
+          <div class="flex justify-center items-baseline my-8">
+            <span class="mr-2 text-3xl font-extrabold font-mono">$39.99</span>
+            <span class="text-gray-500">/year</span>
+          </div>
+          <!-- List -->
+          <ul role="list" class="mb-8 space-y-4 text-left">
+            <li class="flex items-center space-x-3">
+              <!-- Icon -->
+              <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              <span><span class="font-semibold">Unlimited</span> summary creation</span>
+            </li>
+            <li class="flex items-center space-x-3">
+              <!-- Icon -->
+              <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              <span>Access to AI assistant</span>
+            </li>
+            <li class="flex items-center space-x-3">
+              <!-- Icon -->
+              <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              <span>Create manual summaries</span>
+            </li>
+            <li class="flex items-center space-x-3">
+              <!-- Icon -->
+              <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              <span><span class="font-semibold">Priority requests</span> - faster response times</span>
+            </li>
+          </ul>
+          <a href="#"
+            class="text-black bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Get
+            started</a>
+        </div>
+      </div>
+
+
+
+      <div
+        class="flex flex-col justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5 mt-4">
+        <button id="upgrade-btn" class="btn-primary">Upgrade Plan</button>
+        <div id="upgrade-container" class="hidden mt-8">
+          <h2 class="text-2xl mb-4">Choose Your Plan</h2>
+          <button id="monthly" class="btn-primary mb-4">Monthly Plan ($3.99)</button>
+          <button id="yearly" class="btn-primary">Yearly Plan ($39.99)</button>
+          <button id="close-upgrade" class="btn-secondary mt-4">Close</button>
+        </div>
+        <button id="manage-subscription-btn" class="hidden btn-secondary mt-4">Manage Subscription</button>
+        <button id="logoutButton" class="btn-primary">Logout</button>
+      </div>
     </section>
+
+    <!-- <div id="plan-info" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
+      <div class="bg-white p-8 rounded-lg">
+        <button id="exit-account" class="absolute top-4 right-4 btn-primary">X</button>
+        <p class="mb-4">Your current plan: <span id="current-plan" class="font-medium"></span></p>
+        <p id="usage-info" class="mb-4"></p>
+        <button id="upgrade-btn" class="btn-primary">Upgrade Plan</button>
+        <div id="upgrade-container" class="hidden mt-8">
+          <h2 class="text-2xl mb-4">Choose Your Plan</h2>
+          <button id="monthly" class="btn-primary mb-4">Monthly Plan ($3.99)</button>
+          <button id="yearly" class="btn-primary">Yearly Plan ($39.99)</button>
+          <button id="close-upgrade" class="btn-secondary mt-4">Close</button>
+        </div>
+        <button id="manage-subscription-btn" class="hidden btn-secondary mt-4">Manage Subscription</button>
+      </div>
+    </div> -->
 
 
 
@@ -193,7 +370,7 @@
 
 
 
-  
+
 
   <!-- <div id="loggedIn" style="display: none;">
     <section class="bg-white">
@@ -236,21 +413,7 @@
         </div>
       </div>
     
-      <div id="plan-info" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
-        <div class="bg-white p-8 rounded-lg">
-          <button id="exit-account" class="absolute top-4 right-4 btn-primary">X</button>
-          <p class="mb-4">Your current plan: <span id="current-plan" class="font-medium"></span></p>
-          <p id="usage-info" class="mb-4"></p>
-          <button id="upgrade-btn" class="btn-primary">Upgrade Plan</button>
-          <div id="upgrade-container" class="hidden mt-8">
-            <h2 class="text-2xl mb-4">Choose Your Plan</h2>
-            <button id="monthly" class="btn-primary mb-4">Monthly Plan ($3.99)</button>
-            <button id="yearly" class="btn-primary">Yearly Plan ($39.99)</button>
-            <button id="close-upgrade" class="btn-secondary mt-4">Close</button>
-          </div>
-          <button id="manage-subscription-btn" class="hidden btn-secondary mt-4">Manage Subscription</button>
-        </div>
-      </div>
+
     
       <div id="aiResponsePopup" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
         <div class="bg-white p-8 rounded-lg">

@@ -12,7 +12,7 @@ chrome.runtime.onMessage.addListener(
       } else {
         // Tab exists, update the badge
         chrome.action.setBadgeText({ text: request.count.toString(), tabId: tabId });
-        chrome.action.setBadgeBackgroundColor({ color: [255, 0, 0, 255] });
+        chrome.action.setBadgeBackgroundColor({ color: '#22c55e' });
       }
     } else if (request.url) {
       fetchPageHTML(request.url)

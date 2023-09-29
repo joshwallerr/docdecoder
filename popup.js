@@ -15,7 +15,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (result.first_name) {
       document.getElementById('loggedOut').style.display = 'none';
       document.getElementById('loggedIn').style.display = 'block';
-      document.getElementById('nameDisplay').textContent = result.first_name;
+      const firstName = result.first_name.charAt(0).toUpperCase() + result.first_name.slice(1);
+      document.getElementById('nameDisplay').textContent = firstName;
+      console.log("first name: " + result.first_name);
     }
   });
 
@@ -113,7 +115,9 @@ document.addEventListener('DOMContentLoaded', function () {
       if (data.success) {
         document.getElementById('loggedOut').style.display = 'none';
         document.getElementById('loggedIn').style.display = 'block';
-        document.getElementById('nameDisplay').textContent = firstName;
+        const firstname = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+
+        document.getElementById('nameDisplay').textContent = firstname;
         chrome.storage.local.set({ first_name: firstName });
 
         // Fetch and store userPlan and summariesCount
@@ -157,7 +161,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (data.success) {
           document.getElementById('loggedOut').style.display = 'none';
           document.getElementById('loggedIn').style.display = 'block';
-          document.getElementById('nameDisplay').textContent = data.first_name;
+          const firstName = data.first_name.charAt(0).toUpperCase() + data.first_name.slice(1);
+          document.getElementById('nameDisplay').textContent = firstName;
           chrome.storage.local.set({ first_name: data.first_name });
 
           // Fetch and store userPlan and summariesCount
@@ -215,9 +220,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         document.getElementById('current-plan').innerText = data.plan;
         if (data.plan === "FREE") {
-          document.getElementById('usage-info').innerText = `You've used ${data.summariesCount} of 10 summaries this month.`;
+          document.getElementById('usage-info').innerHTML = `You've used <span class="font-semibold">${data.summariesCount} of 10</span> summaries this month.`;
         } else {
-          document.getElementById('usage-info').innerText = `You've generated ${data.summariesCount} summaries so far this month.`;
+          document.getElementById('usage-info').innerHTML = `You've generated <span class="font-semibold">${data.summariesCount}</span> summaries so far this month.`;
         }
       })
       .catch(error => {

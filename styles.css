@@ -230,3 +230,45 @@ button:hover {
   .text-red-500 {
     color: rgb(244 63 94);
   }
+
+  .animated-bg-container {
+    position: relative; /* Ensure this is set to relative */
+    background: linear-gradient(-45deg, #FFA63D, #FF3D77, #338AFF, #3CF0C5);
+    background-size: 600%;
+    animation: anime 16s linear infinite;
+  }
+  
+  /* Create a dark overlay using the ::before pseudo-element */
+  .animated-bg-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.1); /* Adjust the alpha value to control the darkness of the overlay */
+    pointer-events: none; /* Ensure clicks go through the overlay */
+    border-radius: 0.5rem;
+  }
+  
+  /* Your other styles */
+  .animated-bg-container-blurred {
+    position: absolute;
+    margin-top: -70px;
+    z-index: -1;
+    filter: blur(30px);
+    opacity: 0.8;
+  }
+  
+  @keyframes anime {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
