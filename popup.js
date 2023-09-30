@@ -403,11 +403,13 @@ function updatePremiumFeaturesVisibility() {
       // document.getElementById('myForm').removeAttribute('title');
       document.getElementById('premiumFeatureMessage').style.display = 'none';
       document.getElementById('manage-subscription-btn').style.display = 'block';
+      document.getElementById('premium-button').style.display = 'none';
     } else {
       document.getElementById('myForm').classList.add('greyed-out');
       // document.getElementById('myForm').setAttribute('title', 'This is a premium feature. Please subscribe to access it.');
       document.getElementById('premiumFeatureMessage').style.display = 'block';
       document.getElementById('manage-subscription-btn').style.display = 'none';
+      document.getElementById('premium-button').style.display = 'block';
     }
   });
 }
