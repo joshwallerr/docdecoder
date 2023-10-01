@@ -162,7 +162,18 @@ function summarizeDocument(document, url, sectionTitle) {
     .then(response => {
       // Check if the status code is 429
       if (response.status === 429) {
-        throw new Error('RateLimitExceeded');
+        response.json().then(data => {
+          let rateLimitExceededmsg;
+          if (data.error === "You've exceeded your summary limit for the FREE plan") {
+            rateLimitExceededmsg = "You've exceeded your summary limit for the FREE plan";
+          } else if (data.error === "You've been rate limited") {
+            rateLimitExceededmsg = "Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@termtrimmer.com.";
+          } else {
+            rateLimitExceededmsg = "Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@termtrimmer.com.";
+          }
+          chrome.storage.local.set({ rateLimitExceeded: rateLimitExceededmsg });
+          throw new Error('RateLimitExceeded');
+        });
       } else if (response.status === 403) {
         chrome.runtime.sendMessage({ type: "logUserOut" });
       }

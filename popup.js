@@ -195,6 +195,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (response.ok) {
           // If logout is successful, update the UI and clear local storage
           logUserOut();
+          document.getElementById('plan-info').style.display = 'none';
+          document.getElementById('main-extension-content').style.display = 'block';
         } else {
           console.error('Failed to logout');
         }
@@ -221,8 +223,12 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('current-plan').innerText = data.plan;
         if (data.plan === "FREE") {
           document.getElementById('usage-info').innerHTML = `You've used <span class="font-semibold">${data.summariesCount} of 10</span> summaries this month.`;
+          if (data.summariesCount === 10) {
+            document.getElementById('upgrade-premium-txt').style.display = 'block';
+          }
         } else {
           document.getElementById('usage-info').innerHTML = `You've generated <span class="font-semibold">${data.summariesCount}</span> summaries so far this month.`;
+          document.getElementById('upgrade-premium-txt').style.display = 'none';
         }
       })
       .catch(error => {
@@ -240,14 +246,16 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('main-extension-content').style.display = 'block';
   });
 
-  // Function to show the upgrade modal
   document.getElementById('upgrade-btn').addEventListener('click', function () {
-    document.getElementById('upgrade-container').style.display = 'block';
+    document.getElementById('plan-info').style.display = 'none';
+    document.getElementById('premium-container').style.display = 'block';
+    document.getElementById('exit-premium-container-tomain').style.display = 'none';
+    document.getElementById('exit-premium-container-toacct').style.display = 'block';
   });
 
-  // Function to hide the upgrade modal
-  document.getElementById('close-upgrade').addEventListener('click', function () {
-    document.getElementById('upgrade-container').style.display = 'none';
+  document.getElementById("exit-premium-container-toacct").addEventListener("click", function () {
+    document.getElementById('plan-info').style.display = 'block';
+    document.getElementById('premium-container').style.display = 'none';
   });
 
   document.getElementById("monthly").addEventListener("click", function () {
@@ -348,7 +356,45 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('closeCreateSummary').style.display = 'none';
     document.getElementById('openCreateSummary').style.display = 'contents';
     document.getElementById('createSummaryForm').style.display = 'none';
-  });    
+  });
+  
+  const rateLimitMessage = document.getElementById('rateLimitMessage');
+  chrome.storage.local.get(['rateLimitExceeded'], function(data) {
+    if (data.rateLimitExceeded) {
+      rateLimitMessage.style.display = 'block';
+      rateLimitMessage.querySelector('p').textContent = data.rateLimitExceeded;
+      chrome.storage.local.remove('rateLimitExceeded');
+    }
+  });
+
+  document.getElementById('premium-button').addEventListener('click', function() {
+    document.getElementById('main-extension-content').style.display = 'none';
+    document.getElementById('premium-container').style.display = 'block';
+    document.getElementById('exit-premium-container-tomain').style.display = 'block';
+    document.getElementById('exit-premium-container-toacct').style.display = 'none';
+  });
+  
+  document.getElementById('exit-premium-container-tomain').addEventListener('click', function () {
+    document.getElementById('premium-container').style.display = 'none';
+    document.getElementById('main-extension-content').style.display = 'block';
+  });
+
+
+  const upgradePremiumTxt = document.getElementById('upgrade-premium-txt');
+  const upgradePremiumLink = upgradePremiumTxt.querySelector('a');
+  upgradePremiumLink.addEventListener('click', function () {
+    document.getElementById('plan-info').style.display = 'none';
+    document.getElementById('premium-container').style.display = 'block';
+    document.getElementById('exit-premium-container-tomain').style.display = 'none';
+    document.getElementById('exit-premium-container-toacct').style.display = 'block';
+  });
+
+  document.getElementById('premium-subscribe-txt').addEventListener('click', function () {
+    document.getElementById('main-extension-content').style.display = 'none';
+    document.getElementById('premium-container').style.display = 'block';
+    document.getElementById('exit-premium-container-tomain').style.display = 'block';
+    document.getElementById('exit-premium-container-toacct').style.display = 'none';
+  });
 });
 
 function initiateStripeCheckout(plan_type) {
@@ -402,12 +448,15 @@ function updatePremiumFeaturesVisibility() {
       document.getElementById('myForm').classList.remove('greyed-out');
       // document.getElementById('myForm').removeAttribute('title');
       document.getElementById('premiumFeatureMessage').style.display = 'none';
+      document.getElementById('upgrade-btn').style.display = 'none';
       document.getElementById('manage-subscription-btn').style.display = 'block';
       document.getElementById('premium-button').style.display = 'none';
+      document.getElementById('upgrade-premium-txt').style.display = 'none';
     } else {
       document.getElementById('myForm').classList.add('greyed-out');
       // document.getElementById('myForm').setAttribute('title', 'This is a premium feature. Please subscribe to access it.');
       document.getElementById('premiumFeatureMessage').style.display = 'block';
+      document.getElementById('upgrade-btn').style.display = 'block';
       document.getElementById('manage-subscription-btn').style.display = 'none';
       document.getElementById('premium-button').style.display = 'block';
     }
@@ -417,7 +466,7 @@ function updatePremiumFeaturesVisibility() {
 function logUserOut() {
   document.getElementById('loggedIn').style.display = 'none';
   document.getElementById('loggedOut').style.display = 'block';
-  chrome.storage.local.remove(['first_name', 'userPlan', 'summariesCount']);
+  chrome.storage.local.remove(['first_name', 'userPlan', 'summariesCount', 'rateLimitExceeded']);
 }
 
 
