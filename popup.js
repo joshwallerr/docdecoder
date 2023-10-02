@@ -679,9 +679,12 @@ function initPopup() {
                   if (content.style.display === "none" || content.style.display === "") {
                       content.style.display = "block";
                       this.querySelector('img').src = 'chevron-up.png';
+                      // rotate arrow 180 degrees
+                      this.querySelector('img').style.transform = 'rotate(180deg)';
                   } else {
                       content.style.display = "none";
                       this.querySelector('img').src = 'chevron-up.png';
+                      this.querySelector('img').style.transform = 'rotate(0deg)';
                   }
               });
                     
