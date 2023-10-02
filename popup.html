@@ -139,8 +139,7 @@
       <p id="errorPrompt" style="display: none;"
         class="mt-2.5 p-3 border-l-4 border-yellow-500 bg-yellow-100 rounded-r-lg">We've detected a checkbox, but can't
         find a policy associated with it. Please create a custom summary using the form below.</p>
-      <div
-        class="flex flex-col font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
+      <div class="flex flex-col font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
         <div class="flex flex-row">
           <a href="#" class="contents" id="openCreateSummary">
             <h4 class="text-lg font-semibold mb-0">Create custom summary</h4>
@@ -154,7 +153,7 @@
         </div>
         <div id="createSummaryForm" class="mt-2.5" style="display: none;">
           <div id="premiumFeatureMessage" style="display: none;" class="mb-4 p-4 border-l-4 border-red-500 bg-red-100">
-            <p>This is a premium feature. Please <a href="#" id="premium-subscribe-txt" class="underline">subscribe</a> to access it.</p>
+            <p class="mb-0">This is a premium feature. Please <a href="#" id="premium-subscribe-txt" class="underline">subscribe</a> to access it.</p>
           </div>
           <form id="myForm">
             <p class="mb-2">Step 1: Give the summary a name (e.g. Privacy Policy).</p>
@@ -178,10 +177,15 @@
         <div id="content-container" class="mr-auto">
           <div id="preloader-container"></div>
           <div id="summaries-container">
-            <h4 class="text-base font-semibold mb-0">Summaries will be displayed here.</h4>
+            <h4 id="summaries-container-placeholder" class="text-base font-semibold mb-0">Summaries will be displayed here.</h4>
             <div id="rateLimitMessage" style="display: none;" class="mb-4 p-4 border-l-4 border-red-500 bg-red-100">
               <p></p>
             </div>
+
+
+
+
+
           </div>
         </div>
       </div>
@@ -377,7 +381,7 @@
   </div>
 
 
-
+  <div id="hiddenelementfortailwindbuilding" class="hidden rotate-180 transition-transform"></div>
 
 
   <!-- <div id="loggedIn" style="display: none;">

@@ -622,83 +622,72 @@ function initPopup() {
       });
 
       let container = document.getElementById('summaries-container');
+      let containerPlaceholder = container.querySelector('#summaries-container-placeholder');
+
+      let accordionCounter = 0;  // Counter to generate unique IDs
 
       for (let termType in domainSummaries) {
-        let sanitizedTermType = termType.trim();
+          let sanitizedTermType = termType.trim();
+          containerPlaceholder.style.display = "none";
+      
+          if (!document.querySelector(`.summary-section[data-summary-name="${sanitizedTermType}"]`)) {
+              let accordionWrapper = document.createElement('div');
+              accordionWrapper.className = "summary-section";
+              accordionWrapper.dataset.summaryName = termType;
+      
+              // Increment the counter for unique IDs
+              accordionCounter++;
+      
+              // Accordion header
+              let accordionHeader = document.createElement('div');
+              accordionHeader.className = 'flex flex-row';
+      
+              let accordionToggle = document.createElement('a');
+              accordionToggle.href = '#';
+              accordionToggle.className = 'accordion-toggle w-full flex items-center';
+              accordionToggle.id = 'accordion-toggle-' + accordionCounter;
+      
+              let heading = document.createElement('h4');
+              heading.textContent = toCapitalizedCase(termType);
+              heading.className = "text-lg font-semibold mb-0 flex-grow";
+              accordionToggle.appendChild(heading);
+      
+              let arrowIcon = document.createElement('img');
+              arrowIcon.src = 'chevron-up.png'; 
+              arrowIcon.alt = 'toggle accordion';
+              arrowIcon.className = 'ml-auto my-auto w-5 h-5';
+              accordionToggle.appendChild(arrowIcon);
+      
+              accordionHeader.appendChild(accordionToggle);
+              accordionWrapper.appendChild(accordionHeader);
+      
+              // Accordion content
+              let accordionContent = document.createElement('div');
+              accordionContent.className = 'mt-2.5';
+              accordionContent.style.display = 'none';
+              accordionContent.id = 'accordion-content-' + accordionCounter;
+              accordionContent.innerHTML = formatSummaryText(domainSummaries[termType]);
+              accordionWrapper.appendChild(accordionContent);
+      
+              container.appendChild(accordionWrapper);
 
-        if (!document.querySelector(`.summary-section[data-summary-name="${sanitizedTermType}"]`)) {
-          let section = document.createElement('div');
-          section.className = "summary-section";
-          section.dataset.summaryName = termType;
-
-          let removeIcon = document.createElement('span');
-          removeIcon.textContent = "-";
-          removeIcon.className = "remove-icon";
-          removeIcon.setAttribute("data-domain", currentDomain);
-          removeIcon.setAttribute("data-section-title", termType);
-          section.appendChild(removeIcon);
-
-          let heading = document.createElement('h3');
-          heading.textContent = toCapitalizedCase(termType);
-          section.appendChild(heading);
-
-          if (blockPatterns.some(pattern => pattern.test(domainSummaries[termType]))) {
-            let warning = document.createElement('p');
-            warning.textContent = "Note: This summary may have failed due to the website's use of CAPTCHAs. If you cannot see the expected summary, please manually create one using the form above.";
-            warning.className = "warning";
-            section.appendChild(warning);
+              // Attach the event listener after appending the accordion to the container
+              document.getElementById('accordion-toggle-' + accordionCounter).addEventListener('click', function(event) {
+                  event.preventDefault();
+                  let contentId = this.id.replace('toggle', 'content');
+                  let content = document.getElementById(contentId);
+                  if (content.style.display === "none" || content.style.display === "") {
+                      content.style.display = "block";
+                      this.querySelector('img').src = 'chevron-up.png';
+                  } else {
+                      content.style.display = "none";
+                      this.querySelector('img').src = 'chevron-up.png';
+                  }
+              });
+                    
+              container.appendChild(accordionWrapper);
+              removePreloaderForSummary(termType, currentDomain);
           }
-
-          let summaryText = document.createElement('p');
-          summaryText.innerHTML = formatSummaryText(domainSummaries[termType]);
-          section.appendChild(summaryText);
-
-          // New Code: Add a text box and a "send" button for AI questions
-          let aiQuestionFormContainer = document.createElement('div');
-          aiQuestionFormContainer.className = 'aiQuestionFormContainer';
-
-          let aiQuestionInput = document.createElement('input');
-          aiQuestionInput.type = 'text';
-          aiQuestionInput.placeholder = 'Ask AI about this summary';
-          aiQuestionFormContainer.appendChild(aiQuestionInput);
-
-          let sendButton = document.createElement('button');
-          sendButton.textContent = 'Send';
-          sendButton.addEventListener('click', function () {
-            let userQuestion = aiQuestionInput.value;
-            fetch('https://docdecoder.app/askai', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                question: userQuestion,
-                summaryName: termType,
-                domain: currentDomain,
-              }),
-              credentials: 'include',
-            })
-            .then(response => response.json())
-            .then(data => {
-              if (data.error) {
-                alert(data.error);
-              } else {
-                // Update and show the AI response popup
-                document.getElementById('aiResponseText').textContent = data.answer; // Assuming the AI response is in a 'response' key.
-                document.getElementById('aiResponsePopup').style.display = 'block';
-              }
-            })
-            .catch(error => {
-              console.error('Error asking AI:', error);
-            });
-          });
-          aiQuestionFormContainer.appendChild(sendButton);
-
-          section.appendChild(aiQuestionFormContainer);
-
-          container.appendChild(section);
-          removePreloaderForSummary(termType, currentDomain);
-        }
       }
     });
   });
@@ -706,34 +695,28 @@ function initPopup() {
 
 
 function formatSummaryText(summaryData) {
-  // If it's a string, try to parse it as JSON
   let text = "";
   if (typeof summaryData === 'string') {
-    try {
-      let parsedData = JSON.parse(summaryData);
-      if (parsedData && parsedData.summary) {
-        text = parsedData.summary;
+      try {
+          let parsedData = JSON.parse(summaryData);
+          if (parsedData && parsedData.summary) {
+              text = parsedData.summary;
+          }
+      } catch (error) {
+          // If parsing fails, treat it as a simple string
+          text = summaryData;
       }
-    } catch (error) {
-      // If parsing fails, treat it as a simple string
-      text = summaryData;
-    }
   } else if (typeof summaryData === 'object' && summaryData.summary) {
-    // If it's already an object, just extract the summary
-    text = summaryData.summary;
+      // If it's already an object, just extract the summary
+      text = summaryData.summary;
   }
 
-  // Replace the section headings with h4 wrapped headings
-  let headings = ['Breakdown:', 'Key considerations:', 'Things to watch out for:', 'Things to note:'];
-  headings.forEach(heading => {
-    text = text.replace(heading, `<h4>${heading}</h4>`);
-  });
-
-  // Replace newlines with <br>
+  // Replace newlines with <br> (this might still be useful in some cases)
   text = text.replace(/\n/g, '<br>');
 
   return text.length > 0 ? text : "Not found";
 }
+
 
 function removeLoadingSummary(summaryName, domain) {
   // console.log("removing " + summaryName + " on " + domain);
