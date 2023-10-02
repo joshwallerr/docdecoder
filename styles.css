@@ -271,8 +271,3 @@ button:hover {
       background-position: 0% 50%;
     }
   }
-  
-  .accordion-content {
-    transition: max-height 0.3s ease-in-out;
-    overflow-y: hidden;
-}

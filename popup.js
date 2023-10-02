@@ -644,14 +644,14 @@ function initPopup() {
       
               let accordionToggle = document.createElement('a');
               accordionToggle.href = '#';
-              accordionToggle.className = 'accordion-toggle w-full flex items-center';
+              accordionToggle.className = 'accordion-toggle w-full flex items-center justify-between';
               accordionToggle.id = 'accordion-toggle-' + accordionCounter;
       
               let heading = document.createElement('h4');
               heading.textContent = toCapitalizedCase(termType);
-              heading.className = "text-lg font-semibold mb-0 flex-grow";
+              heading.className = "text-lg font-semibold mb-0 flex-shrink";
               accordionToggle.appendChild(heading);
-      
+                    
               let arrowIcon = document.createElement('img');
               arrowIcon.src = 'chevron-up.png'; 
               arrowIcon.alt = 'toggle accordion';
