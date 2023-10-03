@@ -695,6 +695,64 @@ function initPopup() {
 
           removePreloaderForSummary(termType, currentDomain);
         });
+
+        // New Code: Add a text box and a "send" button for AI questions
+        let aiQuestionFormContainer = document.createElement('div');
+
+        let label = document.createElement('label');
+        label.setAttribute('for', 'hs-trailing-button-add-on');
+        label.className = 'sr-only';
+        label.textContent = 'Label';
+        aiQuestionFormContainer.appendChild(label);
+
+        let flexContainer = document.createElement('div');
+        flexContainer.className = 'flex rounded-md shadow-sm';
+
+        let aiQuestionInput = document.createElement('input');
+        aiQuestionInput.type = 'text';
+        aiQuestionInput.id = 'hs-trailing-button-add-on';
+        aiQuestionInput.name = 'hs-trailing-button-add-on';
+        aiQuestionInput.placeholder = 'Ask AI about this summary';
+        aiQuestionInput.className = 'py-3 px-4 block w-full border-gray-200 shadow-sm rounded-l-md text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 bg-gray-100';
+        flexContainer.appendChild(aiQuestionInput);
+
+        let sendButton = document.createElement('button');
+        sendButton.type = 'button';
+        sendButton.textContent = 'Send';
+        sendButton.className = 'py-3 px-4 inline-flex flex-shrink-0 justify-center items-center gap-2 rounded-r-md rounded-l-none border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm';
+        sendButton.addEventListener('click', function () {
+          let userQuestion = aiQuestionInput.value;
+          fetch('https://docdecoder.app/askai', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              question: userQuestion,
+              summaryName: termType,
+              domain: currentDomain,
+            }),
+            credentials: 'include',
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.error) {
+              alert(data.error);
+            } else {
+              // Update and show the AI response popup
+              document.getElementById('aiResponseText').textContent = data.answer; // Assuming the AI response is in an 'answer' key.
+              document.getElementById('aiResponsePopup').style.display = 'block';
+            }
+          })
+          .catch(error => {
+            console.error('Error asking AI:', error);
+          });
+        });
+        flexContainer.appendChild(sendButton);
+
+        aiQuestionFormContainer.appendChild(flexContainer);
+        container.appendChild(aiQuestionFormContainer);
+
         // Add a horizontal line between policies, but not after the last one
         if (i < policyKeys.length - 1) {
           let horizontalLine = document.createElement('hr');
