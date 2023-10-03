@@ -172,14 +172,13 @@
           </form>
         </div>
       </div>
-      <div id="summary-section-main" class="flex flex-col font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
+      <div id="summary-section-main" class="flex flex-col font-mono w-full bg-white rounded-r-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5 rounded-l-none" style="border-left: 3px solid rgb(239 68 68);">
           <div id="preloader-container"></div>
           <div id="summaries-container" class="-mt-4">
-            <h4 id="summaries-container-placeholder" class="text-base font-semibold mb-0 mt-4">Summaries will be displayed here.</h4>
-            <div id="rateLimitMessage" style="display: none;" class="mb-4 p-4 border-l-4 border-red-500 bg-red-100">
-              <p></p>
-            </div>
-
+            <h4 id="summaries-container-placeholder" class="text-base font-semibold mb-0 mt-4">Summaries will be displayed here.  A summary is automatically generated for each policy document found in any detected consent checkboxes.</h4>
+          </div>
+          <div id="rateLimitMessage" style="display: none;" class="mb-2.5 mt-8 p-4 border-l-4 border-red-500 bg-red-100">
+            <p class="m-0"></p>
           </div>
       </div>
       <div id="premiumFeatureMessage" style="display: none;" class="mb-4 p-4 border-l-4 border-red-500 bg-red-100">
@@ -377,6 +376,7 @@
   <div id="hiddenelementfortailwindbuilding" class="hidden w-4 h-4 rotate-180 transition-transform flex-grow items-center justify-between ml-auto flex-shrink"></div>
   <div id="hiddenelementfortailwindbuilding2" style="display: none !important;" class="w-full mb-auto mt-4 rounder-r-lg border-l-green-500 py-3 px-4 block border-gray-200 shadow-sm rounded-l-md text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 bg-gray-100"></div>
   <div id="hiddenelementfortailwindbuilding3" style="display: none !important;" class="py-3 px-4 inline-flex flex-shrink-0 justify-center items-center gap-2 rounded-r-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm rounded-l-none"></div>
+  <div id="hiddenelementfortailwindbuilding4" style="display: none !important;" class="!border-l-green-500 !rounded-r-lg"></div>
 
   <!-- <div id="loggedIn" style="display: none;">
     <section class="bg-white">

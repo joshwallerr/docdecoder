@@ -362,8 +362,14 @@ document.addEventListener('DOMContentLoaded', function () {
   chrome.storage.local.get(['rateLimitExceeded'], function(data) {
     if (data.rateLimitExceeded) {
       rateLimitMessage.style.display = 'block';
-      rateLimitMessage.querySelector('p').textContent = data.rateLimitExceeded;
+      rateLimitMessage.querySelector('p').innerHTML = data.rateLimitExceeded;
       chrome.storage.local.remove('rateLimitExceeded');
+      document.getElementById('premium-subscribe-txt-sums').addEventListener('click', function () {
+        document.getElementById('main-extension-content').style.display = 'none';
+        document.getElementById('premium-container').style.display = 'block';
+        document.getElementById('exit-premium-container-tomain').style.display = 'block';
+        document.getElementById('exit-premium-container-toacct').style.display = 'none';
+      });    
     }
   });
 
@@ -631,10 +637,7 @@ function initPopup() {
 
       let policyKeys = Object.keys(domainSummaries);
       for (let i = 0; i < policyKeys.length; i++) {
-        document.getElementById('summary-section-main').classList.add = "border-l-green-500 !rounded-r-lg";
         document.getElementById('summary-section-main').style.borderLeft = "3px solid rgb(34 197 94)";
-        document.getElementById('summary-section-main').style.borderTopLeftRadius = "0px";
-        document.getElementById('summary-section-main').style.borderBottomLeftRadius = "0px";
         let termType = policyKeys[i];
 
         let policyTitle = document.createElement('h3');

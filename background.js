@@ -165,7 +165,7 @@ function summarizeDocument(document, url, sectionTitle) {
         response.json().then(data => {
           let rateLimitExceededmsg;
           if (data.error === "You've exceeded your summary limit for the FREE plan") {
-            rateLimitExceededmsg = "You've exceeded your summary limit for the FREE plan";
+            rateLimitExceededmsg = `You've exceeded your summary limit for the FREE plan. Please <a id="premium-subscribe-txt-sums" href="#" class="underline">subscribe</a> for unlimited summaries.`;
           } else if (data.error === "You've been rate limited") {
             rateLimitExceededmsg = "Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@termtrimmer.com.";
           } else {
