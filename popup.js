@@ -437,15 +437,16 @@ function updatePremiumFeaturesVisibility() {
     for (let i = 0; i < aiQuestionFormContainers.length; i++) {
       if (isPremiumUser) {
         aiQuestionFormContainers[i].classList.remove('greyed-out');
-        // aiQuestionFormContainers[i].removeAttribute('title', 'This is a premium feature. Please subscribe to access it.');
+        aiQuestionFormContainers[i].removeAttribute('title');
       } else {
         aiQuestionFormContainers[i].classList.add('greyed-out');
-        // aiQuestionFormContainers[i].setAttribute('title', 'This is a premium feature. Please subscribe to access it.');
+        aiQuestionFormContainers[i].setAttribute('title', 'This is a premium feature. Please subscribe to access it.');
       }
     }
 
     if (isPremiumUser) {
       document.getElementById('myForm').classList.remove('greyed-out');
+      document.getElementById('myForm').removeAttribute('title');
       // document.getElementById('myForm').removeAttribute('title');
       document.getElementById('premiumFeatureMessage').style.display = 'none';
       document.getElementById('upgrade-btn').style.display = 'none';
@@ -454,6 +455,8 @@ function updatePremiumFeaturesVisibility() {
       document.getElementById('upgrade-premium-txt').style.display = 'none';
     } else {
       document.getElementById('myForm').classList.add('greyed-out');
+      document.getElementById('myForm').setAttribute('title', 'This is a premium feature. Please subscribe to access it.');
+
       // document.getElementById('myForm').setAttribute('title', 'This is a premium feature. Please subscribe to access it.');
       document.getElementById('premiumFeatureMessage').style.display = 'block';
       document.getElementById('upgrade-btn').style.display = 'block';
@@ -698,6 +701,7 @@ function initPopup() {
 
         // New Code: Add a text box and a "send" button for AI questions
         let aiQuestionFormContainer = document.createElement('div');
+        aiQuestionFormContainer.className = 'aiQuestionFormContainer';
 
         let label = document.createElement('label');
         label.setAttribute('for', 'hs-trailing-button-add-on');
@@ -712,13 +716,13 @@ function initPopup() {
         aiQuestionInput.type = 'text';
         aiQuestionInput.id = 'hs-trailing-button-add-on';
         aiQuestionInput.name = 'hs-trailing-button-add-on';
-        aiQuestionInput.placeholder = 'Ask AI about this summary';
+        aiQuestionInput.placeholder = 'Ask AI anything about this document';
         aiQuestionInput.className = 'py-3 px-4 block w-full border-gray-200 shadow-sm rounded-l-md text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 bg-gray-100';
         flexContainer.appendChild(aiQuestionInput);
 
         let sendButton = document.createElement('button');
         sendButton.type = 'button';
-        sendButton.textContent = 'Send';
+        sendButton.textContent = 'Ask';
         sendButton.className = 'py-3 px-4 inline-flex flex-shrink-0 justify-center items-center gap-2 rounded-r-md rounded-l-none border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm';
         sendButton.addEventListener('click', function () {
           let userQuestion = aiQuestionInput.value;
