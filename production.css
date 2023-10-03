@@ -644,6 +644,9 @@ video {
 .-mb-1 {
   margin-bottom: -0.25rem;
 }
+.-mt-4 {
+  margin-top: -1rem;
+}
 .mb-0 {
   margin-bottom: 0px;
 }
@@ -664,6 +667,9 @@ video {
 }
 .mb-8 {
   margin-bottom: 2rem;
+}
+.mb-auto {
+  margin-bottom: auto;
 }
 .ml-1 {
   margin-left: 0.25rem;
@@ -2485,8 +2491,30 @@ button:hover {
       background-position: 0% 50%;
     }
   }
-  
-  @media (min-width: 640px) {
+
+  /* List items with bullet points */
+#summaries-container ul {
+  list-style-type: disc; /* Default bullet points */
+  padding-left: 1.5em; /* Add some left padding for alignment */
+  margin-bottom: 2rem;
+}
+
+#summaries-container li {
+  margin-bottom: 1rem;
+}
+
+/* FAQ Questions */
+#summaries-container p[id^="question"] {
+  font-weight: bold; 
+  margin-top: 1rem; /* Add some margin for separation */
+}
+
+/* FAQ Answers */
+#summaries-container p[id^="answer"] {
+  margin-top: 0.5rem;
+  margin-bottom: 2rem; /* Add some margin for separation */
+}
+@media (min-width: 640px) {
 
   .sm\:container {
     width: 100%;
@@ -2527,55 +2555,44 @@ button:hover {
     }
   }
 }
-  
-  .hover\:bg-blue-500:hover {
+.hover\:bg-blue-500:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(59 130 246 / var(--tw-bg-opacity));
 }
-  
-  .hover\:font-bold:hover {
+.hover\:font-bold:hover {
   font-weight: 700;
 }
-  
-  .hover\:text-custom-blue:hover {
+.hover\:text-custom-blue:hover {
   --tw-text-opacity: 1;
   color: rgb(0 100 207 / var(--tw-text-opacity));
 }
-  
-  .hover\:underline:hover {
+.hover\:underline:hover {
   text-decoration-line: underline;
 }
-  
-  .before\:hover\:text-center:hover::before {
+.before\:hover\:text-center:hover::before {
   content: var(--tw-content);
   text-align: center;
 }
-  
-  .hover\:before\:text-center:hover::before {
+.hover\:before\:text-center:hover::before {
   content: var(--tw-content);
   text-align: center;
 }
-  
-  .focus\:outline-none:focus {
+.focus\:outline-none:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
 }
-  
-  .focus\:ring-4:focus {
+.focus\:ring-4:focus {
   --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
   --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(4px + var(--tw-ring-offset-width)) var(--tw-ring-color);
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
 }
-  
-  .focus\:hover\:text-center:hover:focus {
+.focus\:hover\:text-center:hover:focus {
   text-align: center;
 }
-  
-  .hover\:focus\:text-center:focus:hover {
+.hover\:focus\:text-center:focus:hover {
   text-align: center;
 }
-  
-  @media (min-width: 640px) {
+@media (min-width: 640px) {
 
   .sm\:max-w-md {
     max-width: 28rem;
@@ -2603,8 +2620,7 @@ button:hover {
     text-decoration-line: underline;
   }
 }
-  
-  @media (min-width: 768px) {
+@media (min-width: 768px) {
 
   .md\:mt-0 {
     margin-top: 0px;
@@ -2625,8 +2641,7 @@ button:hover {
     line-height: 2rem;
   }
 }
-  
-  @media (min-width: 1024px) {
+@media (min-width: 1024px) {
 
   .lg\:grid {
     display: grid;
@@ -2647,8 +2662,7 @@ button:hover {
     padding-bottom: 0px;
   }
 }
-  
-  @media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
 
   @media (min-width: 1024px) {
 
@@ -2657,8 +2671,7 @@ button:hover {
     }
   }
 }
-  
-  @media (min-width: 1280px) {
+@media (min-width: 1280px) {
 
   .xl\:gap-10 {
     gap: 2.5rem;

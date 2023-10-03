@@ -627,70 +627,67 @@ function initPopup() {
       let accordionCounter = 0;  // Counter to generate unique IDs
 
       for (let termType in domainSummaries) {
-          let sanitizedTermType = termType.trim();
-          containerPlaceholder.style.display = "none";
-      
-          if (!document.querySelector(`.summary-section[data-summary-name="${sanitizedTermType}"]`)) {
-              let accordionWrapper = document.createElement('div');
-              accordionWrapper.className = "summary-section";
-              accordionWrapper.dataset.summaryName = termType;
-      
-              // Increment the counter for unique IDs
-              accordionCounter++;
-      
-              // Accordion header
-              let accordionHeader = document.createElement('div');
-              accordionHeader.className = 'flex flex-row';
-      
-              let accordionToggle = document.createElement('a');
-              accordionToggle.href = '#';
-              accordionToggle.className = 'accordion-toggle w-full flex items-center justify-between';
-              accordionToggle.id = 'accordion-toggle-' + accordionCounter;
-      
-              let heading = document.createElement('h4');
-              heading.textContent = toCapitalizedCase(termType);
-              heading.className = "text-lg font-semibold mb-0 flex-shrink";
-              accordionToggle.appendChild(heading);
-                    
-              let arrowIcon = document.createElement('img');
-              arrowIcon.src = 'chevron-up.png'; 
-              arrowIcon.alt = 'toggle accordion';
-              arrowIcon.className = 'ml-auto my-auto w-5 h-5';
-              accordionToggle.appendChild(arrowIcon);
-      
-              accordionHeader.appendChild(accordionToggle);
-              accordionWrapper.appendChild(accordionHeader);
-      
-              // Accordion content
-              let accordionContent = document.createElement('div');
-              accordionContent.className = 'mt-2.5';
-              accordionContent.style.display = 'none';
-              accordionContent.id = 'accordion-content-' + accordionCounter;
-              accordionContent.innerHTML = formatSummaryText(domainSummaries[termType]);
-              accordionWrapper.appendChild(accordionContent);
-      
-              container.appendChild(accordionWrapper);
+        let policyTitle = document.createElement('h3');
+        policyTitle.textContent = toCapitalizedCase(termType);
+        policyTitle.className = "text-lg font-semibold mt-4";
+        container.appendChild(policyTitle);
 
-              // Attach the event listener after appending the accordion to the container
-              document.getElementById('accordion-toggle-' + accordionCounter).addEventListener('click', function(event) {
-                  event.preventDefault();
-                  let contentId = this.id.replace('toggle', 'content');
-                  let content = document.getElementById(contentId);
-                  if (content.style.display === "none" || content.style.display === "") {
-                      content.style.display = "block";
-                      this.querySelector('img').src = 'chevron-up.png';
-                      // rotate arrow 180 degrees
-                      this.querySelector('img').style.transform = 'rotate(180deg)';
-                  } else {
-                      content.style.display = "none";
-                      this.querySelector('img').src = 'chevron-up.png';
-                      this.querySelector('img').style.transform = 'rotate(0deg)';
-                  }
-              });
-                    
-              container.appendChild(accordionWrapper);
-              removePreloaderForSummary(termType, currentDomain);
+        containerPlaceholder.style.display = "none";
+
+        let summaryContent = formatSummaryText(domainSummaries[termType]);
+        let parser = new DOMParser();
+        let summaryDoc = parser.parseFromString(summaryContent, 'text/html');
+        let headings = summaryDoc.querySelectorAll('h4, h5');
+
+        headings.forEach((heading, index) => {
+          accordionCounter++;
+
+          // Accordion header
+          let accordionHeader = document.createElement('div');
+          accordionHeader.className = 'flex flex-row';
+
+          let accordionToggle = document.createElement('a');
+          accordionToggle.href = '#';
+          accordionToggle.className = 'accordion-toggle w-full flex items-center justify-between';
+          accordionToggle.id = 'accordion-toggle-' + accordionCounter;
+          accordionToggle.innerHTML = heading.outerHTML + '<img src="chevron-up.png" alt="toggle accordion" class="ml-auto mb-auto w-4 h-4">';
+
+          accordionHeader.appendChild(accordionToggle);
+          container.appendChild(accordionHeader);
+
+          // Accordion content
+          let contentNode = heading.nextElementSibling;
+          let accordionContent = document.createElement('div');
+          accordionContent.className = 'mt-2.5';
+          accordionContent.style.display = 'none';
+          accordionContent.id = 'accordion-content-' + accordionCounter;
+
+          while (contentNode && (contentNode.tagName !== 'H4' && contentNode.tagName !== 'H5')) {
+            accordionContent.appendChild(contentNode.cloneNode(true));
+            contentNode = contentNode.nextElementSibling;
           }
+
+          container.appendChild(accordionContent);
+
+
+             // Attach the event listener after appending the accordion to the container
+             document.getElementById('accordion-toggle-' + accordionCounter).addEventListener('click', function(event) {
+              event.preventDefault();
+              let contentId = this.id.replace('toggle', 'content');
+              let content = document.getElementById(contentId);
+              if (content.style.display === "none" || content.style.display === "") {
+                  content.style.display = "block";
+                  this.querySelector('img').src = 'chevron-up.png';
+                  this.querySelector('img').style.transform = 'rotate(180deg)';
+              } else {
+                  content.style.display = "none";
+                  this.querySelector('img').src = 'chevron-up.png';
+                  this.querySelector('img').style.transform = 'rotate(0deg)';
+              }
+          });
+
+          removePreloaderForSummary(termType, currentDomain);
+        });
       }
     });
   });
@@ -715,7 +712,7 @@ function formatSummaryText(summaryData) {
   }
 
   // Replace newlines with <br> (this might still be useful in some cases)
-  text = text.replace(/\n/g, '<br>');
+  text = text.replace(/\n/g, '');
 
   return text.length > 0 ? text : "Not found";
 }
