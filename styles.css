@@ -298,3 +298,8 @@ button:hover {
   margin-top: 0.5rem;
   margin-bottom: 2rem; /* Add some margin for separation */
 }
+
+#summaries-container h3 {
+  border-left: 3px solid rgb(34 197 94);
+  padding-left: 10px;
+}
