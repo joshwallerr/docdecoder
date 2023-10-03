@@ -628,6 +628,10 @@ function initPopup() {
 
       let policyKeys = Object.keys(domainSummaries);
       for (let i = 0; i < policyKeys.length; i++) {
+        document.getElementById('summary-section-main').classList.add = "border-l-green-500 !rounded-r-lg";
+        document.getElementById('summary-section-main').style.borderLeft = "3px solid rgb(34 197 94)";
+        document.getElementById('summary-section-main').style.borderTopLeftRadius = "0px";
+        document.getElementById('summary-section-main').style.borderBottomLeftRadius = "0px";
         let termType = policyKeys[i];
 
         let policyTitle = document.createElement('h3');
