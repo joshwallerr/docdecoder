@@ -626,7 +626,10 @@ function initPopup() {
 
       let accordionCounter = 0;  // Counter to generate unique IDs
 
-      for (let termType in domainSummaries) {
+      let policyKeys = Object.keys(domainSummaries);
+      for (let i = 0; i < policyKeys.length; i++) {
+        let termType = policyKeys[i];
+
         let policyTitle = document.createElement('h3');
         policyTitle.textContent = toCapitalizedCase(termType);
         policyTitle.className = "text-lg font-semibold mt-4";
@@ -688,6 +691,12 @@ function initPopup() {
 
           removePreloaderForSummary(termType, currentDomain);
         });
+        // Add a horizontal line between policies, but not after the last one
+        if (i < policyKeys.length - 1) {
+          let horizontalLine = document.createElement('hr');
+          horizontalLine.className = "my-4"; // Add some vertical margin for spacing. Adjust as needed.
+          container.appendChild(horizontalLine);
+        }
       }
     });
   });
