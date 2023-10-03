@@ -47,11 +47,12 @@ chrome.runtime.onMessage.addListener(
         });
     } else if (request.content) {  // New condition to check for policyContent
       // console.log("Received policy content:", request.content);
+      chrome.runtime.sendMessage({ type: 'showPreloader', summaryName: request.sectionTitle, domain: extractedURL });
       summarizeDocument(request.content, extractedURL, request.sectionTitle)
         .then(summary => {
           sendResponse({ summary: summary });
           storeSummary(extractedURL, summary, request.sectionTitle);
-          console.log(`Sending removePreloader message for ${request.sectionTitle} on ${extractedURL}`);
+          console.log(`FORM: Sending removePreloader message for ${request.sectionTitle} on ${extractedURL}`);
           removeLoadingSummary(request.sectionTitle, extractedURL);
           chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: extractedURL }, function (response) {
             if (chrome.runtime.lastError) {

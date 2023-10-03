@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
         tabURL: tabs[0].url, // This is the URL of the current tab
         fromPopup: true // Indicating this message comes from popup
       }, function (response) {
-        // console.log(response);
+        console.log("AAAAAAAAAAAAAAAAAAAA" + response);
       });
     });
   });
@@ -631,7 +631,12 @@ function initPopup() {
       });
 
       let container = document.getElementById('summaries-container');
-      let containerPlaceholder = container.querySelector('#summaries-container-placeholder');
+      
+      let placeholder = document.getElementById('summaries-container-placeholder').cloneNode(true);
+      
+      container.innerHTML = '';
+      
+      container.appendChild(placeholder);
 
       let accordionCounter = 0;  // Counter to generate unique IDs
 
@@ -645,7 +650,7 @@ function initPopup() {
         policyTitle.className = "text-lg font-semibold mt-4";
         container.appendChild(policyTitle);
 
-        containerPlaceholder.style.display = "none";
+        placeholder.style.display = "none";
 
         let summaryContent = formatSummaryText(domainSummaries[termType]);
         let parser = new DOMParser();
