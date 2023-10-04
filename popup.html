@@ -188,6 +188,7 @@
       <div id="premiumFeatureMessage" style="display: none;" class="mb-4 p-4 border-l-4 border-red-500 bg-red-100">
         <p>This is a premium feature. Please subscribe to access it.</p>
       </div>
+      <p class="-mb-4 text-center text-gray-300">Created by <a href="https://www.instagram.com/joshwallerr/" target="_blank">Josh Waller</a> | josh@docdecoder.app</p>
     </section>
 
     <section id="premium-container" style="display: none;" class="pb-2">
@@ -337,14 +338,16 @@
         <h2 class="text-2xl mb-4">Welcome <span id="nameDisplay" class="font-medium"></span></h2>
 
         <p class="mb-4">Your current plan: <span id="current-plan" class="font-semibold"></span></p>
-        <p id="usage-info"></p>
-
-        <p id="upgrade-premium-txt">Want unlimited usage? <a href="#" class="underline text-custom-blue">Upgrade to premium</a>.</p>
+        <div class="mb-4">
+          <p id="usage-info"></p>
+          <p id="upgrade-premium-txt">Want unlimited usage? <a href="#" class="underline text-custom-blue">Upgrade to premium</a>.</p>
+        </div>
+        <p class="text-xs">For all enquiries, please contact support@docdecoder.app</p>
       </div>
 
       <div class="flex flex-col justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5 mt-4">
         <button id="upgrade-btn" class="">Upgrade Plan</button>
-        <button id="manage-subscription-btn" style="display: none;" class="">Manage Subscription</button>
+        <button id="manage-subscription-btn" style="display: none;" class="">Manage Subscription (Stripe)</button>
         <button id="logoutButton" class="bg-black mt-3">Logout</button>
       </div>
     </section>
