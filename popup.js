@@ -120,6 +120,10 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('nameDisplay').textContent = firstname;
         chrome.storage.local.set({ first_name: firstName });
 
+        modal = document.getElementById("small-modal");
+        modal.style.display = 'flex';
+        document.body.style.height = `600px`;
+
         // Fetch and store userPlan and summariesCount
         fetch('https://docdecoder.app/get-plan', {
           credentials: 'include',
@@ -164,6 +168,10 @@ document.addEventListener('DOMContentLoaded', function () {
           const firstName = data.first_name.charAt(0).toUpperCase() + data.first_name.slice(1);
           document.getElementById('nameDisplay').textContent = firstName;
           chrome.storage.local.set({ first_name: data.first_name });
+
+          modal = document.getElementById("small-modal");
+          modal.style.display = 'flex';
+          document.body.style.height = `600px`;
 
           // Fetch and store userPlan and summariesCount
           fetch('https://docdecoder.app/get-plan', {
@@ -400,6 +408,16 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('premium-container').style.display = 'block';
     document.getElementById('exit-premium-container-tomain').style.display = 'block';
     document.getElementById('exit-premium-container-toacct').style.display = 'none';
+  });
+
+  document.getElementById('close-intro').addEventListener('click', function () {
+    document.getElementById('small-modal').style.display = 'none';
+    document.body.style.height = 'auto';
+  });
+
+  document.getElementById('helpButton').addEventListener('click', function () {
+    document.getElementById('small-modal').style.display = 'flex';
+    document.body.style.height = `600px`;
   });
 });
 
