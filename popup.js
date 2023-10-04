@@ -41,6 +41,10 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("AAAAAAAAAAAAAAAAAAAA" + response);
       });
     });
+
+    // clear input fields
+    document.getElementById('policyName').value = '';
+    document.getElementById('policyContent').value = '';
   });
 
   document.getElementById('signin-prompt').addEventListener('click', function () {
@@ -169,9 +173,9 @@ document.addEventListener('DOMContentLoaded', function () {
           document.getElementById('nameDisplay').textContent = firstName;
           chrome.storage.local.set({ first_name: data.first_name });
 
-          modal = document.getElementById("small-modal");
-          modal.style.display = 'flex';
-          document.body.style.height = `600px`;
+          // modal = document.getElementById("small-modal");
+          // modal.style.display = 'flex';
+          // document.body.style.height = `600px`;
 
           // Fetch and store userPlan and summariesCount
           fetch('https://docdecoder.app/get-plan', {
@@ -729,6 +733,15 @@ function initPopup() {
         let aiQuestionFormContainer = document.createElement('div');
         aiQuestionFormContainer.className = 'aiQuestionFormContainer';
 
+        let submissionMessageId = `submissionMessage-${i}`; // use loop index to generate unique ID
+
+        let submissionMessage = document.createElement('p');
+        submissionMessage.id = submissionMessageId;
+        submissionMessage.textContent = 'Submitted successfully, please wait for the response';
+        submissionMessage.style.display = 'none'; // Initially hidden
+        submissionMessage.className = 'text-sm text-blue-500 mt-2'; // Some styling, adjust as needed
+        aiQuestionFormContainer.appendChild(submissionMessage);
+        
         let label = document.createElement('label');
         label.setAttribute('for', 'hs-trailing-button-add-on');
         label.className = 'sr-only';
@@ -752,6 +765,10 @@ function initPopup() {
         sendButton.className = 'py-3 px-4 inline-flex flex-shrink-0 justify-center items-center gap-2 rounded-r-md rounded-l-none border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm';
         sendButton.addEventListener('click', function () {
           let userQuestion = aiQuestionInput.value;
+          aiQuestionInput.value = '';
+
+          document.getElementById(submissionMessageId).style.display = 'block';
+
           fetch('https://docdecoder.app/askai', {
             method: 'POST',
             headers: {
@@ -766,6 +783,8 @@ function initPopup() {
           })
           .then(response => response.json())
           .then(data => {
+            document.getElementById(submissionMessageId).style.display = 'none';
+
             if (data.error) {
               alert(data.error);
             } else {
@@ -775,6 +794,8 @@ function initPopup() {
             }
           })
           .catch(error => {
+            document.getElementById(submissionMessageId).style.display = 'none';
+
             console.error('Error asking AI:', error);
           });
         });
