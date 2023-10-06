@@ -56,6 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('signup').style.display = 'none';
     document.getElementById('signin').style.display = 'inline-block';
     document.getElementById('resetpword-txt').style.display = 'flex';
+    document.getElementById('password-guide').style.display = 'none';
   });
 
   document.getElementById('signup-prompt').addEventListener('click', function () {
@@ -67,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('signup').style.display = 'inline-block';
     document.getElementById('signin').style.display = 'none';
     document.getElementById('resetpword-txt').style.display = 'none';
+    document.getElementById('password-guide').style.display = 'block';
   });
 
   document.getElementById('resetpword-txt').addEventListener('click', function () {
@@ -95,6 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('remandforgot').style.display = 'flex';
     document.getElementById('resetbtn').style.display = 'none';
     document.getElementById('email-label').style.display = 'block';
+    document.getElementById('password-guide').style.display = 'none';
   });
 
   document.getElementById('signup').addEventListener('click', function () {

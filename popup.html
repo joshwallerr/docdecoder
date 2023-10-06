@@ -25,8 +25,7 @@
                 Create an account
               </h1>
               <p class="tooltip mb-0 ml-1.5">Why?
-                <span class="tooltiptext">An account is necessary so we can track your free usage, prevent spam, and
-                  allows you to sync your summaries across devices.</span>
+                <span class="tooltiptext">An account is necessary so we can track your free usage and prevent spam.</span>
               </p>
             </div>
             <h1 id="signin-h" style="display: none;"
@@ -61,6 +60,7 @@
                   <input type="password" name="password" id="password" placeholder="password"
                     class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
                     required="">
+                    <p id="password-guide" class="text-xs pt-1 text-gray-400">Passwords must be at least <span class="font-semibold">8 characters long</span>, contain at least <span class="font-semibold">one number</span>, and at least <span class="font-semibold">one uppercase character</span>.</p>
                 </div>
               </div>
               <div id="remandforgot" class="flex items-center justify-between">
@@ -179,7 +179,7 @@
       <div id="summary-section-main" class="flex flex-col font-mono w-full bg-white rounded-r-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5 rounded-l-none" style="border-left: 3px solid rgb(239 68 68);">
           <div id="preloader-container"></div>
           <div id="summaries-container" class="-mt-4">
-            <h4 id="summaries-container-placeholder" class="text-base font-semibold mb-0 mt-4">Summaries will be displayed here.  A summary is automatically generated for each policy document found in any detected consent checkboxes.</h4>
+            <h4 id="summaries-container-placeholder" class="text-base font-semibold mb-0 mt-4">Summaries will be displayed here. A summary is automatically generated for each policy document found in any detected consent checkboxes.</h4>
           </div>
           <div id="rateLimitMessage" style="display: none;" class="mb-2.5 mt-8 p-4 border-l-4 border-red-500 bg-red-100">
             <p class="m-0"></p>
