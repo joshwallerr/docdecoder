@@ -48,7 +48,7 @@ function detectCheckboxes() {
 
                     if (linkText) {
                         count++;
-                        // console.log(count);
+
                         chrome.runtime.sendMessage({ type: "updateBadge", count: count });
 
                         let currentDomain = new URL(window.location.href).hostname;
@@ -90,10 +90,15 @@ function detectCheckboxes() {
                         //     }
                         // });
 
+                        console.log(link.href);
 
-                        chrome.runtime.sendMessage({ url: link.href, sectionTitle: linkText }, function (response) {
-                            // console.log(response);
-                        });
+                        let linkHref = link.href;
+                        if (linkHref.toLowerCase().endsWith('.pdf')) {
+                            // This is a PDF link
+                            chrome.runtime.sendMessage({ url: linkHref, type: 'pdf', sectionTitle: linkText }, function (response) {});
+                        } else {
+                            chrome.runtime.sendMessage({ url: link.href, sectionTitle: linkText }, function (response) {});
+                        }
                     }
                 });
             } else {

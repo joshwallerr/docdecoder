@@ -4,7 +4,39 @@ chrome.runtime.onMessage.addListener(
     extractedURL = new URL(extractedURL).hostname;
     console.log(extractedURL);
 
-    if (request.type === "updateBadge") {
+    if (request.type === "pdf") {
+      handlePDFLink(request.url, function(parsedText) {
+          // Use the parsedText to get the summary
+          // console.log("Parsed text:", parsedText);
+          console.log("url: " + request.url);
+          console.log("sectionTitle: " + request.sectionTitle);
+          summarizeDocument(parsedText, extractedURL, request.sectionTitle)
+          .then(summary => {
+            console.log("Summary:", summary);
+              sendResponse({ summary: summary });
+              storeSummary(extractedURL, summary, request.sectionTitle);
+              console.log(`Sending removePreloader message for ${request.sectionTitle} on ${extractedURL}`);
+              removeLoadingSummary(request.sectionTitle, extractedURL);
+              chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: extractedURL }, function (response) {
+                  if (chrome.runtime.lastError) {
+                      console.warn(chrome.runtime.lastError.message);
+                  }
+              });
+          })
+          .catch(error => {
+              console.error('Error:', error);
+              chrome.runtime.sendMessage({ showForm: true });
+              console.log(`Showing form for ${request.sectionTitle}`);
+              console.log(`Sending removePreloader message for ${request.sectionTitle} on ${extractedURL}`);
+              removeLoadingSummary(request.sectionTitle, extractedURL);
+              chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: extractedURL }, function (response) {
+                  if (chrome.runtime.lastError) {
+                      console.warn(chrome.runtime.lastError.message);
+                  }
+              });
+          });
+      });
+    } else if (request.type === "updateBadge") {
       let tabId = parseInt(sender.tab.id, 10);
       if (chrome.runtime.lastError) {
         // Tab does not exist, possibly closed
@@ -143,6 +175,23 @@ function removeLoadingSummary(summaryName, domain) {
 //     .then(response => response.json())
 //     .then(data => data.html);
 // }
+
+function handlePDFLink(pdfUrl, callback) {
+  fetch('https://docdecoder.app/parsepdf', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url: pdfUrl })
+  })
+  .then(response => response.text())
+  .then(parsedText => {
+      callback(parsedText);
+  })
+  .catch(error => {
+      console.error("Error processing the PDF:", error);
+  });
+}
 
 function summarizeDocument(document, url, sectionTitle) {
   let domain = url;
