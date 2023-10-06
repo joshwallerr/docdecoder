@@ -864,13 +864,21 @@ function toCapitalizedCase(str) {
   });
 }
 
+function sanitize_selector_value(value) {
+  // Escapes any double quotes and removes newline characters.
+  return value.replace('"', '\\"').replace(/\n/g, '');
+}
+
+
 function addPreloaderForSummary(summaryName, domain) {
   let container = document.getElementById('preloader-container');
+    
+  let sanitizedSummaryName = sanitize_selector_value(summaryName);
+  let sanitizedDomain = sanitize_selector_value(domain);
 
-  // Check if preloader for this summaryName already exists for the current domain
-  let existingPreloader = document.querySelector(`.preloader-section[data-summary-name="${summaryName}"][data-domain="${domain}"]`);
+  let existingPreloader = document.querySelector(`.preloader-section[data-summary-name="${sanitizedSummaryName}"][data-domain="${sanitizedDomain}"]`);
   if (existingPreloader) {
-    return;
+      return;
   }
 
   let preloaderSection = document.createElement('div');
@@ -895,13 +903,16 @@ function addPreloaderForSummary(summaryName, domain) {
 }
 
 function removePreloaderForSummary(summaryName, domain) {
-  // console.log(domain)
-  let preloaderSection = document.querySelector(`.preloader-section[data-summary-name="${summaryName}"][data-domain="${domain}"]`);
+  let sanitizedSummaryName = sanitize_selector_value(summaryName);
+  let sanitizedDomain = sanitize_selector_value(domain);
+  
+  let preloaderSection = document.querySelector(`.preloader-section[data-summary-name="${sanitizedSummaryName}"][data-domain="${sanitizedDomain}"]`);
   if (preloaderSection) {
     preloaderSection.remove();
     removeLoadingSummary(summaryName, domain);
   }
 }
+
 
 function clearPreloadersForDomain(url) {
   // let domain = new URL(url).hostname;

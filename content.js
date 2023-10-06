@@ -29,7 +29,12 @@ let processedCheckboxes = new Set();
 let count = 0;
 
 function detectCheckboxes() {
-    let checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    let allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+    
+    // If more than 5 checkboxes are detected, narrow down the selection
+    let checkboxes = (allCheckboxes.length > 5) 
+                     ? document.querySelectorAll('form input[type="checkbox"]')
+                     : allCheckboxes;
 
     checkboxes.forEach(checkbox => {
         if (processedCheckboxes.has(checkbox)) {
