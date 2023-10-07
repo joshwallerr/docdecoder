@@ -618,119 +618,65 @@ document.addEventListener("click", function (event) {
 
 function initPopup() {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    let currentDomain = new URL(tabs[0].url).hostname;
-    console.log("domain in popup.js: " + currentDomain);
+      let currentDomain = new URL(tabs[0].url).hostname;
+      console.log("domain in popup.js: " + currentDomain);
 
-    chrome.storage.local.get('loadingSummaries', function (data) {
-      console.log(data.loadingSummaries);
-    });
+      let preloaderContainer = document.getElementById('preloader-container');
+      preloaderContainer.innerHTML = '';
 
-    let preloaderContainer = document.getElementById('preloader-container');
-    preloaderContainer.innerHTML = '';
+      chrome.storage.local.get(['summaries', 'showForm', 'domainForForm', 'loadingSummaries'], function (result) {
+          let summaries = result.summaries || {};
+          let domainSummaries = summaries[currentDomain] || {};
 
-    chrome.storage.local.get(['summaries', 'showForm', 'domainForForm', 'loadingSummaries'], function (result) {
-      let summaries = result.summaries || {};
-      let domainSummaries = summaries[currentDomain] || {};
-      let loadingSummaries = result.loadingSummaries || [];
-
-      if (result.showForm && result.domainForForm === currentDomain) {
-        document.getElementById("errorPrompt").style.display = "block";
-      } else {
-        document.getElementById("errorPrompt").style.display = "none";
-      }
-
-      const blockPatterns = [
-        /javascript.+required/i,
-        /enable javascript/i,
-        /bot detected/i,
-      ];
-
-      chrome.storage.local.get(['loadingSummaries'], function (result) {
-        let loadingSummaries = result.loadingSummaries || [];
-        loadingSummaries.forEach(loadingSummaryObj => {
-          if (loadingSummaryObj.domain === currentDomain) {
-            console.log("POPUP.JS: Adding preloader for " + loadingSummaryObj.summaryName + " on " + loadingSummaryObj.domain);
-            addPreloaderForSummary(loadingSummaryObj.summaryName, loadingSummaryObj.domain);
-          }
-        });
-      });
-
-      let container = document.getElementById('summaries-container');
-      
-      let placeholder = document.getElementById('summaries-container-placeholder').cloneNode(true);
-      
-      container.innerHTML = '';
-      
-      container.appendChild(placeholder);
-
-      let accordionCounter = 0;  // Counter to generate unique IDs
-
-      let policyKeys = Object.keys(domainSummaries);
-      for (let i = 0; i < policyKeys.length; i++) {
-        document.getElementById('summary-section-main').style.borderLeft = "3px solid rgb(34 197 94)";
-        let termType = policyKeys[i];
-
-        let policyTitle = document.createElement('h3');
-        policyTitle.textContent = toCapitalizedCase(termType);
-        policyTitle.className = "text-lg font-semibold mt-4";
-        container.appendChild(policyTitle);
-
-        placeholder.style.display = "none";
-
-        let summaryContent = formatSummaryText(domainSummaries[termType]);
-        let parser = new DOMParser();
-        let summaryDoc = parser.parseFromString(summaryContent, 'text/html');
-        let headings = summaryDoc.querySelectorAll('h4, h5');
-
-        headings.forEach((heading, index) => {
-          accordionCounter++;
-
-          // Accordion header
-          let accordionHeader = document.createElement('div');
-          accordionHeader.className = 'flex flex-row';
-
-          let accordionToggle = document.createElement('a');
-          accordionToggle.href = '#';
-          accordionToggle.className = 'accordion-toggle w-full flex items-center justify-between';
-          accordionToggle.id = 'accordion-toggle-' + accordionCounter;
-          accordionToggle.innerHTML = heading.outerHTML + '<img src="chevron-up.png" alt="toggle accordion" class="ml-auto mb-auto w-4 h-4">';
-
-          accordionHeader.appendChild(accordionToggle);
-          container.appendChild(accordionHeader);
-
-          // Accordion content
-          let contentNode = heading.nextElementSibling;
-          let accordionContent = document.createElement('div');
-          accordionContent.className = 'mt-2.5';
-          accordionContent.style.display = 'none';
-          accordionContent.id = 'accordion-content-' + accordionCounter;
-
-          while (contentNode && (contentNode.tagName !== 'H4' && contentNode.tagName !== 'H5')) {
-            accordionContent.appendChild(contentNode.cloneNode(true));
-            contentNode = contentNode.nextElementSibling;
+          if (result.showForm && result.domainForForm === currentDomain) {
+              document.getElementById("errorPrompt").style.display = "block";
+          } else {
+              document.getElementById("errorPrompt").style.display = "none";
           }
 
-          container.appendChild(accordionContent);
+          const blockPatterns = [
+            /javascript.+required/i,
+            /enable javascript/i,
+            /bot detected/i,
+          ];
 
+          let container = document.getElementById('summaries-container');
+          let placeholder = document.getElementById('preloader-container').cloneNode(true);
+          container.innerHTML = '';
+          container.appendChild(placeholder);
 
-             // Attach the event listener after appending the accordion to the container
-             document.getElementById('accordion-toggle-' + accordionCounter).addEventListener('click', function(event) {
-              event.preventDefault();
-              let contentId = this.id.replace('toggle', 'content');
-              let content = document.getElementById(contentId);
-              if (content.style.display === "none" || content.style.display === "") {
-                  content.style.display = "block";
-                  this.querySelector('img').src = 'chevron-up.png';
-                  this.querySelector('img').style.transform = 'rotate(180deg)';
-              } else {
-                  content.style.display = "none";
-                  this.querySelector('img').src = 'chevron-up.png';
-                  this.querySelector('img').style.transform = 'rotate(0deg)';
+          let policyKeys = Object.keys(domainSummaries);
+          document.getElementById('summary-section-main').style.borderLeft = "3px solid rgb(34 197 94)";
+          for (let i = 0; i < policyKeys.length; i++) {
+              let termType = policyKeys[i];
+              let summaryContent = formatSummaryText(domainSummaries[termType]);
+              console.log("summaryContent: " + summaryContent);
+              let parser = new DOMParser();
+              let summaryDoc = parser.parseFromString(summaryContent, 'text/html');
+
+              let sectionHeaders = summaryDoc.querySelectorAll('h4');
+              sectionHeaders.forEach((header) => {
+                  container.appendChild(header.cloneNode(true));
+
+                  let sibling = header.nextElementSibling;
+                  while (sibling && sibling.tagName !== 'H4') {
+                      container.appendChild(sibling.cloneNode(true));
+                      sibling = sibling.nextElementSibling;
+                  }
+              });
+
+              let gradeElement = summaryDoc.querySelector('#grade-d');
+              if (gradeElement) {
+                  let gradeText = gradeElement.textContent;
+                  if (gradeText.includes("A")) {
+                      gradeElement.style.color = "green";
+                  } else if (gradeText.includes("F")) {
+                      gradeElement.style.color = "red";
+                  }
+                  container.appendChild(gradeElement.cloneNode(true));
               }
-          });
 
-          removePreloaderForSummary(termType, currentDomain);
-        });
+              removePreloaderForSummary(termType, currentDomain);
 
         // New Code: Add a text box and a "send" button for AI questions
         let aiQuestionFormContainer = document.createElement('div');
