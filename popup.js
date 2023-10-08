@@ -17,9 +17,20 @@ document.addEventListener('DOMContentLoaded', function () {
       document.getElementById('loggedIn').style.display = 'block';
       const firstName = result.first_name.charAt(0).toUpperCase() + result.first_name.slice(1);
       document.getElementById('nameDisplay').textContent = firstName;
+      document.getElementById('welcomeName').textContent = firstName;
       console.log("first name: " + result.first_name);
     }
   });
+
+  // get users summary count and first name
+
+  chrome.storage.local.get(['summariesCount'], function (result) {
+    if (result.summariesCount) {
+      document.getElementById('welcomeSummaries').textContent = result.summariesCount;
+    }
+  });
+
+
 
 
   document.getElementById('myForm').addEventListener('submit', function (e) {
@@ -621,62 +632,104 @@ function initPopup() {
       let currentDomain = new URL(tabs[0].url).hostname;
       console.log("domain in popup.js: " + currentDomain);
 
+      chrome.storage.local.get('loadingSummaries', function (data) {
+        console.log(data.loadingSummaries);
+      });
+
       let preloaderContainer = document.getElementById('preloader-container');
       preloaderContainer.innerHTML = '';
 
       chrome.storage.local.get(['summaries', 'showForm', 'domainForForm', 'loadingSummaries'], function (result) {
-          let summaries = result.summaries || {};
-          let domainSummaries = summaries[currentDomain] || {};
+        let summaries = result.summaries || {};
+        let domainSummaries = summaries[currentDomain] || {};
+        let loadingSummaries = result.loadingSummaries || [];
 
-          if (result.showForm && result.domainForForm === currentDomain) {
-              document.getElementById("errorPrompt").style.display = "block";
-          } else {
-              document.getElementById("errorPrompt").style.display = "none";
-          }
+        if (result.showForm && result.domainForForm === currentDomain) {
+            document.getElementById("errorPrompt").style.display = "block";
+        } else {
+            document.getElementById("errorPrompt").style.display = "none";
+        }
 
-          const blockPatterns = [
-            /javascript.+required/i,
-            /enable javascript/i,
-            /bot detected/i,
-          ];
+        const blockPatterns = [
+          /javascript.+required/i,
+          /enable javascript/i,
+          /bot detected/i,
+        ];
 
-          let container = document.getElementById('summaries-container');
-          let placeholder = document.getElementById('preloader-container').cloneNode(true);
-          container.innerHTML = '';
-          container.appendChild(placeholder);
+        chrome.storage.local.get(['loadingSummaries'], function (result) {
+          let loadingSummaries = result.loadingSummaries || [];
+          loadingSummaries.forEach(loadingSummaryObj => {
+            if (loadingSummaryObj.domain === currentDomain) {
+              console.log("POPUP.JS: Adding preloader for " + loadingSummaryObj.summaryName + " on " + loadingSummaryObj.domain);
+              addPreloaderForSummary(loadingSummaryObj.summaryName, loadingSummaryObj.domain);
+            }
+          });
+        });
 
-          let policyKeys = Object.keys(domainSummaries);
+        let container = document.getElementById('summaries-container');
+        let placeholder = document.getElementById('summaries-container-placeholder').cloneNode(true);
+
+        container.innerHTML = '';
+        container.appendChild(placeholder);
+
+        let policyKeys = Object.keys(domainSummaries);
+        for (let i = 0; i < policyKeys.length; i++) {
           document.getElementById('summary-section-main').style.borderLeft = "3px solid rgb(34 197 94)";
-          for (let i = 0; i < policyKeys.length; i++) {
-              let termType = policyKeys[i];
-              let summaryContent = formatSummaryText(domainSummaries[termType]);
-              console.log("summaryContent: " + summaryContent);
-              let parser = new DOMParser();
-              let summaryDoc = parser.parseFromString(summaryContent, 'text/html');
+          let termType = policyKeys[i];
 
-              let sectionHeaders = summaryDoc.querySelectorAll('h4');
-              sectionHeaders.forEach((header) => {
-                  container.appendChild(header.cloneNode(true));
+          let policyTitle = document.createElement('h3');
+          policyTitle.textContent = toCapitalizedCase(termType);
+          policyTitle.className = "text-lg font-semibold mt-4";
+          container.appendChild(policyTitle);
 
-                  let sibling = header.nextElementSibling;
-                  while (sibling && sibling.tagName !== 'H4') {
-                      container.appendChild(sibling.cloneNode(true));
-                      sibling = sibling.nextElementSibling;
+          let summaryContent = formatSummaryText(domainSummaries[termType]);
+          console.log("summaryContent: " + summaryContent);
+          let parser = new DOMParser();
+          let summaryDoc = parser.parseFromString(summaryContent, 'text/html');
+
+          placeholder.style.display = "none";
+
+          let sectionHeaders = summaryDoc.querySelectorAll('h4');
+          sectionHeaders.forEach((header) => {
+              let clonedHeader = header.cloneNode(true);
+              clonedHeader.id += `-${termType}`;
+              container.appendChild(clonedHeader);
+
+              let sibling = header.nextElementSibling;
+              while (sibling && sibling.tagName !== 'H4') {
+                  let clonedSibling = sibling.cloneNode(true);
+                  if (clonedSibling.id) {
+                      clonedSibling.id += `-${termType}`;
                   }
-              });
-
-              let gradeElement = summaryDoc.querySelector('#grade-d');
-              if (gradeElement) {
-                  let gradeText = gradeElement.textContent;
-                  if (gradeText.includes("A")) {
-                      gradeElement.style.color = "green";
-                  } else if (gradeText.includes("F")) {
-                      gradeElement.style.color = "red";
-                  }
-                  container.appendChild(gradeElement.cloneNode(true));
+                  
+                  if (clonedSibling.tagName === 'UL' && clonedHeader.id.includes("implications")) {
+                    Array.from(clonedSibling.children).forEach((li) => {
+                        let iconSrc;
+                        switch (li.className) {
+                            case 'good': 
+                                iconSrc = "good.png";
+                                break;
+                            case 'bad':
+                                iconSrc = "bad.png";
+                                break;
+                            default:
+                                iconSrc = "neutral.png";
+                                break;
+                        }
+                        let iconImg = document.createElement('img');
+                        iconImg.src = iconSrc;
+                        iconImg.alt = li.className;
+                        iconImg.style.marginRight = "8px";  // Add some spacing between icon and text
+                        iconImg.classList.add('w-5', 'h-5', 'mb-auto');  // Add the classes to the icon
+                        li.insertBefore(iconImg, li.firstChild);
+                    });
+                }
+                  container.appendChild(clonedSibling);
+                  sibling = sibling.nextElementSibling;
               }
+          });
 
-              removePreloaderForSummary(termType, currentDomain);
+          removePreloaderForSummary(termType, currentDomain);
 
         // New Code: Add a text box and a "send" button for AI questions
         let aiQuestionFormContainer = document.createElement('div');
@@ -713,6 +766,7 @@ function initPopup() {
         sendButton.textContent = 'Ask';
         sendButton.className = 'py-3 px-4 inline-flex flex-shrink-0 justify-center items-center gap-2 rounded-r-md rounded-l-none border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm';
         sendButton.addEventListener('click', function () {
+
           let userQuestion = aiQuestionInput.value;
           aiQuestionInput.value = '';
 

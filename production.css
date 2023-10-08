@@ -757,6 +757,9 @@ video {
 .mt-8 {
   margin-top: 2rem;
 }
+.mt-auto {
+  margin-top: auto;
+}
 .box-border {
   box-sizing: border-box;
 }
@@ -2695,6 +2698,41 @@ button:hover {
 #small-modal {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+}
+
+li.good, li.bad, li.neutral {
+  display: flex;
+  list-style: none;
+}
+
+li.good {
+  color: #33a733;
+  font-weight: 600;
+  font-family: arial;
+}
+
+li.neutral {
+  color: #6b6b6b;
+  font-weight: 600;
+  font-family: arial;
+}
+
+li.bad {
+  color: #db3838;
+  font-weight: 600;
+  font-family: arial;
+}
+
+/* all h4 where the class begins with 'implications-' */
+
+h4[id^='implications-'] {
+  display: none;
+}
+
+/* all ul directly after a h4 where the class begins with 'implications-' */
+
+h4[id^='implications-'] + ul {
+  padding-left: 0px !important;
 }
 
 @media (min-width: 640px) {
