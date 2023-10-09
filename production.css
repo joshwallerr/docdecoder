@@ -767,6 +767,9 @@ video {
 .mt-4 {
   margin-top: 1rem;
 }
+.mt-5 {
+  margin-top: 1.25rem;
+}
 .mt-8 {
   margin-top: 2rem;
 }
@@ -2685,7 +2688,7 @@ button:hover {
 #summaries-container ul {
   list-style-type: decimal; /* Default bullet points */
   padding-left: 1.5em; /* Add some left padding for alignment */
-  margin-bottom: 2rem;
+  /* margin-bottom: 2rem; */
 }
 
 #summaries-container li {
@@ -2700,12 +2703,13 @@ button:hover {
 #summaries-container p[id^="question"] {
   font-weight: bold; 
   margin-top: 0rem; /* Add some margin for separation */
+  margin-bottom: -0.5rem;
 }
 
 /* FAQ Answers */
 #summaries-container p[id^="answer"] {
   margin-top: 0.5rem;
-  margin-bottom: 2rem; /* Add some margin for separation */
+  margin-bottom: 1.5rem; /* Add some margin for separation */
 }
 
 /* This will position the container relative to the overlay */

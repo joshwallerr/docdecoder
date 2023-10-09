@@ -716,7 +716,7 @@ function initPopup() {
 
           let policyTitle = document.createElement('h3');
           policyTitle.textContent = toCapitalizedCase(termType);
-          policyTitle.className = "text-lg font-semibold mt-4";
+          policyTitle.className = "text-lg font-semibold mt-5 mb-4";
           container.appendChild(policyTitle);
 
           let summaryContent = formatSummaryText(domainSummaries[termType]);
@@ -728,41 +728,58 @@ function initPopup() {
 
           let sectionHeaders = summaryDoc.querySelectorAll('h4');
           sectionHeaders.forEach((header) => {
-              let clonedHeader = header.cloneNode(true);
-              clonedHeader.id += `-${termType}`;
-              container.appendChild(clonedHeader);
+            let clonedHeader = header.cloneNode(true);
+            clonedHeader.id += `-${termType}`;
 
-              let sibling = header.nextElementSibling;
-              while (sibling && sibling.tagName !== 'H4') {
-                  let clonedSibling = sibling.cloneNode(true);
-                  if (clonedSibling.id) {
-                      clonedSibling.id += `-${termType}`;
-                  }
-                  
-                  if (clonedSibling.tagName === 'UL' && clonedHeader.id.includes("implications")) {
-                    Array.from(clonedSibling.children).forEach((li) => {
-                        let iconSrc;
-                        switch (li.className) {
-                            case 'good': 
-                                iconSrc = "good.png";
-                                break;
-                            case 'bad':
-                                iconSrc = "bad.png";
-                                break;
-                            default:
-                                iconSrc = "neutral.png";
-                                break;
-                        }
-                        let iconImg = document.createElement('img');
-                        iconImg.src = iconSrc;
-                        iconImg.alt = li.className;
-                        iconImg.style.marginRight = "8px";  // Add some spacing between icon and text
-                        iconImg.classList.add('w-5', 'h-5', 'mb-auto');  // Add the classes to the icon
-                        li.insertBefore(iconImg, li.firstChild);
-                    });
+            clonedHeader.classList.add('text-lg', 'font-semibold', 'mt-8');
+        
+            // New Code: Modify header based on content
+            switch (clonedHeader.textContent.toLowerCase()) {
+              case 'things to watch out for':
+                  clonedHeader.innerHTML = '&#x1F440; ' + clonedHeader.textContent;
+                  break;
+              case 'ai recommendations':
+                  clonedHeader.innerHTML = '&#x1F4A1; ' + clonedHeader.textContent;
+                  break;
+              case 'faqs':
+                  clonedHeader.innerHTML = '&#x1F9E0; Predicted ' + clonedHeader.textContent;
+                  break;
+              default:
+                  break;
+            }
+            container.appendChild(clonedHeader);
+
+            let sibling = header.nextElementSibling;
+            while (sibling && sibling.tagName !== 'H4') {
+                let clonedSibling = sibling.cloneNode(true);
+                if (clonedSibling.id) {
+                    clonedSibling.id += `-${termType}`;
                 }
-                  container.appendChild(clonedSibling);
-                  sibling = sibling.nextElementSibling;
+                
+                if (clonedSibling.tagName === 'UL' && clonedHeader.id.includes("implications")) {
+                  Array.from(clonedSibling.children).forEach((li) => {
+                      let iconSrc;
+                      switch (li.className) {
+                          case 'good': 
+                              iconSrc = "good.png";
+                              break;
+                          case 'bad':
+                              iconSrc = "bad.png";
+                              break;
+                          default:
+                              iconSrc = "neutral.png";
+                              break;
+                      }
+                      let iconImg = document.createElement('img');
+                      iconImg.src = iconSrc;
+                      iconImg.alt = li.className;
+                      iconImg.style.marginRight = "8px";  // Add some spacing between icon and text
+                      iconImg.classList.add('w-5', 'h-5', 'mb-auto');  // Add the classes to the icon
+                      li.insertBefore(iconImg, li.firstChild);
+                  });
+                }
+                container.appendChild(clonedSibling);
+                sibling = sibling.nextElementSibling;
               }
           });
 
