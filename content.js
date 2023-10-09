@@ -10,6 +10,8 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
+let notificationSent = false;
+
 function findPotentialLabelForCheckbox(checkbox) {
     let potentialLabels = Array.from(document.querySelectorAll('p, div')).filter(el => {
         let text = el.textContent.trim().toLowerCase();
@@ -42,6 +44,11 @@ function detectCheckboxes() {
         }
         processedCheckboxes.add(checkbox); // Add the checkbox to the processed set
         console.log(checkbox);
+
+        if (!notificationSent) {
+            chrome.runtime.sendMessage({ type: "checkboxDetected" });
+            notificationSent = true;
+        }        
 
         let label = document.querySelector(`label[for="${checkbox.id}"]`) || findPotentialLabelForCheckbox(checkbox);
         if (label) {

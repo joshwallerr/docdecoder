@@ -4,6 +4,10 @@ chrome.runtime.onMessage.addListener(
     extractedURL = new URL(extractedURL).hostname;
     console.log(extractedURL);
 
+    if (request.type === "checkboxDetected") {
+      sendCheckboxNotification();
+    }
+
     if (request.type === "pdf") {
       handlePDFLink(request.url, function(parsedText) {
           // Use the parsedText to get the summary
@@ -118,7 +122,7 @@ chrome.runtime.onMessage.addListener(
       chrome.storage.local.get('loadingSummaries', function(data) {
         console.log("storage from background.js after adding to storage: \n" + data.loadingSummaries);
       });
-    }  
+    }
     return true;
   }
 );
@@ -162,6 +166,16 @@ function removeLoadingSummary(summaryName, domain) {
       }
   });
 }
+
+function sendCheckboxNotification() {
+  chrome.notifications.create('checkboxDetected', {
+      type: 'basic',
+      iconUrl: 'docdecoderlogo.png', // Replace with the path to your icon
+      title: 'Consent Checkbox Detected!',
+      message: 'A consent checkbox was detected on the current page. Open the extension to see the summary.'
+  });
+}
+
 
 // function fetchPageHTML(url) {
 //   return fetch('https://docdecoder.app/gethtml', {
