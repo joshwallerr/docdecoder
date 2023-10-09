@@ -210,7 +210,7 @@
 
       <div class="flex space-y-8 lg:grid lg:grid-cols-3 sm:gap-6 xl:gap-10 lg:space-y-0 mb-2.5">
         <!-- Pricing Card -->
-        <div class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-l-lg border border-gray-100 shadow pt-6">
+        <div class="fixed-column flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-l-lg border border-gray-100 shadow pt-6">
           <h3 class="text-2xl font-semibold mb-2">Free Forever</h3>
           <p class="font-light text-gray-500 sm:text-lg mb-0">See what DocDecoder is capable of for free.</p>
           <div class="flex justify-center items-baseline my-4 mb-0 mt-2">
@@ -251,17 +251,17 @@
               <span><span class="font-semibold">Priority requests</span> - faster response times</span>
             </li>
           </ul>
-          <a id="monthly" href="#" style="background-color: darkgray;" class="text-white focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Current plan</a>
+          <a id="current-plan-btn" href="#" style="background-color: darkgray;" class="text-white focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center pointer-events-none">Current plan</a>
         </div>
         <!-- Pricing Card -->
-        <div class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-r-lg border border-gray-100 shadow !mt-0 relative">
+        <div class="fixed-column flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-r-lg border border-gray-100 shadow !mt-0 relative">
           <h3 class="mb-2 text-2xl font-semibold">Premium</h3>
-          <p class="font-light text-gray-500 sm:text-lg mb-0">Access to all features of premium, <span class="font-semibold">billed yearly</span>.</p>
+          <p class="font-light text-gray-500 sm:text-lg mb-0">Access to all features of premium, <span class="font-semibold" id="billed-text">billed monthly</span>.</p>
           <div class="flex justify-center items-baseline my-4 mt-2">
-            <span class="mr-2 text-3xl font-extrabold font-mono">$39.99</span>
-            <span class="text-gray-500">/year</span>
+            <span class="mr-2 text-3xl font-extrabold font-mono" id="premium-price">$3.99</span>
+            <span id="slash-term-txt" class="text-gray-500">/month</span>
           </div>
-          <label for="Toggle1" class="cursor-pointer flex items-center space-x-4 ml-auto mr-auto mb-4"> <!-- Removed absolute positioning -->
+          <label for="Toggle1" class="cursor-pointer flex items-center space-x-4 ml-auto mr-auto mb-4">
             <span>Monthly</span>
             <span class="relative !ml-2">
                 <input id="Toggle1" type="checkbox" class="hidden peer">
@@ -313,7 +313,8 @@
               <span><span class="font-semibold">Priority requests</span> - faster response times</span>
             </li>
           </ul>
-          <a id="yearly" href="#" class="text-white bg-custom-blue hover:bg-blue-500 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Choose plan</a>
+          <a id="monthly" href="#" class="text-white bg-custom-blue hover:bg-blue-500 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Choose plan</a>
+          <a id="yearly" style="display: none;" href="#" class="text-white bg-custom-blue hover:bg-blue-500 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Choose plan</a>
         </div>
       </div>
 

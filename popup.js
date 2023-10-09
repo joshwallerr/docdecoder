@@ -414,6 +414,25 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('small-modal').style.display = 'flex';
     document.body.style.height = `600px`;
   });
+
+  const toggle = document.getElementById('Toggle1');
+  toggle.addEventListener('change', function() {
+      if (this.checked) {
+          console.log('Toggle set to right');
+          document.getElementById('billed-text').textContent = 'billed yearly';
+          document.getElementById('premium-price').textContent = '$39.99';
+          document.getElementById('monthly').style.display = 'none';
+          document.getElementById('yearly').style.display = 'block';
+          document.getElementById('slash-term-txt').textContent = '/year';
+      } else {
+          console.log('Toggle set to Monthly (left)');
+          document.getElementById('billed-text').textContent = 'billed monthly';
+          document.getElementById('premium-price').textContent = '$3.99';
+          document.getElementById('monthly').style.display = 'block';
+          document.getElementById('yearly').style.display = 'none';
+          document.getElementById('slash-term-txt').textContent = '/month';
+      }
+  });
 });
 
 function initiateStripeCheckout(plan_type) {

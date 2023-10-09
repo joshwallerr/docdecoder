@@ -365,3 +365,14 @@ h4[id^='implications-'] {
 h4[id^='implications-'] + ul {
   padding-left: 0px !important;
 }
+
+.fixed-column {
+  /* Set a fixed width */
+  width: calc(50% - 10px); /* Assuming 10px is the gap between columns */
+  /* Ensure the column does not expand or contract */
+  min-width: calc(50% - 10px);
+  max-width: calc(50% - 10px);
+  /* Handle overflowing content, if necessary */
+  overflow: hidden;
+  border-radius: 10px;
+}
