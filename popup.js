@@ -22,7 +22,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // get users summary count and first name
+  chrome.storage.local.get("notificationsEnabled", function(data) {
+    document.getElementById("notifs-toggle").checked = data.notificationsEnabled;
+  });
+
 
 
 
@@ -432,6 +435,10 @@ document.addEventListener('DOMContentLoaded', function () {
           document.getElementById('yearly').style.display = 'none';
           document.getElementById('slash-term-txt').textContent = '/month';
       }
+  });
+
+  document.getElementById("notifs-toggle").addEventListener("change", function(e) {
+    chrome.storage.local.set({ notificationsEnabled: e.target.checked });
   });
 });
 

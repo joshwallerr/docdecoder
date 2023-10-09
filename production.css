@@ -719,11 +719,17 @@ video {
 .mb-8 {
   margin-bottom: 2rem;
 }
+.mb-\[0\.625rem\] {
+  margin-bottom: 0.625rem;
+}
 .mb-\[2\.2rem\] {
   margin-bottom: 2.2rem;
 }
 .mb-auto {
   margin-bottom: auto;
+}
+.ml-0 {
+  margin-left: 0px;
 }
 .ml-1 {
   margin-left: 0.25rem;

@@ -333,7 +333,7 @@
           <p class="text-base font-semibold -mb-1 DDLogoAccount">DocDecoder</p>
           <p class="-mb-1 text-xs font-normal">AI-Powered Policy Summariser</p>
         </span> -->
-        <h1 class="font-semibold text-gray-900 text-2xl ml-1">My Account</h1>
+        <h1 class="font-semibold text-gray-900 text-2xl ml-1">My account</h1>
         <div class="ml-auto bg-white rounded-lg shadow p-0.5">
           <a href="#">
             <img title="back" src="back-arrow.png" alt="go back" id="exit-account" class="w-5 h-5 p-0.5">
@@ -342,17 +342,37 @@
       </div>
 
       <div class="flex flex-col justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
-        <h2 class="text-2xl mb-4">Welcome <span id="nameDisplay" class="font-medium"></span></h2>
+        <h2 class="text-xl font-semibold mb-2">Welcome <span id="nameDisplay"></span></h2>
 
-        <p class="mb-4">Your current plan: <span id="current-plan" class="font-semibold"></span></p>
-        <div class="mb-4">
-          <p id="usage-info"></p>
+        <p class="mb-[0.625rem]">Your current plan: <span id="current-plan" class="font-semibold"></span></p>
+        <div class="mb-0">
+          <p id="usage-info" class="mb-0"></p>
           <p id="upgrade-premium-txt">Want unlimited usage? <a href="#" class="underline text-custom-blue">Upgrade to premium</a>.</p>
         </div>
-        <p class="text-xs">For all enquiries, please contact support@docdecoder.app</p>
+        <!-- <p class="text-xs">For all enquiries, please contact support@docdecoder.app</p> -->
       </div>
 
-      <div class="flex flex-col justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5 mt-4">
+      <div class="flex flex-col justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
+        <h4 class="text-lg mb-2 font-semibold">Notifications</h4>
+        <p>Use the below toggle to enable or disable the notifications feature.</p>
+        <label for="notifs-toggle" class="cursor-pointer flex items-center space-x-4 ml-0 mr-auto mb-2 mt-2">
+          <span>Off</span>
+          <span class="relative !ml-2">
+            <input id="notifs-toggle" type="checkbox" class="hidden peer" checked>
+            <div class="w-9 h-5 rounded-full shadow-inner bg-gray-400 peer-checked:bg-custom-blue"></div>
+            <div class="absolute inset-y-0 left-0 w-4 h-4 m-1 rounded-full shadow peer-checked:right-0 peer-checked:left-auto bg-gray-800 mt-[0.1rem]" style="margin-left: 0.14rem; background-color: white; margin-right: 0.24rem;"></div>
+          </span>
+          <span class="!ml-2">On&nbsp;</span>
+        </label>
+      </div>
+
+      <div class="flex flex-col justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
+        <h4 class="text-lg mb-2 font-semibold">Contact</h4>
+        <p>For everything from feature requests, to account support, please email <span class="font-semibold">support@docdecoder.app</span></p>
+        <p>All feedback is greatly appreciated!</p>
+      </div>
+
+      <div class="flex flex-col justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
         <button id="upgrade-btn" class="">Upgrade Plan</button>
         <button id="manage-subscription-btn" style="display: none;" class="">Manage Subscription (Stripe)</button>
         <button id="logoutButton" class="bg-black mt-3">Logout</button>

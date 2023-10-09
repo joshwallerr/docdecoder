@@ -5,8 +5,13 @@ chrome.runtime.onMessage.addListener(
     console.log(extractedURL);
 
     if (request.type === "checkboxDetected") {
-      sendCheckboxNotification();
+      chrome.storage.local.get("notificationsEnabled", function(data) {
+          if (data.notificationsEnabled) {
+              sendCheckboxNotification();
+          }
+      });
     }
+  
 
     if (request.type === "pdf") {
       handlePDFLink(request.url, function(parsedText) {
@@ -126,6 +131,15 @@ chrome.runtime.onMessage.addListener(
     return true;
   }
 );
+
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.storage.local.get("notificationsEnabled", function(data) {
+      if (data.notificationsEnabled === undefined) {
+          chrome.storage.local.set({ notificationsEnabled: true });
+      }
+  });
+});
+
 
 // chrome.webNavigation.onCompleted.addListener(function(details) {
 //   // Check if it's the main frame (not an iframe or subframe)
