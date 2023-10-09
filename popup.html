@@ -139,7 +139,7 @@
 
       <div class="flex flex-col justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
         <h4 class="text-lg font-semibold m-0">Hello <span id="welcomeName"></span> &#128075;</h4>
-        <p class="mb-0">You've generated <span id="welcomeSummaries"></span> so far this month!</p>
+        <p class="mb-0" id="welcomeContainer"></p>
       </div>
 
       <div
@@ -199,7 +199,7 @@
 
     <section id="premium-container" style="display: none;" class="pb-2">
       <div class="flex flex-row items-start mb-2 font-semibold text-gray-900">
-        <h1 class="font-semibold text-gray-900 text-2xl ml-1">Get Premium</h1>
+        <h1 class="font-semibold text-gray-900 text-2xl ml-1">Choose your plan</h1>
         <div class="ml-auto bg-white rounded-lg shadow p-0.5">
           <a href="#">
             <img title="back" src="back-arrow.png" alt="go back" id="exit-premium-container-tomain" class="w-5 h-5 p-0.5">
@@ -210,12 +210,11 @@
 
       <div class="flex space-y-8 lg:grid lg:grid-cols-3 sm:gap-6 xl:gap-10 lg:space-y-0 mb-2.5">
         <!-- Pricing Card -->
-        <div
-          class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-l-lg border border-gray-100 shadow">
-          <h3 class="mb-4 text-2xl font-semibold">Monthly</h3>
-          <p class="font-light text-gray-500 sm:text-lg mb-0">Access to all features of premium, <span class="font-semibold">billed monthly</span>.</p>
-          <div class="flex justify-center items-baseline my-4">
-            <span class="mr-2 text-3xl font-extrabold font-mono">$3.99</span>
+        <div class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-l-lg border border-gray-100 shadow pt-6">
+          <h3 class="text-2xl font-semibold mb-2">Free Forever</h3>
+          <p class="font-light text-gray-500 sm:text-lg mb-0">See what DocDecoder is capable of for free.</p>
+          <div class="flex justify-center items-baseline my-4 mb-0 mt-2">
+            <span class="mr-2 text-3xl font-extrabold font-mono mb-[3.25rem]">$0</span>
             <span class="text-gray-500">/month</span>
           </div>
           <!-- List -->
@@ -228,50 +227,49 @@
                   d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                   clip-rule="evenodd"></path>
               </svg>
-              <span><span class="font-semibold">Unlimited</span> summary creation</span>
+              <span><span class="font-semibold">2</span> summaries every month</span>
             </li>
             <li class="flex items-center space-x-3">
               <!-- Icon -->
-              <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"></path>
+              <svg class="flex-shrink-0 w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
               </svg>
               <span>Access to AI assistant</span>
             </li>
             <li class="flex items-center space-x-3">
               <!-- Icon -->
-              <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"></path>
+              <svg class="flex-shrink-0 w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
               </svg>
               <span>Create custom summaries</span>
             </li>
             <li class="flex items-center space-x-3">
               <!-- Icon -->
-              <svg class="flex-shrink-0 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"></path>
+              <svg class="flex-shrink-0 w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
               </svg>
               <span><span class="font-semibold">Priority requests</span> - faster response times</span>
             </li>
           </ul>
-          <a id="monthly" href="#" class="text-white bg-custom-blue hover:bg-blue-500 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Choose plan</a>
+          <a id="monthly" href="#" style="background-color: darkgray;" class="text-white focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Current plan</a>
         </div>
         <!-- Pricing Card -->
-        <div
-          class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-r-lg border border-gray-100 shadow !mt-0">
-          <h3 class="mb-4 text-2xl font-semibold">Yearly</h3>
+        <div class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-r-lg border border-gray-100 shadow !mt-0 relative">
+          <h3 class="mb-2 text-2xl font-semibold">Premium</h3>
           <p class="font-light text-gray-500 sm:text-lg mb-0">Access to all features of premium, <span class="font-semibold">billed yearly</span>.</p>
-          <div class="flex justify-center items-baseline my-4">
+          <div class="flex justify-center items-baseline my-4 mt-2">
             <span class="mr-2 text-3xl font-extrabold font-mono">$39.99</span>
             <span class="text-gray-500">/year</span>
           </div>
+          <label for="Toggle1" class="cursor-pointer flex items-center space-x-4 ml-auto mr-auto mb-4"> <!-- Removed absolute positioning -->
+            <span>Monthly</span>
+            <span class="relative !ml-2">
+                <input id="Toggle1" type="checkbox" class="hidden peer">
+                <div class="w-9 h-5 rounded-full shadow-inner bg-gray-400 peer-checked:bg-custom-blue"></div>
+                <div class="absolute inset-y-0 left-0 w-4 h-4 m-1 rounded-full shadow peer-checked:right-0 peer-checked:left-auto bg-gray-800 mt-[0.1rem]" style="margin-left: 0.14rem; background-color: white; margin-right: 0.24rem;"></div>
+            </span>
+            <span class="!ml-2">Yearly&nbsp;</span>
+          </label>
           <!-- List -->
           <ul role="list" class="mb-8 space-y-4 text-left">
             <li class="flex items-center space-x-3">
@@ -415,8 +413,8 @@
                   <ul class="px-2.5 text-black">
                     <li>> Key considerations</li>
                     <li>> Things to watch out for</li>
-                    <li>> Other notes</li>
-                    <li>> FAQs</li>
+                    <li>> AI recommendations</li>
+                    <li>> Predicted FAQs</li>
                   </ul>
                 </div>
             </div>

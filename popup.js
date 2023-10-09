@@ -24,11 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // get users summary count and first name
 
-  chrome.storage.local.get(['summariesCount'], function (result) {
-    if (result.summariesCount) {
-      document.getElementById('welcomeSummaries').textContent = result.summariesCount;
-    }
-  });
+
 
 
 
@@ -187,6 +183,15 @@ document.addEventListener('DOMContentLoaded', function () {
           document.getElementById('nameDisplay').textContent = firstName;
           chrome.storage.local.set({ first_name: data.first_name });
 
+          if (data.first_name) {
+            document.getElementById('loggedOut').style.display = 'none';
+            document.getElementById('loggedIn').style.display = 'block';
+            const firstName = data.first_name.charAt(0).toUpperCase() + data.first_name.slice(1);
+            document.getElementById('nameDisplay').textContent = firstName;
+            document.getElementById('welcomeName').textContent = firstName;
+            console.log("first name: " + data.first_name);
+          }
+
           // modal = document.getElementById("small-modal");
           // modal.style.display = 'flex';
           // document.body.style.height = `600px`;
@@ -233,34 +238,6 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById('accountButton').addEventListener('click', function () {
-    function updateUserAccountInfo() {
-      fetch('https://docdecoder.app/get-plan', {
-        credentials: 'include',
-      })
-      .then(response => {
-        if (response.status === 403) {
-          logUserOut();
-        }
-        return response.json();
-      })
-      .then(data => {
-        chrome.storage.local.set({userPlan: data.plan, summariesCount: data.summariesCount});
-
-        document.getElementById('current-plan').innerText = data.plan;
-        if (data.plan === "FREE") {
-          document.getElementById('usage-info').innerHTML = `You've used <span class="font-semibold">${data.summariesCount} of 10</span> summaries this month.`;
-          if (data.summariesCount === 10) {
-            document.getElementById('upgrade-premium-txt').style.display = 'block';
-          }
-        } else {
-          document.getElementById('usage-info').innerHTML = `You've generated <span class="font-semibold">${data.summariesCount}</span> summaries so far this month.`;
-          document.getElementById('upgrade-premium-txt').style.display = 'none';
-        }
-      })
-      .catch(error => {
-        console.error('Error updating user account info:', error);
-      });
-    }
     updateUserAccountInfo();
   
     document.getElementById('main-extension-content').style.display = 'none';
@@ -486,6 +463,17 @@ function updatePremiumFeaturesVisibility() {
       }
     }
 
+    chrome.storage.local.get(['summariesCount'], function (result) {
+      console.log(result.summariesCount);
+      if (result.summariesCount >= 0) {
+        if (isPremiumUser) {
+          document.getElementById('welcomeContainer').innerHTML = `You've generated <span class="font-semibold">${result.summariesCount}</span> summaries so far this month!`;
+        } else if (!isPremiumUser) {
+          document.getElementById('welcomeContainer').innerHTML = `You've used <span class="font-semibold">${result.summariesCount}/10</span> summaries this month.`;
+        }
+      }
+    });
+
     if (isPremiumUser) {
       document.getElementById('myForm').classList.remove('greyed-out');
       document.getElementById('myForm').removeAttribute('title');
@@ -587,6 +575,35 @@ function updateCheckboxCount(checkboxCount) {
 }
 
 
+
+function updateUserAccountInfo() {
+  fetch('https://docdecoder.app/get-plan', {
+    credentials: 'include',
+  })
+  .then(response => {
+    if (response.status === 403) {
+      logUserOut();
+    }
+    return response.json();
+  })
+  .then(data => {
+    chrome.storage.local.set({userPlan: data.plan, summariesCount: data.summariesCount});
+
+    document.getElementById('current-plan').innerText = data.plan;
+    if (data.plan === "FREE") {
+      document.getElementById('usage-info').innerHTML = `You've used <span class="font-semibold">${data.summariesCount} of 10</span> summaries this month.`;
+      if (data.summariesCount === 10) {
+        document.getElementById('upgrade-premium-txt').style.display = 'block';
+      }
+    } else {
+      document.getElementById('usage-info').innerHTML = `You've generated <span class="font-semibold">${data.summariesCount}</span> summaries so far this month.`;
+      document.getElementById('upgrade-premium-txt').style.display = 'none';
+    }
+  })
+  .catch(error => {
+    console.error('Error updating user account info:', error);
+  });
+}
 
 
 
