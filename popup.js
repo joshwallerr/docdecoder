@@ -420,14 +420,14 @@ document.addEventListener('DOMContentLoaded', function () {
       if (this.checked) {
           console.log('Toggle set to right');
           document.getElementById('billed-text').textContent = 'billed yearly';
-          document.getElementById('premium-price').textContent = '$39.99';
+          document.getElementById('premium-price').textContent = '$49.99';
           document.getElementById('monthly').style.display = 'none';
           document.getElementById('yearly').style.display = 'block';
           document.getElementById('slash-term-txt').textContent = '/year';
       } else {
           console.log('Toggle set to Monthly (left)');
           document.getElementById('billed-text').textContent = 'billed monthly';
-          document.getElementById('premium-price').textContent = '$3.99';
+          document.getElementById('premium-price').textContent = '$4.99';
           document.getElementById('monthly').style.display = 'block';
           document.getElementById('yearly').style.display = 'none';
           document.getElementById('slash-term-txt').textContent = '/month';
@@ -488,8 +488,9 @@ function updatePremiumFeaturesVisibility() {
         if (isPremiumUser) {
           document.getElementById('welcomeContainer').innerHTML = `You've generated <span class="font-semibold">${result.summariesCount}</span> summaries so far this month!`;
         } else if (!isPremiumUser) {
-          document.getElementById('welcomeContainer').innerHTML = `You've used <span class="font-semibold">${result.summariesCount}/10</span> summaries this month.`;
+          document.getElementById('welcomeContainer').innerHTML = `You've used <span class="font-semibold">${result.summariesCount}/2</span> summaries this month.`;
         }
+        document.getElementById('premium-sumCount').innerHTML = `You've used ${result.summariesCount}/2 summaries this month.`;
       }
     });
 
