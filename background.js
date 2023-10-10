@@ -5,9 +5,11 @@ chrome.runtime.onMessage.addListener(
     console.log(extractedURL);
 
     if (request.type === "checkboxDetected") {
+      const domain = new URL(sender.tab.url).hostname;
       chrome.storage.local.get("notificationsEnabled", function(data) {
           if (data.notificationsEnabled) {
-              sendCheckboxNotification();
+              console.log("Sending checkboxDetected notification");
+              sendCheckboxNotification(domain);
           }
       });
     }
@@ -181,12 +183,13 @@ function removeLoadingSummary(summaryName, domain) {
   });
 }
 
-function sendCheckboxNotification() {
+function sendCheckboxNotification(domain) {
+  const message = `A consent checkbox was detected on ${domain}. Open the extension to see the summary.`;
   chrome.notifications.create('checkboxDetected', {
       type: 'basic',
       iconUrl: 'docdecoderlogo.png', // Replace with the path to your icon
-      title: 'Consent Checkbox Detected!',
-      message: 'A consent checkbox was detected on the current page. Open the extension to see the summary.'
+      title: 'Consent Checkbox Detected',
+      message: message
   });
 }
 
@@ -223,6 +226,14 @@ function handlePDFLink(pdfUrl, callback) {
 
 function summarizeDocument(document, url, sectionTitle) {
   let domain = url;
+
+  chrome.storage.local.get(['userPlan'], function(data) {
+    if (data.userPlan && data.userPlan !== "NONE") {
+        // Existing code to send request for summarization
+    } else {
+        alert("Please log in to use the summarization feature.");
+    }
+  });
 
   return new Promise((resolve, reject) => {
     fetch('https://docdecoder.app/summarize', {

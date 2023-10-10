@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   chrome.storage.local.get("notificationsEnabled", function(data) {
     document.getElementById("notifs-toggle").checked = data.notificationsEnabled;
+    console.log(data.notificationsEnabled);
   });
 
 
@@ -135,7 +136,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const firstname = firstName.charAt(0).toUpperCase() + firstName.slice(1);
 
         document.getElementById('nameDisplay').textContent = firstname;
+        document.getElementById('welcomeName').textContent = firstName;
         chrome.storage.local.set({ first_name: firstName });
+        console.log("first name: " + data.first_name);
 
         modal = document.getElementById("small-modal");
         modal.style.display = 'flex';
@@ -184,16 +187,9 @@ document.addEventListener('DOMContentLoaded', function () {
           document.getElementById('loggedIn').style.display = 'block';
           const firstName = data.first_name.charAt(0).toUpperCase() + data.first_name.slice(1);
           document.getElementById('nameDisplay').textContent = firstName;
+          document.getElementById('welcomeName').textContent = firstName;
           chrome.storage.local.set({ first_name: data.first_name });
-
-          if (data.first_name) {
-            document.getElementById('loggedOut').style.display = 'none';
-            document.getElementById('loggedIn').style.display = 'block';
-            const firstName = data.first_name.charAt(0).toUpperCase() + data.first_name.slice(1);
-            document.getElementById('nameDisplay').textContent = firstName;
-            document.getElementById('welcomeName').textContent = firstName;
-            console.log("first name: " + data.first_name);
-          }
+          console.log("first name: " + data.first_name);
 
           // modal = document.getElementById("small-modal");
           // modal.style.display = 'flex';
