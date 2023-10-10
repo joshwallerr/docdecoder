@@ -618,8 +618,8 @@ function updateUserAccountInfo() {
 
     document.getElementById('current-plan').innerText = data.plan;
     if (data.plan === "FREE") {
-      document.getElementById('usage-info').innerHTML = `You've used <span class="font-semibold">${data.summariesCount} of 10</span> summaries this month.`;
-      if (data.summariesCount === 10) {
+      document.getElementById('usage-info').innerHTML = `You've used <span class="font-semibold">${data.summariesCount} of 2</span> summaries this month.`;
+      if (data.summariesCount === 2) {
         document.getElementById('upgrade-premium-txt').style.display = 'block';
       }
     } else {
@@ -647,6 +647,17 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     removePreloaderForSummary(message.summaryName, message.domain);
   } else if (message.type === "logUserOut") {
     logUserOut();
+  } else if (message.type === "showRateLimitMsg") {
+    const rateLimitMessage = document.getElementById('rateLimitMessage');
+    rateLimitMessage.style.display = 'block';
+    rateLimitMessage.querySelector('p').innerHTML = message.rateLimitExceeded;
+    chrome.storage.local.remove('rateLimitExceeded');
+    document.getElementById('premium-subscribe-txt-sums').addEventListener('click', function () {
+      document.getElementById('main-extension-content').style.display = 'none';
+      document.getElementById('premium-container').style.display = 'block';
+      document.getElementById('exit-premium-container-tomain').style.display = 'block';
+      document.getElementById('exit-premium-container-toacct').style.display = 'none';
+    });
   }
 });
 
@@ -698,6 +709,8 @@ function initPopup() {
           /javascript.+required/i,
           /enable javascript/i,
           /bot detected/i,
+          /captcha/i,
+          /blocked/i,
         ];
 
         chrome.storage.local.get(['loadingSummaries'], function (result) {
@@ -725,6 +738,26 @@ function initPopup() {
           policyTitle.textContent = toCapitalizedCase(termType);
           policyTitle.className = "text-lg font-semibold mt-5 mb-4";
           container.appendChild(policyTitle);
+
+          if (blockPatterns.some(pattern => pattern.test(domainSummaries[termType]))) {
+            let warningDiv = document.createElement('div');
+            let warning = document.createElement('p');
+            warning.textContent = "Note: This summary may have failed due to the website's use of CAPTCHAs. If you cannot see the expected summary, please manually create one using the form above.";
+            warningDiv.className = "mb-4 -mt-2 p-4 bg-red-100";
+            warning.className = "m-0";
+            warningDiv.appendChild(warning);
+            container.appendChild(warningDiv);
+          }
+
+          if (domainSummaries[termType].includes("Sorry, this policy was too large for our servers to handle. We're working on a solution for this.")) {
+            let tooLargeDiv = document.createElement('div');
+            let tooLarge = document.createElement('p');
+            tooLarge.textContent = "Sorry, this policy was too large for our servers to handle. We're working on a solution for this.";
+            tooLargeDiv.className = "mb-4 -mt-2 p-4 bg-red-100";
+            tooLarge.className = "m-0";
+            tooLargeDiv.appendChild(tooLarge);
+            container.appendChild(tooLargeDiv);
+          }
 
           let summaryContent = formatSummaryText(domainSummaries[termType]);
           console.log("summaryContent: " + summaryContent);

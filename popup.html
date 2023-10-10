@@ -147,10 +147,16 @@
         <h4 class="text-lg font-semibold m-0"><span id="checkbox-count">0 consent checkboxes detected</span> on this
           page</h4>
       </div>
+
+      <div id="rateLimitMessage" style="display: none;" class="mb-2.5 mt-2 p-4 border-l-4 border-red-500 bg-red-100">
+        <p class="m-0"></p>
+      </div>  
+
       <p id="errorPrompt" style="display: none;"
         class="mt-2.5 p-3 border-l-4 border-yellow-500 bg-yellow-100 rounded-r-lg">We've detected a checkbox, but can't
         find a policy associated with it. Please create a custom summary using the form below.</p>
-      <div class="flex flex-col font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
+
+        <div class="flex flex-col font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
         <div class="flex flex-row">
           <a href="#" class="contents" id="openCreateSummary">
             <h4 class="text-lg font-semibold mb-0">Create custom summary</h4>
@@ -184,12 +190,9 @@
       </div>
 
       <div id="summary-section-main" class="flex flex-col font-mono w-full bg-white rounded-r-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5 rounded-l-none" style="border-left: 3px solid rgb(239 68 68);">
-          <div id="preloader-container"></div>
+        <div id="preloader-container"></div>
           <div id="summaries-container" class="-mt-4">
             <h4 id="summaries-container-placeholder" class="text-base font-semibold mb-0 mt-4">Summaries will be displayed here. A summary is automatically generated for each policy document found in any detected consent checkboxes.</h4>
-          </div>
-          <div id="rateLimitMessage" style="display: none;" class="mb-2.5 mt-8 p-4 border-l-4 border-red-500 bg-red-100">
-            <p class="m-0"></p>
           </div>
       </div>
       <div id="premiumFeatureMessage" style="display: none;" class="mb-4 p-4 border-l-4 border-red-500 bg-red-100">
@@ -333,7 +336,7 @@
           <p class="text-base font-semibold -mb-1 DDLogoAccount">DocDecoder</p>
           <p class="-mb-1 text-xs font-normal">AI-Powered Policy Summariser</p>
         </span> -->
-        <h1 class="font-semibold text-gray-900 text-2xl ml-1">My account</h1>
+        <h1 class="font-semibold text-gray-900 text-2xl ml-1">Your account</h1>
         <div class="ml-auto bg-white rounded-lg shadow p-0.5">
           <a href="#">
             <img title="back" src="back-arrow.png" alt="go back" id="exit-account" class="w-5 h-5 p-0.5">

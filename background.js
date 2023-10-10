@@ -250,20 +250,31 @@ function summarizeDocument(document, url, sectionTitle) {
             rateLimitExceededmsg = "Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@termtrimmer.com.";
           }
           chrome.storage.local.set({ rateLimitExceeded: rateLimitExceededmsg });
+          chrome.runtime.sendMessage({ type: 'showRateLimitMsg', rateLimitExceeded: rateLimitExceededmsg });
           throw new Error('RateLimitExceeded');
         });
       } else if (response.status === 403) {
         chrome.runtime.sendMessage({ type: "logUserOut" });
-      }
-      return response.text();
+      } else if (response.status === 400) {
+        return response.json().then(data => {
+            if (data.error === "Sorry, this policy was too large for our servers to handle. We're working on a solution for this.") {
+                return `Sorry, this policy was too large for our servers to handle. We're working on a solution for this.`;
+            }
+            throw new Error('PolicyTooLarge');
+        });
+    }
+      return response.text();  
     })
     .then(data => resolve(data))
     .catch(error => {
       if (error.message === 'RateLimitExceeded') {
         // Return the rate limit error message
         reject("Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@termtrimmer.com.");
+      }else if (error.message === "Sorry, this policy was too large for our servers to handle. We're working on a solution for this.") {
+        reject(error.message);
+      } else {
+        reject(error);
       }
-      reject(error);  // For other errors, re-throw them so they can be caught and handled by the caller.
     });
   });
 }
