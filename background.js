@@ -13,7 +13,6 @@ chrome.runtime.onMessage.addListener(
           }
       });
     }
-  
 
     if (request.type === "pdf") {
       handlePDFLink(request.url, function(parsedText) {
