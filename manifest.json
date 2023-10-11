@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "DocDecoder - AI Powered Terms & Conditions Summarizer",
+  "name": "DocDecoder",
   "version": "1.0",
   "action": {
     "default_popup": "popup.html",

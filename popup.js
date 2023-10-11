@@ -580,6 +580,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 
     updateFavicon(faviconUrl);
 
+    console.log(data.domainCheckboxCounts);
     updateCheckboxCount(checkboxCount);
   });
 });
@@ -591,7 +592,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
       const domain = url.hostname;
 
       const counts = data.domainCheckboxCounts || {};
-      const checkboxCount = counts[domain] || 'No';
+      const checkboxCount = counts[url] || 'No';
 
       const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}`;
 
@@ -599,7 +600,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
       updateFavicon(faviconUrl);
 
-
+      console.log(data.domainCheckboxCounts);
       updateCheckboxCount(checkboxCount);
     });
   }
