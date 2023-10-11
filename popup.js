@@ -228,11 +228,11 @@ document.addEventListener('DOMContentLoaded', function () {
           document.getElementById('plan-info').style.display = 'none';
           document.getElementById('main-extension-content').style.display = 'block';
         } else {
-          console.error('Failed to logout');
+          console.warn('Failed to logout');
         }
       })
       .catch(error => {
-        console.error('Error during logout:', error);
+        console.warn('Error during logout:', error);
       });
   });
 
@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     })
     .catch(error => {
-      console.error('Error fetching user plan:', error);
+      console.warn('Error fetching user plan:', error);
     });
 
   document.getElementById('manage-subscription-btn').addEventListener('click', function() {
@@ -319,11 +319,11 @@ document.addEventListener('DOMContentLoaded', function () {
             // Redirect the user to the Customer Portal
             window.open(data.url, '_blank');
         } else {
-            console.error('Failed to create portal session:', data.error);
+            console.warn('Failed to create portal session:', data.error);
         }
     })
     .catch(error => {
-        console.error('Error creating portal session:', error);
+        console.warn('Error creating portal session:', error);
     });
   });
 
@@ -354,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })
     .catch((error) => {
       // Handle errors in sending the request or receiving the response
-      console.error('Error:', error);
+      console.warn('Error:', error);
     });
   });
 
@@ -494,11 +494,11 @@ function initiateStripeCheckout(plan_type) {
     if (data.checkout_url) {
       window.open(data.checkout_url, '_blank');
     } else {
-      console.error("Error starting Stripe checkout:", data.error);
+      console.warn("Error starting Stripe checkout:", data.error);
     }
   })
   .catch(error => {
-    console.error("Error starting Stripe checkout:", error);
+    console.warn("Error starting Stripe checkout:", error);
   });
 }
 
@@ -660,7 +660,7 @@ function updateUserAccountInfo() {
     }
   })
   .catch(error => {
-    console.error('Error updating user account info:', error);
+    console.warn('Error updating user account info:', error);
   });
 }
 
@@ -930,7 +930,7 @@ function initPopup() {
           .catch(error => {
             document.getElementById(submissionMessageId).style.display = 'none';
 
-            console.error('Error asking AI:', error);
+            console.warn('Error asking AI:', error);
           });
         });
         flexContainer.appendChild(sendButton);

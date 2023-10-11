@@ -34,7 +34,7 @@ chrome.runtime.onMessage.addListener(
               });
           })
           .catch(error => {
-              console.error('Error:', error);
+              console.warn('Error:', error);
               chrome.runtime.sendMessage({ showForm: true });
               console.log(`Showing form for ${request.sectionTitle}`);
               console.log(`Sending removePreloader message for ${request.sectionTitle} on ${extractedURL}`);
@@ -50,7 +50,7 @@ chrome.runtime.onMessage.addListener(
       let tabId = parseInt(sender.tab.id, 10);
       if (chrome.runtime.lastError) {
         // Tab does not exist, possibly closed
-        console.error(chrome.runtime.lastError);
+        console.warn(chrome.runtime.lastError);
       } else {
         // Tab exists, update the badge
         chrome.action.setBadgeText({ text: request.count.toString(), tabId: tabId });
@@ -76,7 +76,7 @@ chrome.runtime.onMessage.addListener(
           });
         })
         .catch(error => {
-          console.error('Error:', error);
+          console.warn('Error:', error);
           chrome.runtime.sendMessage({ showForm: true });
           console.log(`Showing form for ${request.sectionTitle}`);
           console.log(`Sending removePreloader message for ${request.sectionTitle} on ${extractedURL}`);
@@ -103,7 +103,7 @@ chrome.runtime.onMessage.addListener(
           });
         })
         .catch(error => {
-          console.error('Error:', error);
+          console.warn('Error:', error);
           chrome.runtime.sendMessage({ showForm: true });
           console.log(`Showing form for ${request.sectionTitle}`);
           console.log(`Sending removePreloader message for ${request.sectionTitle} on ${extractedURL}`);
@@ -219,7 +219,7 @@ function handlePDFLink(pdfUrl, callback) {
       callback(parsedText);
   })
   .catch(error => {
-      console.error("Error processing the PDF:", error);
+      console.warn("Error processing the PDF:", error);
   });
 }
 
@@ -255,13 +255,13 @@ function summarizeDocument(document, url, sectionTitle) {
           if (data.error === "You've exceeded your summary limit for the FREE plan") {
             rateLimitExceededmsg = `You've exceeded your summary limit for the FREE plan. Please <a id="premium-subscribe-txt-sums" href="#" class="underline">subscribe</a> for unlimited summaries.`;
           } else if (data.error === "You've been rate limited") {
-            rateLimitExceededmsg = "Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@termtrimmer.com.";
+            rateLimitExceededmsg = "Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@docdecoder.app.";
           } else {
-            rateLimitExceededmsg = "Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@termtrimmer.com.";
+            rateLimitExceededmsg = "Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@docdecoder.app.";
           }
           chrome.storage.local.set({ rateLimitExceeded: rateLimitExceededmsg });
           chrome.runtime.sendMessage({ type: 'showRateLimitMsg', rateLimitExceeded: rateLimitExceededmsg });
-          throw new Error('RateLimitExceeded');
+          return Promise.reject('RateLimitExceeded');
         });
       } else if (response.status === 403) {
         chrome.runtime.sendMessage({ type: "logUserOut" });
@@ -270,7 +270,7 @@ function summarizeDocument(document, url, sectionTitle) {
             if (data.error === "Sorry, this policy was too large for our servers to handle. We're working on a solution for this.") {
                 return `Sorry, this policy was too large for our servers to handle. We're working on a solution for this.`;
             }
-            throw new Error('PolicyTooLarge');
+            return Promise.reject('PolicyTooLarge');
         });
     }
       return response.text();  
@@ -279,7 +279,7 @@ function summarizeDocument(document, url, sectionTitle) {
     .catch(error => {
       if (error.message === 'RateLimitExceeded') {
         // Return the rate limit error message
-        reject("Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@termtrimmer.com.");
+        reject("Please slow down, you've made a very high volume of requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@docdecoder.app");
       }else if (error.message === "Sorry, this policy was too large for our servers to handle. We're working on a solution for this.") {
         reject(error.message);
       } else {
