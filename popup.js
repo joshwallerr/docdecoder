@@ -1,6 +1,41 @@
+function checkLogin() {
+  fetch('https://docdecoder.app/check-login', {
+    credentials: 'include',
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.logged_in) {
+      const firstName = data.first_name.charAt(0).toUpperCase() + data.first_name.slice(1);
+      document.getElementById('nameDisplay').textContent = firstName;
+      document.getElementById('welcomeName').textContent = firstName;
+      chrome.storage.local.set({ first_name: data.first_name });
+
+      // Fetch and store userPlan and summariesCount
+      fetch('https://docdecoder.app/get-plan', {
+          credentials: 'include',
+      })
+      .then(response => {
+          if (response.status === 403) {
+              logUserOut();
+          }
+          return response.json();
+      })
+      .then(planData => {
+          chrome.storage.local.set({ userPlan: planData.plan, summariesCount: planData.summariesCount });
+          updatePremiumFeaturesVisibility();
+      });
+    } else {
+      console.log("User is not logged in");
+    }
+  });
+}
+
+
+
 document.addEventListener('DOMContentLoaded', function () {
   initPopup();
   updatePremiumFeaturesVisibility();
+  checkLogin();
 
   // Event listener to handle storage changes
   chrome.storage.onChanged.addListener(function (changes, namespace) {
@@ -11,16 +46,16 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  chrome.storage.local.get(['first_name'], function (result) {
-    if (result.first_name) {
-      document.getElementById('loggedOut').style.display = 'none';
-      document.getElementById('loggedIn').style.display = 'block';
-      const firstName = result.first_name.charAt(0).toUpperCase() + result.first_name.slice(1);
-      document.getElementById('nameDisplay').textContent = firstName;
-      document.getElementById('welcomeName').textContent = firstName;
-      console.log("first name: " + result.first_name);
-    }
-  });
+  // chrome.storage.local.get(['first_name'], function (result) {
+  //   if (result.first_name) {
+  //     document.getElementById('loggedOut').style.display = 'none';
+  //     document.getElementById('loggedIn').style.display = 'block';
+  //     const firstName = result.first_name.charAt(0).toUpperCase() + result.first_name.slice(1);
+  //     document.getElementById('nameDisplay').textContent = firstName;
+  //     document.getElementById('welcomeName').textContent = firstName;
+  //     console.log("first name: " + result.first_name);
+  //   }
+  // });
 
   chrome.storage.local.get("notificationsEnabled", function(data) {
     document.getElementById("notifs-toggle").checked = data.notificationsEnabled;
@@ -58,190 +93,25 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('policyContent').value = '';
   });
 
-  document.getElementById('signin-prompt').addEventListener('click', function () {
-    document.getElementById('signup-h').style.display = 'none';
-    document.getElementById('signin-h').style.display = 'block';
-    document.getElementById('firstname-div').style.display = 'none';
-    document.getElementById('signin-prompt').style.display = 'none';
-    document.getElementById('signup-prompt').style.display = 'block';
-    document.getElementById('signup').style.display = 'none';
-    document.getElementById('signin').style.display = 'inline-block';
-    document.getElementById('resetpword-txt').style.display = 'flex';
-    document.getElementById('password-guide').style.display = 'none';
-  });
-
-  document.getElementById('signup-prompt').addEventListener('click', function () {
-    document.getElementById('signup-h').style.display = 'flex';
-    document.getElementById('signin-h').style.display = 'none';
-    document.getElementById('firstname-div').style.display = 'block';
-    document.getElementById('signin-prompt').style.display = 'block';
-    document.getElementById('signup-prompt').style.display = 'none';
-    document.getElementById('signup').style.display = 'inline-block';
-    document.getElementById('signin').style.display = 'none';
-    document.getElementById('resetpword-txt').style.display = 'none';
-    document.getElementById('password-guide').style.display = 'block';
-  });
-
-  document.getElementById('resetpword-txt').addEventListener('click', function () {
-    document.getElementById('signup-h').style.display = 'none';
-    document.getElementById('signin-h').style.display = 'none';
-    document.getElementById('firstname-div').style.display = 'none';
-    document.getElementById('pword-div').style.display = 'none';
-    document.getElementById('signin-prompt').style.display = 'none';
-    document.getElementById('signup-prompt').style.display = 'none';
-    document.getElementById('signup').style.display = 'none';
-    document.getElementById('signin').style.display = 'none';
-    document.getElementById('reset-div').style.display = 'block';
-    document.getElementById('remembered-prompt').style.display = 'block';
-    document.getElementById('remandforgot').style.display = 'none';
-    document.getElementById('resetbtn').style.display = 'inline-block';
-    document.getElementById('email-label').style.display = 'none';
-  });
-
-  document.getElementById('remembered-prompt').addEventListener('click', function () {
-    document.getElementById('signin-h').style.display = 'block';
-    document.getElementById('pword-div').style.display = 'block';
-    document.getElementById('signup-prompt').style.display = 'block';
-    document.getElementById('signin').style.display = 'inline-block';
-    document.getElementById('reset-div').style.display = 'none';
-    document.getElementById('remembered-prompt').style.display = 'none';
-    document.getElementById('remandforgot').style.display = 'flex';
-    document.getElementById('resetbtn').style.display = 'none';
-    document.getElementById('email-label').style.display = 'block';
-    document.getElementById('password-guide').style.display = 'none';
-  });
-
-  document.getElementById('signup').addEventListener('click', function () {
-    const firstName = document.getElementById('firstname').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    fetch('https://docdecoder.app/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        first_name: firstName,
-        email: email,
-        password: password,
-      }),
-      credentials: 'include',
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        document.getElementById('loggedOut').style.display = 'none';
-        document.getElementById('loggedIn').style.display = 'block';
-        const firstname = firstName.charAt(0).toUpperCase() + firstName.slice(1);
-
-        document.getElementById('nameDisplay').textContent = firstname;
-        document.getElementById('welcomeName').textContent = firstName;
-        chrome.storage.local.set({ first_name: firstName });
-        console.log("first name: " + data.first_name);
-
-        modal = document.getElementById("small-modal");
-        modal.style.display = 'flex';
-        document.body.style.height = `600px`;
-
-        // Fetch and store userPlan and summariesCount
-        fetch('https://docdecoder.app/get-plan', {
-          credentials: 'include',
-        })
-        .then(response => {
-          if (response.status === 403) {
-            logUserOut();
-          }
-          return response.json();
-        })
-          .then(planData => {
-            chrome.storage.local.set({ userPlan: planData.plan, summariesCount: planData.summariesCount });
-            updatePremiumFeaturesVisibility();
-          });
-      } else {
-        alert(data.message);
-      }
-    });
-  });
-
-
-  document.getElementById('signin').addEventListener('click', function () {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    fetch('https://docdecoder.app/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: email,
-        password: password,
-      }),
-      credentials: 'include',
-    })
-    .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          document.getElementById('loggedOut').style.display = 'none';
-          document.getElementById('loggedIn').style.display = 'block';
-          const firstName = data.first_name.charAt(0).toUpperCase() + data.first_name.slice(1);
-          document.getElementById('nameDisplay').textContent = firstName;
-          document.getElementById('welcomeName').textContent = firstName;
-          chrome.storage.local.set({ first_name: data.first_name });
-          console.log("first name: " + data.first_name);
-
-          // modal = document.getElementById("small-modal");
-          // modal.style.display = 'flex';
-          // document.body.style.height = `600px`;
-
-          // Fetch and store userPlan and summariesCount
-          fetch('https://docdecoder.app/get-plan', {
-            credentials: 'include',
-          })
-          .then(response => {
-            if (response.status === 403) {
-              logUserOut();
-            }
-            return response.json();
-          })
-          .then(planData => {
-            chrome.storage.local.set({ userPlan: planData.plan, summariesCount: planData.summariesCount });
-            updatePremiumFeaturesVisibility();
-          });
-      } else {
-        alert(data.message);
-      }
-    });
-  });
-
   document.getElementById('logoutButton').addEventListener('click', function () {
-    // Make a request to the logout endpoint
-    fetch('https://docdecoder.app/logout', {
-      method: 'GET',
-      credentials: 'include', // Include credentials
-    })
-      .then(response => {
-        if (response.ok) {
-          // If logout is successful, update the UI and clear local storage
-          logUserOut();
-          document.getElementById('plan-info').style.display = 'none';
-          document.getElementById('main-extension-content').style.display = 'block';
-        } else {
-          console.warn('Failed to logout');
-        }
-      })
-      .catch(error => {
-        console.warn('Error during logout:', error);
-      });
+    logUserOut();
   });
 
   document.getElementById('accountButton').addEventListener('click', function () {
-    updateUserAccountInfo();
-  
-    document.getElementById('main-extension-content').style.display = 'none';
-    document.getElementById('plan-info').style.display = 'block';
+    // Check if user is logged in
+    chrome.storage.local.get('first_name', function(data) {
+        if (data.first_name) {
+            // User is logged in, proceed with the existing logic
+            updateUserAccountInfo();
+            document.getElementById('main-extension-content').style.display = 'none';
+            document.getElementById('plan-info').style.display = 'block';
+        } else {
+            // User is not logged in, open a new tab for login page
+            chrome.tabs.create({ url: 'https://docdecoder.app/login' });
+        }
+    });
   });
+
 
   document.getElementById('exit-account').addEventListener('click', function () {
     document.getElementById('plan-info').style.display = 'none';
@@ -331,32 +201,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('aiResponsePopup').style.display = 'none';
   });
 
-  document.getElementById('resetbtn').addEventListener('click', function (e) {
-    // Get the email address entered by the user
-    const email = document.getElementById('email').value;
-  
-    // Send a POST request to the server’s /reset-password endpoint with the email address
-    fetch('https://docdecoder.app/reset-password', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email: email }),
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      // Handle the server’s response
-      if (data.success) {
-        alert('Password reset email has been sent! Remember to check your spam folder.');
-      } else {
-        alert('Error: ' + data.message);
-      }
-    })
-    .catch((error) => {
-      // Handle errors in sending the request or receiving the response
-      console.warn('Error:', error);
-    });
-  });
 
   document.getElementById('openCreateSummary').addEventListener('click', function() {
     document.getElementById('closeCreateSummary').style.display = 'contents';
@@ -555,9 +399,24 @@ function updatePremiumFeaturesVisibility() {
 }
 
 function logUserOut() {
-  document.getElementById('loggedIn').style.display = 'none';
-  document.getElementById('loggedOut').style.display = 'block';
-  chrome.storage.local.remove(['first_name', 'userPlan', 'summariesCount', 'rateLimitExceeded']);
+    fetch('https://docdecoder.app/logout', {
+      method: 'GET',
+      credentials: 'include', // Include credentials
+    })
+    .then(response => {
+      if (response.ok) {
+        console.log('Logged out successfully');
+      } else {
+        console.warn('Failed to logout');
+      }
+    })
+    .catch(error => {
+      console.warn('Error during logout:', error);
+    });
+
+    document.getElementById('plan-info').style.display = 'none';
+    document.getElementById('main-extension-content').style.display = 'block';
+    chrome.storage.local.remove(['first_name', 'userPlan', 'summariesCount', 'rateLimitExceeded']);
 }
 
 

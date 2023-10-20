@@ -230,7 +230,7 @@ function summarizeDocument(document, url, sectionTitle) {
     if (data.userPlan && data.userPlan !== "NONE") {
         // Existing code to send request for summarization
     } else {
-        alert("Please log in to use the summarization feature.");
+        console.log("Please log in to use the summarization feature.");
     }
   });
 
