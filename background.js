@@ -226,13 +226,13 @@ function handlePDFLink(pdfUrl, callback) {
 function summarizeDocument(document, url, sectionTitle) {
   let domain = url;
 
-  chrome.storage.local.get(['userPlan'], function(data) {
-    if (data.userPlan && data.userPlan !== "NONE") {
-        // Existing code to send request for summarization
-    } else {
-        console.log("Please log in to use the summarization feature.");
-    }
-  });
+  // chrome.storage.local.get(['userPlan'], function(data) {
+  //   if (data.userPlan && data.userPlan !== "NONE") {
+  //       // Existing code to send request for summarization
+  //   } else {
+  //       console.log("Please log in to use the summarization feature.");
+  //   }
+  // });
 
   return new Promise((resolve, reject) => {
     fetch('https://docdecoder.app/summarize', {
@@ -252,8 +252,8 @@ function summarizeDocument(document, url, sectionTitle) {
       if (response.status === 429) {
         response.json().then(data => {
           let rateLimitExceededmsg;
-          if (data.error === "You've exceeded your summary limit for the FREE plan") {
-            rateLimitExceededmsg = `You've exceeded your summary limit for the FREE plan. Please <a id="premium-subscribe-txt-sums" href="#" class="underline">subscribe</a> for unlimited summaries.`;
+          if (data.error === "You've exceeded your monthly summary limit for the FREE plan") {
+            rateLimitExceededmsg = `You've exceeded your monthly summary limit for the FREE plan. Please <a id="premium-subscribe-txt-sums" href="#" class="underline">subscribe</a> for unlimited summaries.`;
           } else if (data.error === "You've been rate limited") {
             rateLimitExceededmsg = "Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@docdecoder.app.";
           } else {

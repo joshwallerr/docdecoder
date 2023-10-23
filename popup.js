@@ -4,38 +4,19 @@ function checkLogin() {
   })
   .then(response => response.json())
   .then(data => {
-    if (data.logged_in) {
-      const firstName = data.first_name.charAt(0).toUpperCase() + data.first_name.slice(1);
-      document.getElementById('nameDisplay').textContent = firstName;
-      document.getElementById('welcomeName').textContent = firstName;
-      chrome.storage.local.set({ first_name: data.first_name });
-
-      // Fetch and store userPlan and summariesCount
-      fetch('https://docdecoder.app/get-plan', {
-          credentials: 'include',
-      })
-      .then(response => {
-          if (response.status === 403) {
-              logUserOut();
-          }
-          return response.json();
-      })
-      .then(planData => {
-          chrome.storage.local.set({ userPlan: planData.plan, summariesCount: planData.summariesCount });
-          updatePremiumFeaturesVisibility();
-      });
-    } else {
-      console.log("User is not logged in");
-    }
+    const firstName = data.first_name.charAt(0).toUpperCase() + data.first_name.slice(1);
+    document.getElementById('nameDisplay').textContent = firstName;
+    document.getElementById('welcomeName').textContent = firstName;
+    
+    chrome.storage.local.set({ first_name: data.first_name, userPlan: planData.plan, summariesCount: planData.summariesCount });
+    updatePremiumFeaturesVisibility();
   });
 }
 
-
-
 document.addEventListener('DOMContentLoaded', function () {
+  checkLogin();
   initPopup();
   updatePremiumFeaturesVisibility();
-  checkLogin();
 
   // Event listener to handle storage changes
   chrome.storage.onChanged.addListener(function (changes, namespace) {
@@ -147,31 +128,6 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById("yearly").addEventListener("click", function () {
     initiateStripeCheckout("YEARLY");
   });
-
-  // Make a fetch request to the /get-plan endpoint
-  fetch('https://docdecoder.app/get-plan', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-  })
-  .then(response => {
-    if (response.status === 403) {
-      logUserOut();
-    }
-    return response.json();
-  })
-    .then(data => {
-      // Store the received plan and summariesCount in local storage
-      chrome.storage.local.set({ userPlan: data.plan, summariesCount: data.summariesCount }, function () {
-        // Update the UI based on the user's plan by calling the function
-        updatePremiumFeaturesVisibility();
-      });
-    })
-    .catch(error => {
-      console.warn('Error fetching user plan:', error);
-    });
 
   document.getElementById('manage-subscription-btn').addEventListener('click', function() {
     fetch('https://docdecoder.app/create-portal-session', {
