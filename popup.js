@@ -8,13 +8,71 @@ function checkLogin() {
     document.getElementById('nameDisplay').textContent = firstName;
     document.getElementById('welcomeName').textContent = firstName;
     
-    chrome.storage.local.set({ first_name: data.first_name, userPlan: planData.plan, summariesCount: planData.summariesCount });
+    chrome.storage.local.set({ first_name: data.first_name, userPlan: data.plan, summariesCount: data.summariesCount });
     updatePremiumFeaturesVisibility();
   });
 }
 
+async function fetchAndStoreSummariesForDomain(domain) {
+  try {
+    const response = await fetch('https://docdecoder.app/get-summaries', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ domain: domain }),
+    });
+    const data = await response.json();
+    if (data.summaries) {
+      let summaryCount = 0; // Initialize summary count
+      for (const [sectionTitle, summary] of Object.entries(data.summaries)) {
+        await storeSummary(domain, summary, sectionTitle);
+        summaryCount++; // Increment summary count
+      }
+      // Store summary count in domainSummaryCounts
+      await storeSummaryCount(domain, summaryCount);
+    } else if (data.error) {
+      console.log("Error fetching summaries:", data.error);
+    }
+  } catch (error) {
+    console.log("Error fetching summaries:", error);
+  }
+}
+
+async function storeSummaryCount(domain, count) {
+  const result = await new Promise(resolve => chrome.storage.local.get(['domainSummaryCounts'], resolve));
+  let counts = result.domainSummaryCounts || {};
+  counts[domain] = count;
+  await new Promise(resolve => chrome.storage.local.set({ domainSummaryCounts: counts }, resolve));
+}
+
+async function storeSummary(url, summary, sectionTitle) {
+  let domain = url;
+  console.log("Storing summary for " + sectionTitle);
+  // Get the stored summaries
+  const result = await new Promise(resolve => chrome.storage.local.get(['summaries'], resolve));
+  let summaries = result.summaries || {};
+  if (!summaries[domain]) {
+    summaries[domain] = {};
+  }
+  summaries[domain][sectionTitle] = summary;
+  // Store the updated summaries
+  await new Promise(resolve => chrome.storage.local.set({ summaries: summaries }, resolve));
+  console.log(summaries);
+}
+
+
+
 document.addEventListener('DOMContentLoaded', function () {
   checkLogin();
+
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    let url = new URL(tabs[0].url);
+    let domainOfCurrentPage = url.hostname;
+    fetchAndStoreSummariesForDomain(domainOfCurrentPage);
+  });
+
   initPopup();
   updatePremiumFeaturesVisibility();
 
@@ -47,7 +105,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+  document.getElementById('gensum-btn').addEventListener('click', function () {
+    document.getElementById('main-extension-content').style.display = 'none';
+    document.getElementById('gensum-container').style.display = 'block';
 
+    // add bg-white class to body
+    document.body.classList.add('!bg-white');
+  });
+
+  document.getElementById('exit-gensum-container').addEventListener('click', function () {
+    document.getElementById('gensum-container').style.display = 'none';
+    document.getElementById('main-extension-content').style.display = 'block';
+
+    // remove bg-white class from body
+    document.body.classList.remove('!bg-white');
+  });
 
   document.getElementById('myForm').addEventListener('submit', function (e) {
     e.preventDefault(); // To prevent the form from submitting the usual way
@@ -324,11 +396,11 @@ function updatePremiumFeaturesVisibility() {
       console.log(result.summariesCount);
       if (result.summariesCount >= 0) {
         if (isPremiumUser) {
-          document.getElementById('welcomeContainer').innerHTML = `You've generated <span class="font-semibold">${result.summariesCount}</span> summaries so far this month!`;
+          document.getElementById('welcomeContainer').innerHTML = `You've used <span class="font-semibold">${result.summariesCount}</span> <span class="tooltip"><span id="sumtokenexplainer">summary tokens</span><span class="tooltiptext">Summary tokens can be spent on generating your own summaries for policies that we've not yet summarised. One token is worth one summary.</span></span> so far this month!`;
         } else if (!isPremiumUser) {
-          document.getElementById('welcomeContainer').innerHTML = `You've used <span class="font-semibold">${result.summariesCount}/2</span> summaries this month.`;
+          document.getElementById('welcomeContainer').innerHTML = `You've used <span class="font-semibold">${result.summariesCount}/2</span> <span class="tooltip"><span id="sumtokenexplainer">summary tokens</span><span class="tooltiptext">Summary tokens can be spent on generating your own summaries for policies that we've not yet summarised. One token is worth one summary.</span></span> this month.`;
         }
-        document.getElementById('premium-sumCount').innerHTML = `You've used ${result.summariesCount}/2 summaries this month.`;
+        document.getElementById('premium-sumCount').innerHTML = `You've used ${result.summariesCount}/2 summary tokens this month.`;
       }
     });
 
@@ -381,13 +453,13 @@ function logUserOut() {
 
 
 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-  chrome.storage.local.get(['domainCheckboxCounts'], function(data) {
+  chrome.storage.local.get(['domainSummaryCounts'], function(data) {
     const currentTab = tabs[0];
     const url = new URL(currentTab.url);
     const domain = url.hostname;
 
-    const counts = data.domainCheckboxCounts || {};
-    const checkboxCount = counts[url] || 'No';
+    const counts = data.domainSummaryCounts || {};
+    const summaryCount = counts[domain] || 'No';
 
     const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}`;
 
@@ -395,19 +467,19 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 
     updateFavicon(faviconUrl);
 
-    console.log(data.domainCheckboxCounts);
-    updateCheckboxCount(checkboxCount);
+    console.log(data.domainSummaryCounts);
+    updateSummaryCount(summaryCount);
   });
 });
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   if (changeInfo.status === 'complete' && tab.active) {
-    chrome.storage.local.get(['domainCheckboxCounts'], function(data) {
+    chrome.storage.local.get(['domainSummaryCounts'], function(data) {
       const url = new URL(tab.url);
       const domain = url.hostname;
 
-      const counts = data.domainCheckboxCounts || {};
-      const checkboxCount = counts[url] || 'No';
+      const counts = data.domainSummaryCounts || {};
+      const summaryCount = counts[domain] || 'No';
 
       const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}`;
 
@@ -415,11 +487,12 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
       updateFavicon(faviconUrl);
 
-      console.log(data.domainCheckboxCounts);
-      updateCheckboxCount(checkboxCount);
+      console.log(data.domainSummaryCounts);
+      updateSummaryCount(summaryCount);
     });
   }
 });
+
 
 function updateFavicon(faviconUrl) {
   // Update the favicon image in the popup
@@ -433,18 +506,17 @@ function updateDomainTop(domain) {
   domainTopElement.textContent = `${domain}`;
 }
 
-function updateCheckboxCount(checkboxCount) {
-  const checkboxCountElement = document.getElementById('checkbox-count');
-  if (checkboxCount === 'No') {
-    checkboxCountElement.textContent = `No consent checkboxes detected`;
-    checkboxCountElement.classList.add('text-red-500');
-  } else if (checkboxCount === 1) {
-    checkboxCountElement.textContent = `${checkboxCount} consent checkbox detected`;
-    checkboxCountElement.classList.add('text-green-500');
-
+function updateSummaryCount(summaryCount) {
+  const summaryCountElement = document.getElementById('checkbox-count');
+  if (summaryCount === 'No') {
+    summaryCountElement.textContent = `No summaries found`;
+    summaryCountElement.classList.add('text-red-500');
+  } else if (summaryCount === 1) {
+    summaryCountElement.textContent = `${summaryCount} summary found`;
+    summaryCountElement.classList.add('text-green-500');
   } else {
-    checkboxCountElement.textContent = `${checkboxCount} consent checkboxes detected`;
-    checkboxCountElement.classList.add('text-green-500');
+    summaryCountElement.textContent = `${summaryCount} summaries found`;
+    summaryCountElement.classList.add('text-green-500');
   }
 }
 
@@ -612,7 +684,7 @@ function initPopup() {
           }
 
           let summaryContent = formatSummaryText(domainSummaries[termType]);
-          console.log("summaryContent: " + summaryContent);
+          // console.log("summaryContent: " + summaryContent);
           let parser = new DOMParser();
           let summaryDoc = parser.parseFromString(summaryContent, 'text/html');
 

@@ -162,7 +162,7 @@ button:hover {
 .tooltip {
     position: relative;
     display: inline-block;
-    border-bottom: 1px dotted black;
+    border-bottom: 1px dotted grey;
     line-height: 14px;
 }
 
@@ -170,7 +170,7 @@ button:hover {
     visibility: hidden;
     width: 150px;
     background-color: black;
-    opacity: 0.8;
+    opacity: 0.85;
     color: white;
     text-align: left;
     border-radius: 6px;
@@ -180,6 +180,7 @@ button:hover {
     top: -5px;
     left: 120%;
     border: 1px solid black;
+    font-family: Arial, Helvetica, sans-serif !important;
 }
 
 .tooltip .tooltiptext::after {

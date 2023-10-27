@@ -673,10 +673,6 @@ video {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
-.my-auto {
-  margin-top: auto;
-  margin-bottom: auto;
-}
 .\!ml-2 {
   margin-left: 0.5rem !important;
 }
@@ -691,6 +687,9 @@ video {
 }
 .-mb-4 {
   margin-bottom: -1rem;
+}
+.-mt-2 {
+  margin-top: -0.5rem;
 }
 .-mt-4 {
   margin-top: -1rem;
@@ -713,9 +712,6 @@ video {
 .mb-5 {
   margin-bottom: 1.25rem;
 }
-.mb-6 {
-  margin-bottom: 1.5rem;
-}
 .mb-8 {
   margin-bottom: 2rem;
 }
@@ -736,9 +732,6 @@ video {
 }
 .ml-1\.5 {
   margin-left: 0.375rem;
-}
-.ml-3 {
-  margin-left: 0.75rem;
 }
 .ml-4 {
   margin-left: 1rem;
@@ -863,9 +856,6 @@ video {
 .\!h-\[calc\(100\%-1rem\)\] {
   height: calc(100% - 1rem) !important;
 }
-.h-11 {
-  height: 2.75rem;
-}
 .h-4 {
   height: 1rem;
 }
@@ -883,9 +873,6 @@ video {
 }
 .max-h-full {
   max-height: 100%;
-}
-.w-11 {
-  width: 2.75rem;
 }
 .w-4 {
   width: 1rem;
@@ -1712,10 +1699,6 @@ video {
   --tw-border-opacity: 1;
   border-color: rgb(229 231 235 / var(--tw-border-opacity));
 }
-.border-gray-300 {
-  --tw-border-opacity: 1;
-  border-color: rgb(209 213 219 / var(--tw-border-opacity));
-}
 .border-red-500 {
   --tw-border-opacity: 1;
   border-color: rgb(239 68 68 / var(--tw-border-opacity));
@@ -1734,6 +1717,10 @@ video {
 .border-l-green-500 {
   --tw-border-opacity: 1;
   border-left-color: rgb(34 197 94 / var(--tw-border-opacity));
+}
+.\!bg-white {
+  --tw-bg-opacity: 1 !important;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity)) !important;
 }
 .bg-\[rgb\(255\2c 0\2c 0\)\] {
   --tw-bg-opacity: 1;
@@ -1758,10 +1745,6 @@ video {
 .bg-gray-400 {
   --tw-bg-opacity: 1;
   background-color: rgb(156 163 175 / var(--tw-bg-opacity));
-}
-.bg-gray-50 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(249 250 251 / var(--tw-bg-opacity));
 }
 .bg-gray-800 {
   --tw-bg-opacity: 1;
@@ -1876,9 +1859,6 @@ video {
 .p-2 {
   padding: 0.5rem;
 }
-.p-2\.5 {
-  padding: 0.625rem;
-}
 .p-3 {
   padding: 0.75rem;
 }
@@ -1890,6 +1870,9 @@ video {
 }
 .p-8 {
   padding: 2rem;
+}
+.p-\[0\.075rem\] {
+  padding: 0.075rem;
 }
 .px-1 {
   padding-left: 0.25rem;
@@ -1933,15 +1916,6 @@ video {
 }
 .pb-2 {
   padding-bottom: 0.5rem;
-}
-.pb-8 {
-  padding-bottom: 2rem;
-}
-.pt-1 {
-  padding-top: 0.25rem;
-}
-.pt-4 {
-  padding-top: 1rem;
 }
 .pt-6 {
   padding-top: 1.5rem;
@@ -2097,12 +2071,6 @@ video {
 .leading-relaxed {
   line-height: 1.625;
 }
-.leading-tight {
-  line-height: 1.25;
-}
-.tracking-tight {
-  letter-spacing: -0.025em;
-}
 .text-\[\#336699\]\/\[\.35\] {
   color: rgb(51 102 153 / .35);
 }
@@ -2121,10 +2089,6 @@ video {
 .text-gray-300 {
   --tw-text-opacity: 1;
   color: rgb(209 213 219 / var(--tw-text-opacity));
-}
-.text-gray-400 {
-  --tw-text-opacity: 1;
-  color: rgb(156 163 175 / var(--tw-text-opacity));
 }
 .text-gray-500 {
   --tw-text-opacity: 1;
@@ -2579,7 +2543,7 @@ button:hover {
 .tooltip {
     position: relative;
     display: inline-block;
-    border-bottom: 1px dotted black;
+    border-bottom: 1px dotted grey;
     line-height: 14px;
 }
 
@@ -2587,7 +2551,7 @@ button:hover {
     visibility: hidden;
     width: 150px;
     background-color: black;
-    opacity: 0.8;
+    opacity: 0.85;
     color: white;
     text-align: left;
     border-radius: 6px;
@@ -2597,6 +2561,7 @@ button:hover {
     top: -5px;
     left: 120%;
     border: 1px solid black;
+    font-family: Arial, Helvetica, sans-serif !important;
 }
 
 .tooltip .tooltiptext::after {
@@ -2847,17 +2812,13 @@ h4[id^='implications-'] + ul {
   background-color: rgb(37 99 235 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-gray-100:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
+}
+
 .hover\:font-bold:hover {
   font-weight: 700;
-}
-
-.hover\:text-custom-blue:hover {
-  --tw-text-opacity: 1;
-  color: rgb(0 100 207 / var(--tw-text-opacity));
-}
-
-.hover\:underline:hover {
-  text-decoration-line: underline;
 }
 
 .before\:hover\:text-center:hover::before {
@@ -2937,18 +2898,9 @@ h4[id^='implications-'] + ul {
     gap: 1.5rem;
   }
 
-  .sm\:p-8 {
-    padding: 2rem;
-  }
-
   .sm\:text-lg {
     font-size: 1.125rem;
     line-height: 1.75rem;
-  }
-
-  .sm\:text-sm {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
   }
 
   .sm\:underline {
@@ -2964,21 +2916,6 @@ h4[id^='implications-'] + ul {
 
   .md\:mt-0 {
     margin-top: 0px;
-  }
-
-  .md\:h-screen {
-    height: 100vh;
-  }
-
-  .md\:space-y-6 > :not([hidden]) ~ :not([hidden]) {
-    --tw-space-y-reverse: 0;
-    margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
-    margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
-  }
-
-  .md\:text-2xl {
-    font-size: 1.5rem;
-    line-height: 2rem;
   }
 }
 
@@ -2996,11 +2933,6 @@ h4[id^='implications-'] + ul {
     --tw-space-y-reverse: 0;
     margin-top: calc(0px * calc(1 - var(--tw-space-y-reverse)));
     margin-bottom: calc(0px * var(--tw-space-y-reverse));
-  }
-
-  .lg\:py-0 {
-    padding-top: 0px;
-    padding-bottom: 0px;
   }
 }
 

@@ -74,7 +74,7 @@ function detectCheckboxes() {
                     
                             // Store the updated counts object
                             chrome.storage.local.set({ domainCheckboxCounts: counts });
-                          });
+                        });
                     
                         chrome.runtime.sendMessage({
                             type: "showPreloader",

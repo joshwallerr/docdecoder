@@ -43,48 +43,21 @@
 
       <div
         class="flex justify-center font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
-        <h4 class="text-lg font-semibold m-0"><span id="checkbox-count">0 consent checkboxes detected</span> on this
-          page</h4>
+        <h4 class="text-lg font-semibold m-0"><span id="checkbox-count">0 summaries found</span> for this
+          this website</h4>
       </div>
 
       <div id="rateLimitMessage" style="display: none;" class="mb-2.5 mt-2 p-4 border-l-4 border-red-500 bg-red-100">
         <p class="m-0"></p>
-      </div>  
+      </div>
 
       <p id="errorPrompt" style="display: none;"
         class="mt-2.5 p-3 border-l-4 border-yellow-500 bg-yellow-100 rounded-r-lg">We've detected a checkbox, but can't
         find a policy associated with it. Please create a custom summary using the form below.</p>
 
-        <div class="flex flex-col font-mono w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5">
-        <div class="flex flex-row">
-          <a href="#" class="contents" id="openCreateSummary">
-            <h4 class="text-lg font-semibold mb-0">Create custom summary</h4>
-            <img title="create summary" src="plus-icon.png" alt="open create summary" class="ml-auto my-auto w-5 h-5">
-          </a>
-
-          <a href="#" style="display: none;" id="closeCreateSummary">
-            <h4 class="text-lg font-semibold mb-0">Create custom summary</h4>
-            <img title="cancel" src="minus-icon.png" alt="close create summary" class="ml-auto my-auto w-5 h-5">
-          </a>
-        </div>
-        <div id="createSummaryForm" class="mt-2.5" style="display: none;">
-          <div id="premiumFeatureMessage" style="display: none;" class="mb-4 p-4 border-l-4 border-red-500 bg-red-100">
-            <p class="mb-0">This is a premium feature. Please <a href="#" id="premium-subscribe-txt" class="underline">subscribe</a> to access it.</p>
-          </div>
-          <form id="myForm">
-            <p class="mb-2">Step 1: Give the summary a name (e.g. Privacy Policy).</p>
-            <label for="policyName" class="block text-sm font-semibold text-gray-700">Summary name:</label>
-            <input type="text" id="policyName" name="policyName" required class="mt-1 p-2 w-full border rounded-md">
-
-            <p class="mb-2 mt-4">Step 2: Open the page that contains the policy you want to summarize, and hit CTRL + A, then CTRL + C
-              to copy the entire page contents.</p>
-            <p class="mb-2">Step 3: Paste the content in the box below and click "Create Summary".</p>
-            <label for="policyContent" class="block text-sm font-semibold text-gray-700">Policy content:</label>
-            <textarea id="policyContent" name="policyContent" required
-              class="mt-1 p-2 w-full h-40 border rounded-md"></textarea>
-
-            <input type="submit" value="Create Summary" class="btn-primary mt-4">
-          </form>
+      <div id="gensum-btn" class="flex flex-col cursor-pointer text-gray-900 bg-white focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-full w-full font-mono md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5" style="border: 1px solid lightgray;">
+        <div class="flex flex-row justify-center">
+          <h4 class="text-lg font-semibold mb-0">Generate a summary</h4>
         </div>
       </div>
 
@@ -98,6 +71,18 @@
         <p>This is a premium feature. Please subscribe to access it.</p>
       </div>
       <p class="-mb-4 text-center text-gray-300">Created by <a href="https://www.instagram.com/joshwallerr/" target="_blank">Josh Waller</a> | josh@docdecoder.app</p>
+    </section>
+
+    <section id="gensum-container" class="pb-2 bg-white" style="display: none;">
+      <div class="flex flex-row items-start mb-2 font-semibold text-gray-900">
+        <div class="ml-auto bg-white rounded-lg p-0.5">
+          <a href="#">
+            <img title="back" src="close(x).png" alt="go back" id="exit-gensum-container" class="w-5 h-5 p-[0.075rem]">
+          </a>
+        </div>
+      </div>
+      <h1 class="font-semibold text-gray-900 text-xl text-center uppercase">Generate a summary</h1>
+
     </section>
 
     <section id="premium-container" style="display: none;" class="pb-2">
@@ -371,7 +356,7 @@
   <div id="hiddenelementfortailwindbuilding" class="hidden w-4 h-4 rotate-180 transition-transform flex-grow items-center justify-between ml-auto flex-shrink mt-5"></div>
   <div id="hiddenelementfortailwindbuilding2" style="display: none !important;" class="w-full mb-auto mt-4 rounder-r-lg border-l-green-500 py-3 px-4 block border-gray-200 shadow-sm rounded-l-md text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 bg-gray-100"></div>
   <div id="hiddenelementfortailwindbuilding3" style="display: none !important;" class="py-3 px-4 inline-flex flex-shrink-0 justify-center items-center gap-2 rounded-r-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm rounded-l-none"></div>
-  <div id="hiddenelementfortailwindbuilding4" style="display: none !important;" class="!border-l-green-500 !rounded-r-lg mb-auto mt-auto"></div>
+  <div id="hiddenelementfortailwindbuilding4" style="display: none !important;" class="!border-l-green-500 !rounded-r-lg !bg-white mb-auto mt-auto"></div>
 
   <!-- <div id="loggedIn" style="display: none;">
     <section class="bg-white">
