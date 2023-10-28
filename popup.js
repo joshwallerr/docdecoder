@@ -121,30 +121,34 @@ document.addEventListener('DOMContentLoaded', function () {
     document.body.classList.remove('!bg-white');
   });
 
-  document.getElementById('myForm').addEventListener('submit', function (e) {
-    e.preventDefault(); // To prevent the form from submitting the usual way
-
-    // Extracting the form data
-    let policyName = document.getElementById('policyName').value;
-    let policyContent = document.getElementById('policyContent').value;
-
-    // Get the current tab's URL
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      // Sending the form data to background.js
-      chrome.runtime.sendMessage({
-        content: policyContent, // This is the URL of the current tab
-        sectionTitle: policyName,
-        tabURL: tabs[0].url, // This is the URL of the current tab
-        fromPopup: true // Indicating this message comes from popup
-      }, function (response) {
-        console.log("AAAAAAAAAAAAAAAAAAAA" + response);
-      });
+  document.getElementById('customSummaryForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // Prevent default form submission
+  
+    // Extracting the policy link
+    let policyLink = document.getElementById('policyLink').value;
+    console.log(policyLink);
+  
+    // make this work
+    // make this work
+    // make this work
+    chrome.runtime.sendMessage({
+      type: "showPreloader",
+      summaryName: linkText,
+      domain: currentDomain,
+      requestId: Date.now()
     });
 
-    // clear input fields
-    document.getElementById('policyName').value = '';
-    document.getElementById('policyContent').value = '';
+    // Send the policy link to the background script
+    chrome.runtime.sendMessage({
+      fromPopup: true,
+      action: "generateSummary",
+      url: policyLink
+    });
+  
+    // Clear the input field
+    document.getElementById('policyLink').value = '';
   });
+  
 
   document.getElementById('logoutButton').addEventListener('click', function () {
     logUserOut();
@@ -227,19 +231,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   document.querySelector('.close-popup-btn').addEventListener('click', function() {
     document.getElementById('aiResponsePopup').style.display = 'none';
-  });
-
-
-  document.getElementById('openCreateSummary').addEventListener('click', function() {
-    document.getElementById('closeCreateSummary').style.display = 'contents';
-    document.getElementById('openCreateSummary').style.display = 'none';
-    document.getElementById('createSummaryForm').style.display = 'block';
-  });
-
-  document.getElementById('closeCreateSummary').addEventListener('click', function() {
-    document.getElementById('closeCreateSummary').style.display = 'none';
-    document.getElementById('openCreateSummary').style.display = 'contents';
-    document.getElementById('createSummaryForm').style.display = 'none';
   });
   
   const rateLimitMessage = document.getElementById('rateLimitMessage');
@@ -405,20 +396,21 @@ function updatePremiumFeaturesVisibility() {
     });
 
     if (isPremiumUser) {
-      document.getElementById('myForm').classList.remove('greyed-out');
-      document.getElementById('myForm').removeAttribute('title');
+      // document.getElementById('myForm').classList.remove('greyed-out');
       // document.getElementById('myForm').removeAttribute('title');
-      document.getElementById('premiumFeatureMessage').style.display = 'none';
+      // document.getElementById('myForm').removeAttribute('title');
+      // document.getElementById('premiumFeatureMessage').style.display = 'none';
+
       document.getElementById('upgrade-btn').style.display = 'none';
       document.getElementById('manage-subscription-btn').style.display = 'block';
       document.getElementById('premium-button').style.display = 'none';
       document.getElementById('upgrade-premium-txt').style.display = 'none';
     } else {
-      document.getElementById('myForm').classList.add('greyed-out');
-      document.getElementById('myForm').setAttribute('title', 'This is a premium feature. Please subscribe to access it.');
-
+      // document.getElementById('myForm').classList.add('greyed-out');
       // document.getElementById('myForm').setAttribute('title', 'This is a premium feature. Please subscribe to access it.');
-      document.getElementById('premiumFeatureMessage').style.display = 'block';
+      // document.getElementById('myForm').setAttribute('title', 'This is a premium feature. Please subscribe to access it.');
+      // document.getElementById('premiumFeatureMessage').style.display = 'block';
+
       document.getElementById('upgrade-btn').style.display = 'block';
       document.getElementById('manage-subscription-btn').style.display = 'none';
       document.getElementById('premium-button').style.display = 'block';

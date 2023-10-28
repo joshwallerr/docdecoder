@@ -1,7 +1,14 @@
 chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
-    let extractedURL = request.fromPopup ? request.tabURL : sender.tab.url;
-    extractedURL = new URL(extractedURL).hostname;
+    let extractedURL;
+
+    if (request.action === "generateSummary" && request.url) {
+      extractedURL = new URL(request.url).hostname;
+    } else {
+      extractedURL = request.fromPopup ? request.tabURL : sender.tab.url;
+      extractedURL = new URL(extractedURL).hostname;
+    }
+
     console.log(extractedURL);
 
     if (request.type === "checkboxDetected") {
@@ -56,6 +63,37 @@ chrome.runtime.onMessage.addListener(
         chrome.action.setBadgeText({ text: request.count.toString(), tabId: tabId });
         chrome.action.setBadgeBackgroundColor({ color: '#22c55e' });
       }
+    } else if (request.action === "generateSummary" && request.url) {
+      fetchPageHTML(request.url).then(pageContent => {
+        let sectionTitle = new URL(request.url).pathname.split('/').pop();
+        let domain = new URL(request.url).hostname;
+
+        // Send the content for summarization
+        summarizeDocument(pageContent, domain, sectionTitle)
+          .then(summary => {
+            sendResponse({ summary: summary });
+            storeSummary(extractedURL, summary, request.sectionTitle);
+            console.log(`Sending removePreloader message for ${request.sectionTitle} on ${extractedURL}`);
+            removeLoadingSummary(request.sectionTitle, extractedURL);
+            chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: extractedURL }, function (response) {
+              if (chrome.runtime.lastError) {
+                console.warn(chrome.runtime.lastError.message);
+              }
+            });
+          })
+          .catch(error => {
+            console.warn('Error:', error);
+            chrome.runtime.sendMessage({ showForm: true });
+            console.log(`Showing form for ${request.sectionTitle}`);
+            console.log(`Sending removePreloader message for ${request.sectionTitle} on ${extractedURL}`);
+            removeLoadingSummary(request.sectionTitle, extractedURL);
+            chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: extractedURL }, function (response) {
+              if (chrome.runtime.lastError) {
+                console.warn(chrome.runtime.lastError.message);
+              }
+            });
+          });
+      });
     } else if (request.url) {
       fetchPageHTML(request.url)
         .then(html => {
@@ -132,6 +170,14 @@ chrome.runtime.onMessage.addListener(
     return true;
   }
 );
+
+
+
+
+
+
+
+
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.local.get("notificationsEnabled", function(data) {
