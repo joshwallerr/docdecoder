@@ -73,7 +73,7 @@
       <p class="-mb-4 text-center text-gray-300">Created by <a href="https://www.instagram.com/joshwallerr/" target="_blank">Josh Waller</a> | josh@docdecoder.app</p>
     </section>
 
-
+    <!-- MAKE THIS A POPUP, NOT SEPERATE SECTION -->
     <section id="gensum-container" class="pb-2 bg-white" style="display: none;">
       <div class="flex flex-row items-start mb-2 font-semibold text-gray-900">
         <div class="ml-auto bg-white rounded-lg p-0.5">
@@ -86,9 +86,10 @@
       <p>
         Copy and paste the link to the policy you want to summarise below. When you click "Generate", we will open the page in a new tab, get the entire page's text content, and then send it off to our server to be summarized.
       </p>
-      <form id="customSummaryForm">
-        <input type="text" id="policyLink" placeholder="Enter the link to the policy (e.g. https://example.com/privacy-policy)">
-        <button type="submit">Generate</button>
+      <form id="customSummaryForm" class="flex flex-col justify-center">
+        <input type="text" id="policyName" class="bg-gray-50 border-t border-l border-r border-gray-300 text-gray-900 sm:text-sm rounded-t-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 max-w-xs mx-auto" placeholder="Policy name (e.g. Terms and Conditions)" required="">
+        <input type="text" id="policyLink" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 max-w-xs mx-auto" placeholder="Link to policy (e.g. https://example.com/terms)" required="">
+        <button type="submit" class="max-w-xs w-80 rounded-lg rounded-tl-none border-gray-300 border-b border-l border-r rounded-tr-none mx-auto bg-custom-blue">Generate</button>
       </form>
     </section>
 
@@ -123,7 +124,7 @@
                   d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                   clip-rule="evenodd"></path>
               </svg>
-              <span><span class="font-semibold">2</span> summaries every month</span>
+              <span><span class="font-semibold">2</span> summary tokens every month</span>
             </li>
             <li class="flex items-center space-x-3">
               <!-- Icon -->

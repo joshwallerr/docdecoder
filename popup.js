@@ -126,15 +126,20 @@ document.addEventListener('DOMContentLoaded', function () {
   
     // Extracting the policy link
     let policyLink = document.getElementById('policyLink').value;
-    console.log(policyLink);
+    let sectionTitle = document.getElementById('policyName').value;
+    let domain = new URL(policyLink).hostname;
   
+    console.log("policyLink: " + policyLink);
+    console.log("sectionTitle: " + sectionTitle);
+    console.log("domain: " + domain);
+
     // make this work
     // make this work
     // make this work
     chrome.runtime.sendMessage({
       type: "showPreloader",
-      summaryName: linkText,
-      domain: currentDomain,
+      summaryName: sectionTitle,
+      domain: domain,
       requestId: Date.now()
     });
 
@@ -142,7 +147,8 @@ document.addEventListener('DOMContentLoaded', function () {
     chrome.runtime.sendMessage({
       fromPopup: true,
       action: "generateSummary",
-      url: policyLink
+      url: policyLink,
+      policyName: sectionTitle,
     });
   
     // Clear the input field
@@ -553,9 +559,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.type === "showPreloader" && message.summaryName && message.domain) {
     addPreloaderForSummary(message.summaryName, message.domain);
     console.log("SHFSDJKFHDJKSFHDKASJLFHASDJKFHASJKDFHASJKLHDJKLHASF")
+    initPopup();
   } else if (message.type === "removePreloader" && message.summaryName && message.domain) {
     console.log(`Received removePreloader message for ${message.summaryName}`);
     removePreloaderForSummary(message.summaryName, message.domain);
+    initPopup();
   } else if (message.type === "logUserOut") {
     logUserOut();
   } else if (message.type === "showRateLimitMsg") {
