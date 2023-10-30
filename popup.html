@@ -61,10 +61,10 @@
         </div>
       </div>
 
-      <div id="summary-section-main" class="flex flex-col font-mono w-full bg-white rounded-r-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5 rounded-l-none" style="border-left: 3px solid rgb(239 68 68);">
+      <div id="summary-section-main" class="flex flex-col w-full bg-white rounded-r-lg shadow md:mt-0 sm:max-w-md xl:p-0 px-6 py-4 mb-2.5 rounded-l-none" style="border-left: 3px solid rgb(239 68 68);">
         <div id="preloader-container"></div>
           <div id="summaries-container" class="-mt-4">
-            <h4 id="summaries-container-placeholder" class="text-base font-semibold mb-0 mt-4">Summaries will be displayed here. A summary is automatically generated for each policy document found in any detected consent checkboxes.</h4>
+            <h4 id="summaries-container-placeholder" class="text-base font-mono font-semibold mb-0 mt-4">Summaries will be displayed here. A summary is automatically generated for each policy document found in any detected consent checkboxes.</h4>
           </div>
       </div>
       <div id="premiumFeatureMessage" style="display: none;" class="mb-4 p-4 border-l-4 border-red-500 bg-red-100">
@@ -73,25 +73,43 @@
       <p class="-mb-4 text-center text-gray-300">Created by <a href="https://www.instagram.com/joshwallerr/" target="_blank">Josh Waller</a> | josh@docdecoder.app</p>
     </section>
 
-    <!-- MAKE THIS A POPUP, NOT SEPERATE SECTION -->
-    <section id="gensum-container" class="pb-2 bg-white" style="display: none;">
-      <div class="flex flex-row items-start mb-2 font-semibold text-gray-900">
-        <div class="ml-auto bg-white rounded-lg p-0.5">
-          <a href="#">
-            <img title="back" src="close(x).png" alt="go back" id="exit-gensum-container" class="w-5 h-5 p-[0.075rem]">
-          </a>
-        </div>
-      </div>
-      <h1 class="font-semibold text-gray-900 text-xl text-center uppercase">Generate a summary</h1>
-      <p>
-        Copy and paste the link to the policy you want to summarise below. When you click "Generate", we will open the page in a new tab, get the entire page's text content, and then send it off to our server to be summarized.
-      </p>
-      <form id="customSummaryForm" class="flex flex-col justify-center">
-        <input type="text" id="policyName" class="bg-gray-50 border-t border-l border-r border-gray-300 text-gray-900 sm:text-sm rounded-t-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 max-w-xs mx-auto" placeholder="Policy name (e.g. Terms and Conditions)" required="">
-        <input type="text" id="policyLink" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 max-w-xs mx-auto" placeholder="Link to policy (e.g. https://example.com/terms)" required="">
-        <button type="submit" class="max-w-xs w-80 rounded-lg rounded-tl-none border-gray-300 border-b border-l border-r rounded-tr-none mx-auto bg-custom-blue">Generate</button>
-      </form>
-    </section>
+    <div id="gensum-container" style="display: none;" tabindex="-1" class="flex justify-center fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 !h-[calc(100%-1rem)] max-h-full">
+      <div class="fixed inset-0 bg-black opacity-50"></div>
+      <div class="relative w-full max-w-md max-h-full my-auto">
+          <!-- Modal content -->
+          <div class="relative bg-white rounded-lg shadow">
+              <!-- Modal header -->
+              <div class="flex items-center justify-between px-5 py-4 border-b rounded-t">
+                  <h3 class="text-xl font-medium text-gray-900 mb-0">
+                      Generate a summary
+                  </h3>
+                  <div class="ml-auto bg-white rounded-lg p-0.5">
+                    <a href="#">
+                      <img title="back" src="close(x).png" alt="go back" id="exit-gensum-container" class="w-5 h-5 p-[0.075rem]">
+                    </a>
+                  </div>
+              </div>
+              <!-- Modal body -->
+              <form id="customSummaryForm">
+                <div class="px-6 space-y-5 py-4">
+                  <div class="flex flex-col justify-center">
+                    <p>If we haven't summarised a policy yet, you can create your own summary using the form below.</p>
+                    <p class="font-semibold">Each summary you generate costs 1 summary token.</p>
+                    <input type="text" name="policyLink" id="policyLink" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 mx-auto rounded-t-2xl" placeholder="Link to policy (e.g. https://example.com/terms)" required="">
+                    <input type="text" id="policyName" class="bg-gray-50 border border-t-0 border-gray-300 text-gray-900 sm:text-sm focus:ring-primary-600 focus:border-primary-600 w-full p-2.5 mx-auto rounded-b-2xl" placeholder="Policy name (e.g. Terms and Conditions)" required="">
+                  </div>
+                  <div id="suggested-links" class="text-xs">
+                    <p class="font-semibold text-sm mb-1">Suggested links:</p>
+
+                  </div>
+                </div>
+                <div class="flex items-center px-6 py-4 space-x-2 border-t border-gray-200 rounded-b">
+                  <button type="submit" class="border-gray-300 bg-custom-blue">Generate (1 summary token)</button>
+                </div>
+              </form>
+          </div>
+      </div>  
+    </div>
 
     <section id="premium-container" style="display: none;" class="pb-2">
       <div class="flex flex-row items-start mb-2 font-semibold text-gray-900">
@@ -308,7 +326,7 @@
 
 
     <section id="aiResponsePopup" style="display: none;" class="ai-response-popup">
-      <div class="ai-response-content">
+      <div class="ai-response-content rounded-lg">
         <span class="close-popup-btn">&times;</span>
         <h2>AI says:</h2>
         <p id="aiResponseText"></p>

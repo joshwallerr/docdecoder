@@ -85,23 +85,6 @@ function detectCheckboxes() {
 
                         console.log(`Sending showPreloader message for ${linkText} on ${currentDomain}`);
                         
-                        // chrome.storage.local.get(['loadingSummaries'], function (data) {
-                        //     let loadingSummaries = data.loadingSummaries || [];
-                        //     let currentDomain = new URL(window.location.href).hostname;
-                        //     console.log("domain in content.js: " + currentDomain);
-                        //     let loadingSummaryObj = {
-                        //         domain: currentDomain,
-                        //         summaryName: linkText
-                        //     };
-                        
-                        //     // Check if summary is already in the array
-                        //     const existingSummary = loadingSummaries.find(summary => summary.domain === currentDomain && summary.summaryName === linkText);
-                        //     if (!existingSummary) {
-                        //         loadingSummaries.push(loadingSummaryObj);
-                        //         chrome.storage.local.set({ loadingSummaries: loadingSummaries });
-                        //     }
-                        // });
-
                         console.log(link.href);
 
                         let linkHref = link.href;
@@ -131,3 +114,36 @@ let checkboxInterval = setInterval(detectCheckboxes, 5000);
 setTimeout(() => {
     clearInterval(checkboxInterval);
 }, 30000);
+
+
+
+
+
+
+// FOR SUGGESTED LINKS
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.action === "findLinks") {
+        const keywords = ['privacy', 'term', 'return', 'shipping']; // Add more keywords as needed
+        let linksMap = {};
+
+        keywords.forEach(keyword => {
+            const foundLinks = Array.from(document.querySelectorAll('a')).filter(link => {
+                return (link.href.toLowerCase().includes(keyword) || link.innerText.toLowerCase().includes(keyword));
+            });
+
+            if (foundLinks.length > 0) {
+                // Only store the last link found for the keyword
+                const lastLink = foundLinks[foundLinks.length - 1];
+                linksMap[keyword] = { href: lastLink.href, text: lastLink.innerText.trim() };
+            }
+        });
+
+        let links = Object.keys(linksMap).map(keyword => ({
+            keyword: keyword,
+            href: linksMap[keyword].href,
+            text: linksMap[keyword].text
+        }));
+        sendResponse({links: links});
+    }
+});
+

@@ -101,25 +101,73 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log(data.notificationsEnabled);
   });
 
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, {action: "findLinks"}, function(response) {
+        const linksContainer = document.getElementById('suggested-links');
+        if (response && response.links && response.links.length > 0) {
+            response.links.forEach(item => {
+                const linkElement = document.createElement('a');
+                linkElement.href = "#"; // Prevent default link behavior
+                linkElement.classList.add('cursor-pointer');
 
+                // Create span element for item.text and apply class
+                const textSpan = document.createElement('span');
+                textSpan.textContent = item.text;
+                textSpan.classList.add('font-semibold');
+
+                // Create text node for separator and URL
+                const separatorAndURL = document.createTextNode(": " + item.href);
+
+                // Append elements to the link element
+                linkElement.appendChild(textSpan);
+                linkElement.appendChild(separatorAndURL);
+
+                // Append the link element to the container
+                linksContainer.appendChild(linkElement);
+                linksContainer.appendChild(document.createElement('br'));
+
+                // Event Listener for filling form fields
+                linkElement.addEventListener('click', function(event) {
+                    event.preventDefault(); // Prevent default link behavior
+                    document.getElementById('policyLink').value = item.href;
+                    document.getElementById('policyName').value = item.text;
+                });
+            });
+        } else {
+            // Create a paragraph for the 'No links found' message
+            const noLinksMessage = document.createElement('p');
+            noLinksMessage.textContent = 'No links found.';
+            noLinksMessage.classList.add('text-sm');
+
+            // Append the message to the container
+            linksContainer.appendChild(noLinksMessage);
+        }
+    });
+  });
 
 
 
   document.getElementById('gensum-btn').addEventListener('click', function () {
-    document.getElementById('main-extension-content').style.display = 'none';
-    document.getElementById('gensum-container').style.display = 'block';
-
-    // add bg-white class to body
-    document.body.classList.add('!bg-white');
+    document.getElementById('gensum-container').style.display = 'flex';
+    document.body.style.height = `600px`;
   });
 
   document.getElementById('exit-gensum-container').addEventListener('click', function () {
     document.getElementById('gensum-container').style.display = 'none';
-    document.getElementById('main-extension-content').style.display = 'block';
-
-    // remove bg-white class from body
-    document.body.classList.remove('!bg-white');
+    document.body.style.height = 'auto';
   });
+
+  // document.getElementById('policyLink').addEventListener('input', function(e) {
+  //   if (this.value.trim() !== '') {
+  //     document.getElementById('policyName').classList.remove('hidden');
+  //     document.getElementById('policyLink').classList.remove('rounded-full');
+  //     document.getElementById('policyLink').classList.add('rounded-t-2xl');
+  //   } else {
+  //     document.getElementById('policyName').classList.add('hidden');
+  //     document.getElementById('policyLink').classList.add('rounded-full');
+  //     document.getElementById('policyLink').classList.remove('rounded-t-2xl');
+  //   }
+  // });
 
   document.getElementById('customSummaryForm').addEventListener('submit', function(e) {
     e.preventDefault(); // Prevent default form submission
@@ -152,7 +200,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   
     // Clear the input field
+    document.getElementById('policyName').value = '';
     document.getElementById('policyLink').value = '';
+
+    document.getElementById('gensum-container').style.display = 'none';
+    document.body.style.height = 'auto';
   });
   
 
@@ -660,7 +712,7 @@ function initPopup() {
 
           let policyTitle = document.createElement('h3');
           policyTitle.textContent = toCapitalizedCase(termType);
-          policyTitle.className = "text-lg font-semibold mt-5 mb-4";
+          policyTitle.className = "text-lg font-semibold mt-5 mb-4 font-mono";
           container.appendChild(policyTitle);
 
           if (blockPatterns.some(pattern => pattern.test(domainSummaries[termType]))) {
@@ -695,7 +747,7 @@ function initPopup() {
             let clonedHeader = header.cloneNode(true);
             clonedHeader.id += `-${termType}`;
 
-            clonedHeader.classList.add('text-lg', 'font-semibold', 'mt-8');
+            clonedHeader.classList.add('text-lg', 'font-semibold', 'mt-8', 'font-mono');
         
             // New Code: Modify header based on content
             switch (clonedHeader.textContent.toLowerCase()) {
