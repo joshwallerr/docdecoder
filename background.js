@@ -69,12 +69,20 @@ chrome.runtime.onMessage.addListener(
       fetchPageHTML(request.url).then(pageContent => {
         let sectionTitle = request.policyName;
         let domain = new URL(request.url).hostname;
+        console.log("domain: " + domain);
+        console.log("extractedURL: " + extractedURL);
 
         // Send the content for summarization
         summarizeDocument(pageContent, domain, sectionTitle)
           .then(summary => {
+            chrome.runtime.sendMessage({ action: "initPopup" }, function (response) {
+              if (chrome.runtime.lastError) {
+                console.warn("Error sending message from background to popup:", chrome.runtime.lastError.message);
+              }
+            });
+            chrome.runtime.sendMessage({ initPopup: true });
             console.log("sectionTitle: " + sectionTitle);
-
+            console.log("Summary:", summary);
             sendResponse({ summary: summary });
             storeSummary(extractedURL, summary, sectionTitle);
             console.log(`Sending removePreloader message for ${sectionTitle} on ${extractedURL}`);
@@ -159,6 +167,7 @@ chrome.runtime.onMessage.addListener(
     } else if (request.showForm) {
       // console.log("Received message to show form");
     } else if (request.type === "showPreloader") {
+      console.log("RECIEVED showPreloader message for" + request.summaryName + " on " + request.domain);
       // Add the link to loadingSummaries
       let loadingSummaryObj = {
           domain: request.domain,

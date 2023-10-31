@@ -81,6 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
     for (let key in changes) {
       if (key === "summaries" || key === "showForm" || key === "domainForForm") {
         initPopup();
+        console.log("Storage change detected for " + key);
       }
     }
   });
@@ -205,6 +206,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('gensum-container').style.display = 'none';
     document.body.style.height = 'auto';
+
+    initPopup();
   });
   
 
@@ -602,6 +605,11 @@ function updateUserAccountInfo() {
 }
 
 
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  if (message.action === "initPopup") {
+    initPopup();
+  }
+});
 
 
 // LOOK HERE
@@ -662,10 +670,6 @@ function initPopup() {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       let currentDomain = new URL(tabs[0].url).hostname;
       console.log("domain in popup.js: " + currentDomain);
-
-      chrome.storage.local.get('loadingSummaries', function (data) {
-        console.log(data.loadingSummaries);
-      });
 
       let preloaderContainer = document.getElementById('preloader-container');
       preloaderContainer.innerHTML = '';
