@@ -177,20 +177,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let policyLink = document.getElementById('policyLink').value;
     let sectionTitle = document.getElementById('policyName').value;
     let domain = new URL(policyLink).hostname;
-  
-    console.log("policyLink: " + policyLink);
-    console.log("sectionTitle: " + sectionTitle);
-    console.log("domain: " + domain);
 
-    // make this work
-    // make this work
-    // make this work
-    chrome.runtime.sendMessage({
-      type: "showPreloader",
-      summaryName: sectionTitle,
-      domain: domain,
-      requestId: Date.now()
-    });
+    displayPreloader(sectionTitle, domain);
 
     // Send the policy link to the background script
     chrome.runtime.sendMessage({
@@ -605,11 +593,63 @@ function updateUserAccountInfo() {
 }
 
 
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  if (message.action === "initPopup") {
-    initPopup();
+
+function displayPreloader(sectionTitle, domain) {
+    chrome.storage.local.set({ loadingSummaryFor: { title: sectionTitle, domain: domain } });
+
+    let container = document.getElementById('preloader-container');
+
+    let existingPreloader = document.querySelector(`.preloader-section[data-summary-name="${sectionTitle}"][data-domain="${domain}"]`);
+    if (existingPreloader) {
+      return;
+    }
+
+    let preloaderSection = document.createElement('div');
+    preloaderSection.className = "preloader-section";
+    preloaderSection.dataset.summaryName = sectionTitle;
+
+    preloaderSection.setAttribute("data-domain", domain);
+
+    let preloader = document.createElement('div');
+    preloader.className = "preloader";
+    preloaderSection.appendChild(preloader);
+
+    let preloaderText = document.createElement('p');
+    preloaderText.textContent = `Generating summary for ${sectionTitle}`;
+    preloaderSection.appendChild(preloaderText);
+
+    container.appendChild(preloaderSection);
+}
+
+
+function deletePreloader(sectionTitle, domain) {
+  let preloaderSection = document.querySelector(`.preloader-section[data-summary-name="${sectionTitle}"][data-domain="${domain}"]`);
+  if (preloaderSection) {
+    preloaderSection.remove();
+    removeLoadingSummary(sectionTitle, domain);
   }
-});
+}
+
+function removeLoadingSummary(sectionTitle, domain) {
+  chrome.storage.local.get(['loadingSummaries'], function (data) {
+    let loadingSummaries = data.loadingSummaries || [];
+    let indexToRemove = -1;
+    for (let i = 0; i < loadingSummaries.length; i++) {
+      if (loadingSummaries[i].title === sectionTitle && loadingSummaries[i].domain === domain) {
+        indexToRemove = i;
+        break;
+      }
+    }
+    if (indexToRemove !== -1) {
+      loadingSummaries.splice(indexToRemove, 1);
+      chrome.storage.local.set({ loadingSummaries: loadingSummaries });
+    }
+  });
+}
+
+
+
+
 
 
 // LOOK HERE
@@ -671,13 +711,19 @@ function initPopup() {
       let currentDomain = new URL(tabs[0].url).hostname;
       console.log("domain in popup.js: " + currentDomain);
 
-      let preloaderContainer = document.getElementById('preloader-container');
-      preloaderContainer.innerHTML = '';
+      chrome.storage.local.get(['loadingSummaryFor'], function (result) {
+        let loadingInfo = result.loadingSummaryFor;
+  
+        if (loadingInfo && loadingInfo.domain === currentDomain) {
+          displayPreloader(loadingInfo.title, loadingInfo.domain);
+        } else {
+          document.getElementById('preloader-container').style.display = 'none';
+        }
+      });
 
-      chrome.storage.local.get(['summaries', 'showForm', 'domainForForm', 'loadingSummaries'], function (result) {
+      chrome.storage.local.get(['summaries', 'showForm', 'domainForForm',], function (result) {
         let summaries = result.summaries || {};
         let domainSummaries = summaries[currentDomain] || {};
-        let loadingSummaries = result.loadingSummaries || [];
 
         if (result.showForm && result.domainForForm === currentDomain) {
             document.getElementById("errorPrompt").style.display = "block";
@@ -692,16 +738,6 @@ function initPopup() {
           /captcha/i,
           /blocked/i,
         ];
-
-        chrome.storage.local.get(['loadingSummaries'], function (result) {
-          let loadingSummaries = result.loadingSummaries || [];
-          loadingSummaries.forEach(loadingSummaryObj => {
-            if (loadingSummaryObj.domain === currentDomain) {
-              console.log("POPUP.JS: Adding preloader for " + loadingSummaryObj.summaryName + " on " + loadingSummaryObj.domain);
-              addPreloaderForSummary(loadingSummaryObj.summaryName, loadingSummaryObj.domain);
-            }
-          });
-        });
 
         let container = document.getElementById('summaries-container');
         let placeholder = document.getElementById('summaries-container-placeholder').cloneNode(true);
@@ -803,7 +839,7 @@ function initPopup() {
               }
           });
 
-          removePreloaderForSummary(termType, currentDomain);
+        deletePreloader(termType, currentDomain);
 
         // New Code: Add a text box and a "send" button for AI questions
         let aiQuestionFormContainer = document.createElement('div');

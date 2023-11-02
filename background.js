@@ -69,41 +69,18 @@ chrome.runtime.onMessage.addListener(
       fetchPageHTML(request.url).then(pageContent => {
         let sectionTitle = request.policyName;
         let domain = new URL(request.url).hostname;
-        console.log("domain: " + domain);
-        console.log("extractedURL: " + extractedURL);
 
         // Send the content for summarization
         summarizeDocument(pageContent, domain, sectionTitle)
           .then(summary => {
-            chrome.runtime.sendMessage({ action: "initPopup" }, function (response) {
-              if (chrome.runtime.lastError) {
-                console.warn("Error sending message from background to popup:", chrome.runtime.lastError.message);
-              }
-            });
-            chrome.runtime.sendMessage({ initPopup: true });
-            console.log("sectionTitle: " + sectionTitle);
-            console.log("Summary:", summary);
             sendResponse({ summary: summary });
             storeSummary(extractedURL, summary, sectionTitle);
-            console.log(`Sending removePreloader message for ${sectionTitle} on ${extractedURL}`);
-            removeLoadingSummary(sectionTitle, extractedURL);
-            chrome.runtime.sendMessage({ type: "removePreloader", summaryName: sectionTitle, domain: extractedURL }, function (response) {
-              if (chrome.runtime.lastError) {
-                console.warn(chrome.runtime.lastError.message);
-              }
-            });
+            removeLoadingSummary(sectionTitle, domain);
           })
           .catch(error => {
             console.warn('Error:', error);
             chrome.runtime.sendMessage({ showForm: true });
-            console.log(`Showing form for ${sectionTitle}`);
-            console.log(`Sending removePreloader message for ${sectionTitle} on ${extractedURL}`);
-            removeLoadingSummary(sectionTitle, extractedURL);
-            chrome.runtime.sendMessage({ type: "removePreloader", summaryName: sectionTitle, domain: extractedURL }, function (response) {
-              if (chrome.runtime.lastError) {
-                console.warn(chrome.runtime.lastError.message);
-              }
-            });
+            removeLoadingSummary(sectionTitle, domain);
           });
       });
     } else if (request.url) {
@@ -185,7 +162,22 @@ chrome.runtime.onMessage.addListener(
 );
 
 
-
+function removeLoadingSummary(sectionTitle, domain) {
+  chrome.storage.local.get(['loadingSummaries'], function (data) {
+    let loadingSummaries = data.loadingSummaries || [];
+    let indexToRemove = -1;
+    for (let i = 0; i < loadingSummaries.length; i++) {
+      if (loadingSummaries[i].title === sectionTitle && loadingSummaries[i].domain === domain) {
+        indexToRemove = i;
+        break;
+      }
+    }
+    if (indexToRemove !== -1) {
+      loadingSummaries.splice(indexToRemove, 1);
+      chrome.storage.local.set({ loadingSummaries: loadingSummaries });
+    }
+  });
+}
 
 
 
@@ -223,23 +215,6 @@ function fetchPageHTML(url) {
     .then(response => response.text());
 }
 
-function removeLoadingSummary(summaryName, domain) {
-  // console.log("removing " + summaryName + " on " + domain);
-  chrome.storage.local.get(['loadingSummaries'], function (data) {
-      let loadingSummaries = data.loadingSummaries || [];
-      let indexToRemove = -1;
-      for (let i = 0; i < loadingSummaries.length; i++) {
-          if (loadingSummaries[i].summaryName === summaryName && loadingSummaries[i].domain === domain) {
-              indexToRemove = i;
-              break;
-          }
-      }
-      if (indexToRemove !== -1) {
-          loadingSummaries.splice(indexToRemove, 1);
-          chrome.storage.local.set({ loadingSummaries: loadingSummaries });
-      }
-  });
-}
 
 function sendCheckboxNotification(domain) {
   const message = `A consent checkbox was detected on ${domain}. Open the extension to see the summary.`;
