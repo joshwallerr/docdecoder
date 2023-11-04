@@ -172,7 +172,7 @@
           <h3 class="mb-2 text-2xl font-semibold">Premium</h3>
           <p class="font-light text-gray-500 sm:text-lg mb-0">Access to all features of premium, <span class="font-semibold" id="billed-text">billed monthly</span>.</p>
           <div class="flex justify-center items-baseline my-4 mt-2">
-            <span class="mr-2 text-3xl font-extrabold font-mono" id="premium-price">$4.99</span>
+            <span class="mr-2 text-3xl font-extrabold font-mono" id="premium-price">$7.99</span>
             <span id="slash-term-txt" class="text-gray-500">/month</span>
           </div>
           <label for="Toggle1" class="cursor-pointer flex items-center space-x-4 ml-auto mr-auto mb-[2.2rem]">
@@ -347,19 +347,15 @@
             <!-- Modal body -->
             <div class="px-6 space-y-5 py-4">
                 <p class="text-base leading-relaxed text-gray-500 mb-0">
-                  &#x1F50D; The extension will search every page you visit for consent checkboxes, like the one below:
+                  &#x1F50D; Whenever you visit a website, the extension will retrieve all stored '<strong>summaries</strong>' for that domain.
                 </p>
-                <div class="flex justify-center !mt-2" style="border: 1px solid grey;">
+                <!-- <div class="flex justify-center !mt-2" style="border: 1px solid grey;">
                   <input type="checkbox" name="example-consentbox" id="example-consentbox" class="">
                   <label for="example-consentbox" class="ml-1.5">I have read and accept the <a href="#" class="underline">Terms & Conditions</a></label>
-                </div>
+                </div> -->
                 <p class="text-base leading-relaxed text-gray-500 mb-0">
-                  &#x270D; If it finds any, it will automatically summarise the policy associated with the checkbox, in this case, the 'Terms & Conditions'.
-                </p>
-                <p class="text-base leading-relaxed text-gray-500 mb-0">
-                  &#x1F4DC; The summary will then be displayed in the extension popup, breaking the policy down into the below sections:
-                </p>
-                <div class="flex text-sm font-mono leading-relaxed text-gray-500 mb-0 !mt-2">
+                  &#x1F4DC; Each <strong>summary</strong> is an AI generated breakdown of one of the site's legal policies (Terms & Conditions, Privacy Policy, etc.). They are structured like this:
+                <div class="flex text-sm font-mono leading-relaxed text-gray-500 !mt-2">
                   <ul class="px-2.5 text-black">
                     <li>> Key considerations</li>
                     <li>> Things to watch out for</li>
@@ -367,6 +363,10 @@
                     <li>> Predicted FAQs</li>
                   </ul>
                 </div>
+                </p>
+                <p class="text-base leading-relaxed text-gray-500 mb-0">
+                  &#x270D; If one of the site's policies is not yet summarised, you can create your own summary in real time by clicking the "Generate a summary" button.
+                </p>
             </div>
             <!-- Modal footer -->
             <div class="flex items-center px-6 py-4 space-x-2 border-t border-gray-200 rounded-b">

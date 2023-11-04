@@ -125,16 +125,25 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.action === "findLinks") {
         const keywords = ['privacy', 'term', 'return', 'shipping']; // Add more keywords as needed
         let linksMap = {};
+        const currentDomain = new URL(window.location.href).hostname;
+
+        // Helper function to check if domains match considering subdomains
+        const isDomainMatch = (linkDomain, currentDomain) => {
+            return linkDomain.includes(currentDomain) || currentDomain.includes(linkDomain);
+        };
 
         keywords.forEach(keyword => {
             const foundLinks = Array.from(document.querySelectorAll('a')).filter(link => {
                 return (link.href.toLowerCase().includes(keyword) || link.innerText.toLowerCase().includes(keyword));
             });
 
-            if (foundLinks.length > 0) {
-                // Only store the last link found for the keyword
-                const lastLink = foundLinks[foundLinks.length - 1];
-                linksMap[keyword] = { href: lastLink.href, text: lastLink.innerText.trim() };
+            for (let i = foundLinks.length - 1; i >= 0; i--) {
+                const linkDomain = new URL(foundLinks[i].href, window.location.origin).hostname;
+                if (isDomainMatch(linkDomain, currentDomain)) {
+                    // Store the first link found that matches the domain condition
+                    linksMap[keyword] = { href: foundLinks[i].href, text: foundLinks[i].innerText.trim() };
+                    break; // Exit the loop once a match is found
+                }
             }
         });
 

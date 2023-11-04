@@ -86,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
+
   // chrome.storage.local.get(['first_name'], function (result) {
   //   if (result.first_name) {
   //     document.getElementById('loggedOut').style.display = 'none';
@@ -176,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Extracting the policy link
     let policyLink = document.getElementById('policyLink').value;
     let sectionTitle = document.getElementById('policyName').value;
-    let domain = new URL(policyLink).hostname;
+    let domain = new URL(policyLink).hostname; // MAKE SURE SUGGESTED POLICY LINKS ARE FOR THE SAME DOMAIN. IF NOT, DO NOT SUGGEST THEM.
 
     displayPreloader(sectionTitle, domain);
 
@@ -213,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('plan-info').style.display = 'block';
         } else {
             // User is not logged in, open a new tab for login page
-            chrome.tabs.create({ url: 'https://docdecoder.app/login' });
+            chrome.tabs.create({ url: 'https://docdecoder.app/account/login' });
         }
     });
   });
@@ -247,11 +248,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById("monthly").addEventListener("click", function () {
-    initiateStripeCheckout("MONTHLY");
+    redirectToLoginIfNotAuthenticated("MONTHLY");
   });
 
   document.getElementById("yearly").addEventListener("click", function () {
-    initiateStripeCheckout("YEARLY");
+    redirectToLoginIfNotAuthenticated("YEARLY");
   });
 
   document.getElementById('manage-subscription-btn').addEventListener('click', function() {
@@ -366,14 +367,14 @@ document.addEventListener('DOMContentLoaded', function () {
       if (this.checked) {
           console.log('Toggle set to right');
           document.getElementById('billed-text').textContent = 'billed yearly';
-          document.getElementById('premium-price').textContent = '$49.99';
+          document.getElementById('premium-price').textContent = '$79.99';
           document.getElementById('monthly').style.display = 'none';
           document.getElementById('yearly').style.display = 'block';
           document.getElementById('slash-term-txt').textContent = '/year';
       } else {
           console.log('Toggle set to Monthly (left)');
           document.getElementById('billed-text').textContent = 'billed monthly';
-          document.getElementById('premium-price').textContent = '$4.99';
+          document.getElementById('premium-price').textContent = '$7.99';
           document.getElementById('monthly').style.display = 'block';
           document.getElementById('yearly').style.display = 'none';
           document.getElementById('slash-term-txt').textContent = '/month';
@@ -384,6 +385,34 @@ document.addEventListener('DOMContentLoaded', function () {
     chrome.storage.local.set({ notificationsEnabled: e.target.checked });
   });
 });
+
+function redirectToLoginIfNotAuthenticated(planType) {
+  isUserAuthenticated().then(isAuthenticated => {
+    console.log('isAuthenticated:', isAuthenticated);
+    if (!isAuthenticated) {
+      // Store the planType in localStorage
+      window.open(`https://docdecoder.app/account/login/?planType=${encodeURIComponent(planType)}`, '_blank');    } else {
+      initiateStripeCheckout(planType);
+    }
+  });
+}
+
+function isUserAuthenticated() {
+  // Return the fetch promise so that .then can be called on it
+  return fetch('https://docdecoder.app/verify-token', {
+    method: 'GET',
+    credentials: 'include', // Ensure cookies are sent with the request
+  })
+  .then(response => response.json())
+  .then(data => {
+    return data.is_authenticated; // This value will be available in the next .then
+  })
+  .catch(error => {
+    console.error('Error verifying token:', error);
+    return false; // This will also be available in the next .then
+  });
+}
+
 
 function initiateStripeCheckout(plan_type) {
   // Make an AJAX call to your Flask server to start the checkout
@@ -397,6 +426,7 @@ function initiateStripeCheckout(plan_type) {
   })
   .then(response => {
     if (response.status === 403) {
+
       logUserOut();
     }
     return response.json();
@@ -475,6 +505,10 @@ function logUserOut() {
     .then(response => {
       if (response.ok) {
         console.log('Logged out successfully');
+        document.getElementById('plan-info').style.display = 'none';
+        document.getElementById('main-extension-content').style.display = 'block';
+        chrome.storage.local.remove(['first_name', 'userPlan', 'summariesCount', 'rateLimitExceeded']);
+        checkLogin();
       } else {
         console.warn('Failed to logout');
       }
@@ -482,10 +516,6 @@ function logUserOut() {
     .catch(error => {
       console.warn('Error during logout:', error);
     });
-
-    document.getElementById('plan-info').style.display = 'none';
-    document.getElementById('main-extension-content').style.display = 'block';
-    chrome.storage.local.remove(['first_name', 'userPlan', 'summariesCount', 'rateLimitExceeded']);
 }
 
 
@@ -594,58 +624,42 @@ function updateUserAccountInfo() {
 
 
 
-function displayPreloader(sectionTitle, domain) {
-    chrome.storage.local.set({ loadingSummaryFor: { title: sectionTitle, domain: domain } });
+// Function to display and store the preloader information
+function displayPreloader(sectionTitle) {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    let currentDomain = new URL(tabs[0].url).hostname;
 
-    let container = document.getElementById('preloader-container');
-
-    let existingPreloader = document.querySelector(`.preloader-section[data-summary-name="${sectionTitle}"][data-domain="${domain}"]`);
-    if (existingPreloader) {
-      return;
-    }
-
-    let preloaderSection = document.createElement('div');
-    preloaderSection.className = "preloader-section";
-    preloaderSection.dataset.summaryName = sectionTitle;
-
-    preloaderSection.setAttribute("data-domain", domain);
-
-    let preloader = document.createElement('div');
-    preloader.className = "preloader";
-    preloaderSection.appendChild(preloader);
-
-    let preloaderText = document.createElement('p');
-    preloaderText.textContent = `Generating summary for ${sectionTitle}`;
-    preloaderSection.appendChild(preloaderText);
-
-    container.appendChild(preloaderSection);
-}
-
-
-function deletePreloader(sectionTitle, domain) {
-  let preloaderSection = document.querySelector(`.preloader-section[data-summary-name="${sectionTitle}"][data-domain="${domain}"]`);
-  if (preloaderSection) {
-    preloaderSection.remove();
-    removeLoadingSummary(sectionTitle, domain);
-  }
-}
-
-function removeLoadingSummary(sectionTitle, domain) {
-  chrome.storage.local.get(['loadingSummaries'], function (data) {
-    let loadingSummaries = data.loadingSummaries || [];
-    let indexToRemove = -1;
-    for (let i = 0; i < loadingSummaries.length; i++) {
-      if (loadingSummaries[i].title === sectionTitle && loadingSummaries[i].domain === domain) {
-        indexToRemove = i;
-        break;
-      }
-    }
-    if (indexToRemove !== -1) {
-      loadingSummaries.splice(indexToRemove, 1);
+    // Get existing preloaders and add the new one
+    chrome.storage.local.get(['loadingSummaries'], function (result) {
+      let loadingSummaries = result.loadingSummaries || [];
+      loadingSummaries.push({ title: sectionTitle, domain: currentDomain });
       chrome.storage.local.set({ loadingSummaries: loadingSummaries });
-    }
+
+      updatePreloadersDisplay();
+    });
   });
 }
+
+// Function to update preloaders display based on stored data
+function updatePreloadersDisplay() {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    let currentDomain = new URL(tabs[0].url).hostname;
+    let preloaderContainer = document.getElementById('preloader-container');
+    
+    chrome.storage.local.get(['loadingSummaries'], function (result) {
+      let loadingSummaries = result.loadingSummaries || [];
+      let relevantSummaries = loadingSummaries.filter(summary => summary.domain === currentDomain);
+
+      if (relevantSummaries.length > 0) {
+        preloaderContainer.innerHTML = relevantSummaries.map(summary => `Loading summary for ${summary.title}. This could take up to a minute. Feel free to close the extension whilst you wait.`).join('<br>');
+        preloaderContainer.style.display = 'block';
+      } else {
+        preloaderContainer.style.display = 'none';
+      }
+    });
+  });
+}
+
 
 
 
@@ -707,19 +721,11 @@ document.addEventListener("click", function (event) {
 });
 
 function initPopup() {
+  updatePreloadersDisplay();
+
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       let currentDomain = new URL(tabs[0].url).hostname;
       console.log("domain in popup.js: " + currentDomain);
-
-      chrome.storage.local.get(['loadingSummaryFor'], function (result) {
-        let loadingInfo = result.loadingSummaryFor;
-  
-        if (loadingInfo && loadingInfo.domain === currentDomain) {
-          displayPreloader(loadingInfo.title, loadingInfo.domain);
-        } else {
-          document.getElementById('preloader-container').style.display = 'none';
-        }
-      });
 
       chrome.storage.local.get(['summaries', 'showForm', 'domainForForm',], function (result) {
         let summaries = result.summaries || {};
@@ -838,8 +844,6 @@ function initPopup() {
                 sibling = sibling.nextElementSibling;
               }
           });
-
-        deletePreloader(termType, currentDomain);
 
         // New Code: Add a text box and a "send" button for AI questions
         let aiQuestionFormContainer = document.createElement('div');

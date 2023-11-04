@@ -75,12 +75,20 @@ chrome.runtime.onMessage.addListener(
           .then(summary => {
             sendResponse({ summary: summary });
             storeSummary(extractedURL, summary, sectionTitle);
-            removeLoadingSummary(sectionTitle, domain);
+            chrome.storage.local.get(['loadingSummaries'], function (result) {
+              let loadingSummaries = result.loadingSummaries || [];
+              loadingSummaries = loadingSummaries.filter(summary => !(summary.title === sectionTitle && summary.domain === domain));
+              chrome.storage.local.set({ loadingSummaries: loadingSummaries });
+            });
           })
           .catch(error => {
             console.warn('Error:', error);
             chrome.runtime.sendMessage({ showForm: true });
-            removeLoadingSummary(sectionTitle, domain);
+            chrome.storage.local.get(['loadingSummaries'], function (result) {
+              let loadingSummaries = result.loadingSummaries || [];
+              loadingSummaries = loadingSummaries.filter(summary => !(summary.title === sectionTitle && summary.domain === domain));
+              chrome.storage.local.set({ loadingSummaries: loadingSummaries });
+            });
           });
       });
     } else if (request.url) {
@@ -160,25 +168,6 @@ chrome.runtime.onMessage.addListener(
     return true;
   }
 );
-
-
-function removeLoadingSummary(sectionTitle, domain) {
-  chrome.storage.local.get(['loadingSummaries'], function (data) {
-    let loadingSummaries = data.loadingSummaries || [];
-    let indexToRemove = -1;
-    for (let i = 0; i < loadingSummaries.length; i++) {
-      if (loadingSummaries[i].title === sectionTitle && loadingSummaries[i].domain === domain) {
-        indexToRemove = i;
-        break;
-      }
-    }
-    if (indexToRemove !== -1) {
-      loadingSummaries.splice(indexToRemove, 1);
-      chrome.storage.local.set({ loadingSummaries: loadingSummaries });
-    }
-  });
-}
-
 
 
 
