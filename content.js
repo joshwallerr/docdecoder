@@ -1,119 +1,74 @@
-chrome.runtime.onMessage.addListener(
-    function (request, sender, sendResponse) {
-        if (request.userInput) {
-            // send the user input to background.js
-            chrome.runtime.sendMessage({ userInput: request.userInput }, function (response) {
-                // console.log(response);
-            });
-            sendResponse({ message: "User input received" });
-        }
-    }
-);
-
 let notificationSent = false;
 
-function findPotentialLabelForCheckbox(checkbox) {
-    let potentialLabels = Array.from(document.querySelectorAll('p, div')).filter(el => {
-        let text = el.textContent.trim().toLowerCase();
-        return (text.startsWith("i ") || text.startsWith("you ")) && (text.includes("read") || text.includes("agree") || text.includes("accept") || text.includes("understand") || text.includes("acknowledge") || text.includes("consent") || text.includes("confirm") || text.includes("i have"));
-    });
-
-    if (potentialLabels.length) {
-        return potentialLabels.shift();
-    } else {
-        return null;
-    }
+function sendNotification() {
+  if (!notificationSent) {
+    chrome.runtime.sendMessage({ type: "checkboxDetected" });
+    notificationSent = true; // Ensure notification is only sent once
+  }
 }
 
-let processedCheckboxes = new Set();
-// console.log(processedCheckboxes);
+function findPotentialLabelForCheckbox(checkbox) {
+  let potentialLabels = Array.from(document.querySelectorAll('p, div')).filter(el => {
+    let text = el.textContent.trim().toLowerCase();
+    return (text.startsWith("i ") || text.startsWith("you ")) && (text.includes("read") || text.includes("agree") || text.includes("accept") || text.includes("understand") || text.includes("acknowledge") || text.includes("consent") || text.includes("confirm") || text.includes("i have"));
+  });
 
-let count = 0;
+  if (potentialLabels.length) {
+    return potentialLabels.shift();
+  } else {
+    return null;
+  }
+}
 
 function detectCheckboxes() {
-    let allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
-    
-    // If more than 5 checkboxes are detected, narrow down the selection
-    let checkboxes = (allCheckboxes.length > 5) 
-                     ? document.querySelectorAll('form input[type="checkbox"]')
-                     : allCheckboxes;
+  // Select all checkboxes on the page.
+  let checkboxes = document.querySelectorAll('input[type="checkbox"]');
 
-    checkboxes.forEach(checkbox => {
-        if (processedCheckboxes.has(checkbox)) {
-            return; // Skip checkboxes we've already processed
-        }
-        processedCheckboxes.add(checkbox); // Add the checkbox to the processed set
-        console.log(checkbox);
-
-        if (!notificationSent) {
-            chrome.runtime.sendMessage({ type: "checkboxDetected" });
-            notificationSent = true;
-        }        
-
+  // Check if at least one checkbox is present on the page.
+  if (checkboxes.length > 0) {
+    for (let checkbox of checkboxes) {
+      if (!checkbox.checked) {
         let label = document.querySelector(`label[for="${checkbox.id}"]`) || findPotentialLabelForCheckbox(checkbox);
         if (label) {
-            let links = Array.from(label.querySelectorAll('a'));
-            if (links.length) {
-                links.forEach(link => {
-                    let linkText = link.textContent;
-                    // console.log(linkText);
-
-                    if (linkText) {
-                        count++;
-
-                        chrome.runtime.sendMessage({ type: "updateBadge", count: count });
-
-                        let currentDomain = new URL(window.location.href).hostname;
-                        let currentPage = window.location.href;
-                        
-                        chrome.storage.local.get(['domainCheckboxCounts'], function(data) {
-                            let counts = data.domainCheckboxCounts || {};
-                            
-                            // Update the count for the current domain
-                            counts[currentPage] = count;
-                    
-                            // Store the updated counts object
-                            chrome.storage.local.set({ domainCheckboxCounts: counts });
-                        });
-                    
-                        chrome.runtime.sendMessage({
-                            type: "showPreloader",
-                            summaryName: linkText,
-                            domain: currentDomain,
-                            requestId: Date.now()
-                        });
-
-                        console.log(`Sending showPreloader message for ${linkText} on ${currentDomain}`);
-                        
-                        console.log(link.href);
-
-                        let linkHref = link.href;
-                        if (linkHref.toLowerCase().endsWith('.pdf')) {
-                            // This is a PDF link
-                            chrome.runtime.sendMessage({ url: linkHref, type: 'pdf', sectionTitle: linkText }, function (response) {});
-                        } else {
-                            chrome.runtime.sendMessage({ url: link.href, sectionTitle: linkText }, function (response) {});
-                        }
-                    }
-                });
-            } else {
-                let currentDomain = new URL(window.location.href).hostname;
-                chrome.storage.local.set({ showForm: true, domainForForm: currentDomain });
-            }
+          sendNotification();
+          break; // Exit after finding the first unlabeled checkbox
         }
-    });
+      }
+    }
+  }
+}
+
+function detectTextConsent() {
+  // Scan the page for text containing "by" and "agree".
+  const bodyText = document.body.textContent || "";
+  const consentPattern = /\bby\b.*?\bagree\b/;
+  if (consentPattern.test(bodyText)) {
+    sendNotification();
+  }
 }
 
 // Run immediately on page load
 detectCheckboxes();
+detectTextConsent();
 
 // Set up an interval to run the function every 5 seconds
-let checkboxInterval = setInterval(detectCheckboxes, 5000);
+let consentCheckInterval = setInterval(() => {
+  if (!notificationSent) {
+    detectCheckboxes();
+    detectTextConsent();
+  }
+}, 5000);
 
-// Clear the interval after 30 seconds
+// Clear the interval after 30 seconds to stop checking
 setTimeout(() => {
-    clearInterval(checkboxInterval);
+  clearInterval(consentCheckInterval);
 }, 30000);
+
+
+
+
+
+
 
 
 

@@ -490,6 +490,8 @@ function updatePremiumFeaturesVisibility() {
       // document.getElementById('myForm').setAttribute('title', 'This is a premium feature. Please subscribe to access it.');
       // document.getElementById('premiumFeatureMessage').style.display = 'block';
 
+      
+
       document.getElementById('upgrade-btn').style.display = 'block';
       document.getElementById('manage-subscription-btn').style.display = 'none';
       document.getElementById('premium-button').style.display = 'block';

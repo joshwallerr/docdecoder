@@ -206,11 +206,11 @@ function fetchPageHTML(url) {
 
 
 function sendCheckboxNotification(domain) {
-  const message = `A consent checkbox was detected on ${domain}. Open the extension to see the summary.`;
+  const message = `A consent label was detected on ${domain}. Open the extension to check for summaries.`;
   chrome.notifications.create('checkboxDetected', {
       type: 'basic',
       iconUrl: 'docdecoderlogo.png', // Replace with the path to your icon
-      title: 'Consent Checkbox Detected',
+      title: 'Consent Label Detected',
       message: message
   });
 }
