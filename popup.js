@@ -381,6 +381,16 @@ document.addEventListener('DOMContentLoaded', function () {
       }
   });
 
+
+  // DISABLE NOTIFICATIONS FOR FREE USERS!!!
+  // DISABLE NOTIFICATIONS FOR FREE USERS!!!
+  // DISABLE NOTIFICATIONS FOR FREE USERS!!!
+  // DISABLE NOTIFICATIONS FOR FREE USERS!!!
+  // DISABLE NOTIFICATIONS FOR FREE USERS!!!
+  // DISABLE NOTIFICATIONS FOR FREE USERS!!!
+  // DISABLE NOTIFICATIONS FOR FREE USERS!!!
+  // DISABLE NOTIFICATIONS FOR FREE USERS!!!
+
   document.getElementById("notifs-toggle").addEventListener("change", function(e) {
     chrome.storage.local.set({ notificationsEnabled: e.target.checked });
   });
@@ -480,6 +490,9 @@ function updatePremiumFeaturesVisibility() {
       // document.getElementById('myForm').removeAttribute('title');
       // document.getElementById('premiumFeatureMessage').style.display = 'none';
 
+      document.getElementById('notifs-container').classList.remove('greyed-out');
+      document.getElementById('notifs-container').removeAttribute('title');
+
       document.getElementById('upgrade-btn').style.display = 'none';
       document.getElementById('manage-subscription-btn').style.display = 'block';
       document.getElementById('premium-button').style.display = 'none';
@@ -490,7 +503,9 @@ function updatePremiumFeaturesVisibility() {
       // document.getElementById('myForm').setAttribute('title', 'This is a premium feature. Please subscribe to access it.');
       // document.getElementById('premiumFeatureMessage').style.display = 'block';
 
-      
+
+      document.getElementById('notifs-container').classList.add('greyed-out');
+      document.getElementById('notifs-container').setAttribute('title', 'Notifications are a premium feature. Please subscribe to access them.');
 
       document.getElementById('upgrade-btn').style.display = 'block';
       document.getElementById('manage-subscription-btn').style.display = 'none';

@@ -15,9 +15,12 @@ chrome.runtime.onMessage.addListener(
 
     if (request.type === "checkboxDetected") {
       const domain = new URL(sender.tab.url).hostname;
-      chrome.storage.local.get("notificationsEnabled", function(data) {
-          if (data.notificationsEnabled) {
-              console.log("Sending checkboxDetected notification");
+      // Retrieve both notificationsEnabled and userPlan at the same time
+      chrome.storage.local.get(["notificationsEnabled", "userPlan"], function(data) {
+          // Check if notifications are enabled and if the user is a paid user
+          const isPaidUser = data.userPlan === 'MONTHLY' || data.userPlan === 'YEARLY';
+          if (data.notificationsEnabled && isPaidUser) {
+              console.log("Sending checkboxDetected notification for paid user");
               sendCheckboxNotification(domain);
           }
       });
@@ -171,13 +174,11 @@ chrome.runtime.onMessage.addListener(
 
 
 
-
-
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.local.get("notificationsEnabled", function(data) {
-      if (data.notificationsEnabled === undefined) {
-          chrome.storage.local.set({ notificationsEnabled: true });
-      }
+  // Check the user plan and set notificationsEnabled accordingly
+  chrome.storage.local.get("userPlan", function(data) {
+      let defaultNotifications = data.userPlan === 'MONTHLY' || data.userPlan === 'YEARLY';
+      chrome.storage.local.set({ notificationsEnabled: defaultNotifications });
   });
 });
 
