@@ -13,6 +13,14 @@ function checkLogin() {
   });
 }
 
+// todo
+// show how it works popup when installed _/
+// update summary count above _/
+// make sure preloaders work
+// Support PDF with custom summaries
+// Take user to policy page when policy title clicked 
+// TEST tf out of everything
+
 async function fetchAndStoreSummariesForDomain(domain) {
   try {
     const response = await fetch('https://docdecoder.app/get-summaries', {
@@ -45,6 +53,9 @@ async function storeSummaryCount(domain, count) {
   let counts = result.domainSummaryCounts || {};
   counts[domain] = count;
   await new Promise(resolve => chrome.storage.local.set({ domainSummaryCounts: counts }, resolve));
+
+  const summaryCount = counts[domain] || 'No';
+  updateSummaryCount(summaryCount);
 }
 
 async function storeSummary(url, summary, sectionTitle) {
@@ -147,6 +158,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+
+  chrome.storage.local.get(['firstInstall'], function(result) {
+    if (result.firstInstall) {
+      document.getElementById('small-modal').style.display = 'flex';
+      document.body.style.height = `600px`;
+  
+      // After showing the container, reset the firstInstall flag
+      chrome.storage.local.set({ firstInstall: false });
+    }
+  });
 
 
   document.getElementById('gensum-btn').addEventListener('click', function () {

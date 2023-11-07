@@ -182,6 +182,13 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+chrome.runtime.onInstalled.addListener(function(details) {
+  if (details.reason === "install") {
+    // Set a flag when the extension is installed
+    chrome.storage.local.set({ firstInstall: true });
+  }
+});
+
 
 // chrome.webNavigation.onCompleted.addListener(function(details) {
 //   // Check if it's the main frame (not an iframe or subframe)
