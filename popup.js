@@ -620,12 +620,15 @@ function updateSummaryCount(summaryCount) {
   if (summaryCount === 'No') {
     summaryCountElement.textContent = `No summaries found`;
     summaryCountElement.classList.add('text-red-500');
+    summaryCountElement.classList.remove('text-green-500');
   } else if (summaryCount === 1) {
     summaryCountElement.textContent = `${summaryCount} summary found`;
     summaryCountElement.classList.add('text-green-500');
+    summaryCountElement.classList.remove('text-red-500');
   } else {
     summaryCountElement.textContent = `${summaryCount} summaries found`;
     summaryCountElement.classList.add('text-green-500');
+    summaryCountElement.classList.remove('text-red-500');
   }
 }
 
