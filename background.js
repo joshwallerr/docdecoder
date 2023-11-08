@@ -2,7 +2,7 @@ chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
     let extractedURL;
 
-    if (request.action === "generateSummary" && request.url) {
+    if (request.action === "generateSummary" || request.action === "pdf") {
       extractedURL = new URL(request.url).hostname;
     } else if (request.type === "showPreloader") {
       extractedURL = request.domain;
@@ -26,36 +26,30 @@ chrome.runtime.onMessage.addListener(
       });
     }
 
-    if (request.type === "pdf") {
+    if (request.action === "pdf" && request.url) {
       handlePDFLink(request.url, function(parsedText) {
-          // Use the parsedText to get the summary
-          // console.log("Parsed text:", parsedText);
-          console.log("url: " + request.url);
-          console.log("sectionTitle: " + request.sectionTitle);
-          summarizeDocument(parsedText, extractedURL, request.sectionTitle)
+        let sectionTitle = request.policyName;
+        let domain = new URL(request.url).hostname;
+
+        // Send the content for summarization
+        summarizeDocument(parsedText, domain, sectionTitle)
           .then(summary => {
-            console.log("Summary:", summary);
-              sendResponse({ summary: summary });
-              storeSummary(extractedURL, summary, request.sectionTitle);
-              console.log(`Sending removePreloader message for ${request.sectionTitle} on ${extractedURL}`);
-              removeLoadingSummary(request.sectionTitle, extractedURL);
-              chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: extractedURL }, function (response) {
-                  if (chrome.runtime.lastError) {
-                      console.warn(chrome.runtime.lastError.message);
-                  }
-              });
+            sendResponse({ summary: summary });
+            storeSummary(extractedURL, summary, sectionTitle);
+            chrome.storage.local.get(['loadingSummaries'], function (result) {
+              let loadingSummaries = result.loadingSummaries || [];
+              loadingSummaries = loadingSummaries.filter(summary => !(summary.title === sectionTitle && summary.domain === domain));
+              chrome.storage.local.set({ loadingSummaries: loadingSummaries });
+            });
           })
           .catch(error => {
-              console.warn('Error:', error);
-              chrome.runtime.sendMessage({ showForm: true });
-              console.log(`Showing form for ${request.sectionTitle}`);
-              console.log(`Sending removePreloader message for ${request.sectionTitle} on ${extractedURL}`);
-              removeLoadingSummary(request.sectionTitle, extractedURL);
-              chrome.runtime.sendMessage({ type: "removePreloader", summaryName: request.sectionTitle, domain: extractedURL }, function (response) {
-                  if (chrome.runtime.lastError) {
-                      console.warn(chrome.runtime.lastError.message);
-                  }
-              });
+            console.warn('Error:', error);
+            chrome.runtime.sendMessage({ showForm: true });
+            chrome.storage.local.get(['loadingSummaries'], function (result) {
+              let loadingSummaries = result.loadingSummaries || [];
+              loadingSummaries = loadingSummaries.filter(summary => !(summary.title === sectionTitle && summary.domain === domain));
+              chrome.storage.local.set({ loadingSummaries: loadingSummaries });
+            });
           });
       });
     } else if (request.type === "updateBadge") {
@@ -256,14 +250,6 @@ function handlePDFLink(pdfUrl, callback) {
 
 function summarizeDocument(document, url, sectionTitle) {
   let domain = url;
-
-  // chrome.storage.local.get(['userPlan'], function(data) {
-  //   if (data.userPlan && data.userPlan !== "NONE") {
-  //       // Existing code to send request for summarization
-  //   } else {
-  //       console.log("Please log in to use the summarization feature.");
-  //   }
-  // });
 
   return new Promise((resolve, reject) => {
     fetch('https://docdecoder.app/summarize', {

@@ -17,8 +17,8 @@ function checkLogin() {
 // show how it works popup when installed _/
 // update summary count above _/
 // make sure preloaders work
-// Support PDF with custom summaries
-// Take user to policy page when policy title clicked 
+// Support PDF with custom summaries _/
+// Take user to policy page when policy title clicked  X (later)
 // TEST tf out of everything
 
 async function fetchAndStoreSummariesForDomain(domain) {
@@ -202,13 +202,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     displayPreloader(sectionTitle, domain);
 
-    // Send the policy link to the background script
-    chrome.runtime.sendMessage({
-      fromPopup: true,
-      action: "generateSummary",
-      url: policyLink,
-      policyName: sectionTitle,
-    });
+
+    if (policyLink.toLowerCase().endsWith('.pdf')) {
+      chrome.runtime.sendMessage({
+        fromPopup: true,
+        action: "pdf",
+        url: policyLink,
+        policyName: sectionTitle,
+      });
+    } else {
+      chrome.runtime.sendMessage({
+        fromPopup: true,
+        action: "generateSummary",
+        url: policyLink,
+        policyName: sectionTitle,
+      });
+    }
   
     // Clear the input field
     document.getElementById('policyName').value = '';
