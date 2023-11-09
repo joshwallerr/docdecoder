@@ -74,13 +74,12 @@ async function storeSummary(url, summary, sectionTitle) {
 }
 
 
-
 document.addEventListener('DOMContentLoaded', function () {
   checkLogin();
-
+  
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     let url = new URL(tabs[0].url);
-    let domainOfCurrentPage = url.hostname;
+    let domainOfCurrentPage = rootDomain(url.hostname);
     fetchAndStoreSummariesForDomain(domainOfCurrentPage);
   });
 
@@ -198,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Extracting the policy link
     let policyLink = document.getElementById('policyLink').value;
     let sectionTitle = document.getElementById('policyName').value;
-    let domain = new URL(policyLink).hostname; // MAKE SURE SUGGESTED POLICY LINKS ARE FOR THE SAME DOMAIN. IF NOT, DO NOT SUGGEST THEM.
+    let domain = rootDomain(new URL(policyLink).hostname); // MAKE SURE SUGGESTED POLICY LINKS ARE FOR THE SAME DOMAIN. IF NOT, DO NOT SUGGEST THEM.
 
     displayPreloader(sectionTitle, domain);
 
@@ -574,7 +573,7 @@ chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
   chrome.storage.local.get(['domainSummaryCounts'], function(data) {
     const currentTab = tabs[0];
     const url = new URL(currentTab.url);
-    const domain = url.hostname;
+    const domain = rootDomain(url.hostname);
 
     const counts = data.domainSummaryCounts || {};
     const summaryCount = counts[domain] || 'No';
@@ -594,7 +593,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   if (changeInfo.status === 'complete' && tab.active) {
     chrome.storage.local.get(['domainSummaryCounts'], function(data) {
       const url = new URL(tab.url);
-      const domain = url.hostname;
+      const domain = rootDomain(url.hostname);
 
       const counts = data.domainSummaryCounts || {};
       const summaryCount = counts[domain] || 'No';
@@ -677,7 +676,7 @@ function updateUserAccountInfo() {
 // Function to display and store the preloader information
 function displayPreloader(sectionTitle) {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    let currentDomain = new URL(tabs[0].url).hostname;
+    let currentDomain = rootDomain(new URL(tabs[0].url).hostname);
 
     // Get existing preloaders and add the new one
     chrome.storage.local.get(['loadingSummaries'], function (result) {
@@ -693,7 +692,7 @@ function displayPreloader(sectionTitle) {
 // Function to update preloaders display based on stored data
 function updatePreloadersDisplay() {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    let currentDomain = new URL(tabs[0].url).hostname;
+    let currentDomain = rootDomain(new URL(tabs[0].url).hostname);
     let preloaderContainer = document.getElementById('preloader-container');
     
     chrome.storage.local.get(['loadingSummaries'], function (result) {
@@ -703,14 +702,14 @@ function updatePreloadersDisplay() {
       if (relevantSummaries.length > 0) {
         preloaderContainer.innerHTML = relevantSummaries.map(summary => `Loading summary for ${summary.title}. This could take up to a minute. Feel free to close the extension whilst you wait.`).join('<br>');
         preloaderContainer.style.display = 'block';
+        document.getElementById('preloader-icon').style.display = 'block';
       } else {
         preloaderContainer.style.display = 'none';
+        document.getElementById('preloader-icon').style.display = 'none';
       }
     });
   });
 }
-
-
 
 
 
@@ -774,7 +773,7 @@ function initPopup() {
   updatePreloadersDisplay();
 
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      let currentDomain = new URL(tabs[0].url).hostname;
+      let currentDomain = rootDomain(new URL(tabs[0].url).hostname);
       console.log("domain in popup.js: " + currentDomain);
 
       chrome.storage.local.get(['summaries', 'showForm', 'domainForForm',], function (result) {
@@ -1037,6 +1036,19 @@ function sanitize_selector_value(value) {
 }
 
 
+function rootDomain(hostname) {
+  // this function was copied from Aaron Peterson on Github: https://gist.github.com/aaronpeterson/8c481deafa549b3614d3d8c9192e3908
+  let parts = hostname.split(".");
+  if (parts.length <= 2)
+      return hostname;
+
+  parts = parts.slice(-3);
+  if (['co', 'com'].indexOf(parts[1]) > -1)
+      return parts.join('.');
+
+  return parts.slice(-2).join('.');
+}
+
 function addPreloaderForSummary(summaryName, domain) {
   let container = document.getElementById('preloader-container');
     
@@ -1054,7 +1066,7 @@ function addPreloaderForSummary(summaryName, domain) {
 
   // Get the current domain and set it as a data attribute
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    let currentDomain = new URL(tabs[0].url).hostname;
+    let currentDomain = rootDomain(new URL(tabs[0].url).hostname);
     preloaderSection.setAttribute("data-domain", currentDomain);
 
     let preloader = document.createElement('div');
@@ -1083,7 +1095,7 @@ function removePreloaderForSummary(summaryName, domain) {
 
 function clearPreloadersForDomain(url) {
   // let domain = new URL(url).hostname;
-  let domain = url;
+  let domain = rootDomain(url);
   console.log("Clearing preloaders for domain: " + domain);
 
   chrome.storage.local.get(['loadingSummaries'], function (data) {

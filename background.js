@@ -3,18 +3,18 @@ chrome.runtime.onMessage.addListener(
     let extractedURL;
 
     if (request.action === "generateSummary" || request.action === "pdf") {
-      extractedURL = new URL(request.url).hostname;
+      extractedURL = rootDomain(new URL(request.url).hostname);
     } else if (request.type === "showPreloader") {
       extractedURL = request.domain;
     } else {
       extractedURL = request.fromPopup ? request.tabURL : sender.tab.url;
-      extractedURL = new URL(extractedURL).hostname;
+      extractedURL = rootDomain(new URL(extractedURL).hostname);
     }
 
     console.log(extractedURL);
 
     if (request.type === "checkboxDetected") {
-      const domain = new URL(sender.tab.url).hostname;
+      const domain = rootDomain(new URL(sender.tab.url).hostname);
       // Retrieve both notificationsEnabled and userPlan at the same time
       chrome.storage.local.get(["notificationsEnabled", "userPlan"], function(data) {
           // Check if notifications are enabled and if the user is a paid user
@@ -29,7 +29,7 @@ chrome.runtime.onMessage.addListener(
     if (request.action === "pdf" && request.url) {
       handlePDFLink(request.url, function(parsedText) {
         let sectionTitle = request.policyName;
-        let domain = new URL(request.url).hostname;
+        let domain = rootDomain(new URL(request.url).hostname);
 
         // Send the content for summarization
         summarizeDocument(parsedText, domain, sectionTitle)
@@ -65,7 +65,7 @@ chrome.runtime.onMessage.addListener(
     } else if (request.action === "generateSummary" && request.url) {
       fetchPageHTML(request.url).then(pageContent => {
         let sectionTitle = request.policyName;
-        let domain = new URL(request.url).hostname;
+        let domain = rootDomain(new URL(request.url).hostname);
 
         // Send the content for summarization
         summarizeDocument(pageContent, domain, sectionTitle)
@@ -345,4 +345,17 @@ function addToLoadingSummaries(loadingSummaryObj) {
           chrome.storage.local.set({ loadingSummaries: loadingSummaries });
       }
   });
+}
+
+function rootDomain(hostname) {
+  // this function was copied from Aaron Peterson on Github: https://gist.github.com/aaronpeterson/8c481deafa549b3614d3d8c9192e3908
+  let parts = hostname.split(".");
+  if (parts.length <= 2)
+      return hostname;
+
+  parts = parts.slice(-3);
+  if (['co', 'com'].indexOf(parts[1]) > -1)
+      return parts.join('.');
+
+  return parts.slice(-2).join('.');
 }

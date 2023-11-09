@@ -67,7 +67,18 @@ setTimeout(() => {
 
 
 
+function rootDomain(hostname) {
+  // this function was copied from Aaron Peterson on GitHub: https://gist.github.com/aaronpeterson/8c481deafa549b3614d3d8c9192e3908
+  let parts = hostname.split(".");
+  if (parts.length <= 2)
+      return hostname;
 
+  parts = parts.slice(-3);
+  if (['co', 'com'].indexOf(parts[1]) > -1)
+      return parts.join('.');
+
+  return parts.slice(-2).join('.');
+}
 
 
 
@@ -80,7 +91,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.action === "findLinks") {
         const keywords = ['privacy', 'term', 'return', 'shipping']; // Add more keywords as needed
         let linksMap = {};
-        const currentDomain = new URL(window.location.href).hostname;
+        const currentDomain = rootDomain(new URL(window.location.href).hostname);
 
         // Helper function to check if domains match considering subdomains
         const isDomainMatch = (linkDomain, currentDomain) => {
@@ -93,7 +104,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             });
 
             for (let i = foundLinks.length - 1; i >= 0; i--) {
-                const linkDomain = new URL(foundLinks[i].href, window.location.origin).hostname;
+                const linkDomain = rootDomain(new URL(foundLinks[i].href, window.location.origin).hostname);
                 if (isDomainMatch(linkDomain, currentDomain)) {
                     // Store the first link found that matches the domain condition
                     linksMap[keyword] = { href: foundLinks[i].href, text: foundLinks[i].innerText.trim() };
