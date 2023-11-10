@@ -289,7 +289,14 @@ function summarizeDocument(document, url, sectionTitle) {
             }
             return Promise.reject('PolicyTooLarge');
         });
-    }
+      } else if (response.status >= 400) {
+        return response.json().then(data => {
+          if (data.error) {
+              return data.error;
+          }
+          return Promise.reject('SommethingWentWrong');
+      });
+      }
       return response.text();  
     })
     .then(data => resolve(data))
