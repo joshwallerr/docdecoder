@@ -289,13 +289,13 @@ function summarizeDocument(document, url, sectionTitle) {
             }
             return Promise.reject('PolicyTooLarge');
         });
-      } else if (response.status >= 400) {
+      } else if (response.status === 500) {
         return response.json().then(data => {
           if (data.error) {
-              return data.error;
+              return `Sorry, something went wrong. Please try summarising this policy again.`;
           }
-          return Promise.reject('SommethingWentWrong');
-      });
+          return Promise.reject('SomethingWentWrong');
+        });
       }
       return response.text();  
     })
