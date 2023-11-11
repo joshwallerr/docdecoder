@@ -289,7 +289,7 @@ function summarizeDocument(document, url, sectionTitle) {
             }
             return Promise.reject('PolicyTooLarge');
         });
-      } else if (response.status === 500) {
+      } else if (response.status === 500 || response.status === 502) {
         return response.json().then(data => {
           if (data.error) {
               return `Sorry, something went wrong. Please try summarising this policy again.`;
