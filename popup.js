@@ -830,6 +830,16 @@ function initPopup() {
             container.appendChild(tooLargeDiv);
           }
 
+          if (domainSummaries[termType].includes("Sorry, something went wrong. Please try summarising this policy again.")) {
+            let tooLargeDiv = document.createElement('div');
+            let tooLarge = document.createElement('p');
+            tooLarge.textContent = "Sorry, something went wrong. Please try summarising this policy again.";
+            tooLargeDiv.className = "mb-4 -mt-2 p-4 bg-red-100";
+            tooLarge.className = "m-0";
+            tooLargeDiv.appendChild(tooLarge);
+            container.appendChild(tooLargeDiv);
+          }
+
           let summaryContent = formatSummaryText(domainSummaries[termType]);
           // console.log("summaryContent: " + summaryContent);
           let parser = new DOMParser();
