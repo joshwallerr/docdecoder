@@ -700,9 +700,23 @@ function updatePreloadersDisplay() {
       let relevantSummaries = loadingSummaries.filter(summary => summary.domain === currentDomain);
 
       if (relevantSummaries.length > 0) {
-        preloaderContainer.innerHTML = relevantSummaries.map(summary => `Loading summary for ${summary.title}. This could take up to a minute. Feel free to close the extension whilst you wait.`).join('<br>');
+        // Clear the existing content
+        preloaderContainer.innerHTML = '';
+
+        // Create and append each line with the class 'mt-2'
+        relevantSummaries.forEach(summary => {
+          let summaryElement = document.createElement('div');
+          summaryElement.className = 'mt-2';
+          summaryElement.textContent = `Generating summary for ${summary.title}. This could take up to 30 seconds. Feel free to close the extension whilst you wait.`;
+          preloaderContainer.appendChild(summaryElement);
+        });
+
         preloaderContainer.style.display = 'block';
         document.getElementById('preloader-icon').style.display = 'block';
+
+        let line = document.createElement('hr');
+        line.className = "my-4"; // Add some vertical margin for spacing. Adjust as needed.
+        preloaderContainer.appendChild(line);
       } else {
         preloaderContainer.style.display = 'none';
         document.getElementById('preloader-icon').style.display = 'none';
