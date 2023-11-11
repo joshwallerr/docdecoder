@@ -43,7 +43,6 @@ chrome.runtime.onMessage.addListener(
             });
           })
           .catch(error => {
-            sendResponse({ error: 'An error occurred', errorMessage: error.toString() });
             console.warn('Error:', error);
             chrome.runtime.sendMessage({ showForm: true });
             chrome.storage.local.get(['loadingSummaries'], function (result) {
@@ -51,6 +50,7 @@ chrome.runtime.onMessage.addListener(
               loadingSummaries = loadingSummaries.filter(summary => !(summary.title === sectionTitle && summary.domain === domain));
               chrome.storage.local.set({ loadingSummaries: loadingSummaries });
             });
+            sendResponse({ error: 'An error occurred', errorMessage: error.toString() });
           });
       });
     } else if (request.type === "updateBadge") {
@@ -80,14 +80,13 @@ chrome.runtime.onMessage.addListener(
             });
           })
           .catch(error => {
-            sendResponse({ error: 'An error occurred', errorMessage: error.toString() });
-            console.warn('Error:', error);
             chrome.runtime.sendMessage({ showForm: true });
             chrome.storage.local.get(['loadingSummaries'], function (result) {
               let loadingSummaries = result.loadingSummaries || [];
               loadingSummaries = loadingSummaries.filter(summary => !(summary.title === sectionTitle && summary.domain === domain));
               chrome.storage.local.set({ loadingSummaries: loadingSummaries });
             });
+            sendResponse({ error: 'An error occurred' });
           });
       });
     } else if (request.url) {

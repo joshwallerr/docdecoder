@@ -205,8 +205,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function handleResponse(response) {
       if (response.error) {
         setTimeout(function() {
-          updatePreloadersDisplay();
-        }, 1);
+          initPopup();
+        }, 3000);
       }
     }
 
