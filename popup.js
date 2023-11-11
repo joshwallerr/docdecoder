@@ -202,21 +202,21 @@ document.addEventListener('DOMContentLoaded', function () {
     displayPreloader(sectionTitle, domain);
 
 
-    if (policyLink.toLowerCase().endsWith('.pdf')) {
-      chrome.runtime.sendMessage({
-        fromPopup: true,
-        action: "pdf",
-        url: policyLink,
-        policyName: sectionTitle,
-      });
-    } else {
-      chrome.runtime.sendMessage({
-        fromPopup: true,
-        action: "generateSummary",
-        url: policyLink,
-        policyName: sectionTitle,
-      });
+    function handleResponse(response) {
+      if (response.error) {
+        setTimeout(function() {
+          updatePreloadersDisplay();
+        }, 1);
+      }
     }
+
+    const messageData = {
+      fromPopup: true,
+      action: policyLink.toLowerCase().endsWith('.pdf') ? "pdf" : "generateSummary",
+      url: policyLink,
+      policyName: sectionTitle,
+    };
+    chrome.runtime.sendMessage(messageData, handleResponse);
   
     // Clear the input field
     document.getElementById('policyName').value = '';

@@ -43,6 +43,7 @@ chrome.runtime.onMessage.addListener(
             });
           })
           .catch(error => {
+            sendResponse({ error: 'An error occurred', errorMessage: error.toString() });
             console.warn('Error:', error);
             chrome.runtime.sendMessage({ showForm: true });
             chrome.storage.local.get(['loadingSummaries'], function (result) {
@@ -79,6 +80,7 @@ chrome.runtime.onMessage.addListener(
             });
           })
           .catch(error => {
+            sendResponse({ error: 'An error occurred', errorMessage: error.toString() });
             console.warn('Error:', error);
             chrome.runtime.sendMessage({ showForm: true });
             chrome.storage.local.get(['loadingSummaries'], function (result) {
@@ -265,51 +267,36 @@ function summarizeDocument(document, url, sectionTitle) {
       }),
     })
     .then(response => {
-      // Check if the status code is 429
-      if (response.status === 429) {
-        response.json().then(data => {
-          let rateLimitExceededmsg;
-          if (data.error === "You've exceeded your monthly summary limit for the FREE plan") {
-            rateLimitExceededmsg = `You've exceeded your monthly summary limit for the FREE plan. Please <a id="premium-subscribe-txt-sums" href="#" class="underline">subscribe</a> for unlimited summaries.`;
-          } else if (data.error === "You've been rate limited") {
-            rateLimitExceededmsg = "Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@docdecoder.app.";
-          } else {
-            rateLimitExceededmsg = "Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@docdecoder.app.";
-          }
-          chrome.storage.local.set({ rateLimitExceeded: rateLimitExceededmsg });
-          chrome.runtime.sendMessage({ type: 'showRateLimitMsg', rateLimitExceeded: rateLimitExceededmsg });
-          return Promise.reject('RateLimitExceeded');
-        });
-      } else if (response.status === 403) {
-        chrome.runtime.sendMessage({ type: "logUserOut" });
-      } else if (response.status === 400) {
+      if (response.status === 429 || response.status === 403 || response.status === 400 || response.status === 500 || response.status === 502) {
         return response.json().then(data => {
-            if (data.error === "Sorry, this policy was too large for our servers to handle. We're working on a solution for this.") {
-                return `Sorry, this policy was too large for our servers to handle. We're working on a solution for this.`;
+          let message;
+          if (response.status === 429) {
+            if (data.error === "You've exceeded your monthly summary limit for the FREE plan") {
+              message = `You've exceeded your monthly summary limit for the FREE plan. Please <a id="premium-subscribe-txt-sums" href="#" class="underline">subscribe</a> for unlimited summaries.`;
+            } else {
+              message = "Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@docdecoder.app.";
             }
-            return Promise.reject('PolicyTooLarge');
-        });
-      } else if (response.status === 500 || response.status === 502) {
-        return response.json().then(data => {
-          if (data.error) {
-              return `Sorry, something went wrong. Please try summarising this policy again.`;
+            chrome.storage.local.set({ rateLimitExceeded: message });
+            chrome.runtime.sendMessage({ type: 'showRateLimitMsg', rateLimitExceeded: message });
+          } else if (response.status === 403) {
+            chrome.runtime.sendMessage({ type: "logUserOut" });
+          } else if (response.status === 400) {
+            if (data.error === "Sorry, this policy was too large for our servers to handle. We're working on a solution for this.") {
+              message = `Sorry, this policy was too large for our servers to handle. We're working on a solution for this.`;
+            }
+          } else if (response.status === 500 || response.status === 502) {
+            if (data.error) {
+              message = `Sorry, something went wrong. Please try summarising this policy again.`;
+            }
           }
-          return Promise.reject('SomethingWentWrong');
+          return Promise.reject(message || 'Error');
         });
+      } else {
+        return response.text();
       }
-      return response.text();  
     })
     .then(data => resolve(data))
-    .catch(error => {
-      if (error.message === 'RateLimitExceeded') {
-        // Return the rate limit error message
-        reject("Please slow down, you've made a very high volume of requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@docdecoder.app");
-      }else if (error.message === "Sorry, this policy was too large for our servers to handle. We're working on a solution for this.") {
-        reject(error.message);
-      } else {
-        reject(error);
-      }
-    });
+    .catch(error => reject(error));
   });
 }
 
