@@ -294,8 +294,36 @@ function summarizeDocument(document, url, sectionTitle) {
         return response.text();
       }
     })
-    .then(data => resolve(data))
-    .catch(error => reject(error));
+    .then(data => {
+      // On successful summary generation
+      clearSummaryError(domain, sectionTitle); // Clear any existing error
+      resolve(data); // Continue with the existing flow
+    })
+    .catch(error => {
+      handleSummaryError(domain, sectionTitle, error); // Store the error message
+      reject(error); // Continue with the existing flow
+    });
+  });
+}
+
+function clearSummaryError(domain, sectionTitle) {
+  chrome.storage.local.get(['summaryErrors'], function (result) {
+    let summaryErrors = result.summaryErrors || {};
+    if (summaryErrors[domain] && summaryErrors[domain][sectionTitle]) {
+      delete summaryErrors[domain][sectionTitle];
+      chrome.storage.local.set({ summaryErrors: summaryErrors });
+    }
+  });
+}
+
+function handleSummaryError(domain, sectionTitle, errorMessage) {
+  chrome.storage.local.get(['summaryErrors'], function (result) {
+    let summaryErrors = result.summaryErrors || {};
+    if (!summaryErrors[domain]) {
+      summaryErrors[domain] = {};
+    }
+    summaryErrors[domain][sectionTitle] = errorMessage;
+    chrome.storage.local.set({ summaryErrors: summaryErrors });
   });
 }
 

@@ -790,15 +790,44 @@ function initPopup() {
       let currentDomain = rootDomain(new URL(tabs[0].url).hostname);
       console.log("domain in popup.js: " + currentDomain);
 
-      chrome.storage.local.get(['summaries', 'showForm', 'domainForForm',], function (result) {
+      chrome.storage.local.get(['summaries', 'showForm', 'domainForForm', 'summaryErrors'], function (result) {
         let summaries = result.summaries || {};
+        let summaryErrors = result.summaryErrors || {};
         let domainSummaries = summaries[currentDomain] || {};
+        let domainErrors = summaryErrors[currentDomain] || {};
 
         if (result.showForm && result.domainForForm === currentDomain) {
             document.getElementById("errorPrompt").style.display = "block";
         } else {
             document.getElementById("errorPrompt").style.display = "none";
         }
+
+
+        // Retrieve and display errors for each termType in domainErrors
+        for (let termType in domainErrors) {
+          if (domainErrors.hasOwnProperty(termType)) {
+            let errorContainer = document.getElementById('errorContainer');
+            errorContainer.style.display = 'block';
+
+            // create div inside errorContainer
+            let errorDiv = document.createElement('div');
+            let errorMsg = document.createElement('p');
+            errorMsg.innerHTML = '<strong>' + termType + '</strong>: ' + domainErrors[termType];
+            errorDiv.className = "mb-2.5 mt-2 p-4 border-l-4 border-red-500 bg-red-100";
+            errorMsg.className = "m-0";
+            errorDiv.appendChild(errorMsg);
+            errorContainer.appendChild(errorDiv);
+
+            // Optionally, remove the error and summary from storage
+            delete domainErrors[termType];
+            delete domainSummaries[termType];
+          }
+        }
+
+        // Update storage after removing errors and summaries
+        chrome.storage.local.set({ summaryErrors: summaryErrors, summaries: summaries }, function() {
+          console.log('Storage updated after removing errors and summaries');
+        });
 
         const blockPatterns = [
           /javascript.+required/i,
@@ -853,9 +882,9 @@ function initPopup() {
             tooLargeDiv.appendChild(tooLarge);
             container.appendChild(tooLargeDiv);
           }
-
+          
           let summaryContent = formatSummaryText(domainSummaries[termType]);
-          // console.log("summaryContent: " + summaryContent);
+          
           let parser = new DOMParser();
           let summaryDoc = parser.parseFromString(summaryContent, 'text/html');
 
@@ -918,41 +947,41 @@ function initPopup() {
               }
           });
 
-        // New Code: Add a text box and a "send" button for AI questions
-        let aiQuestionFormContainer = document.createElement('div');
-        aiQuestionFormContainer.className = 'aiQuestionFormContainer';
+          // New Code: Add a text box and a "send" button for AI questions
+          let aiQuestionFormContainer = document.createElement('div');
+          aiQuestionFormContainer.className = 'aiQuestionFormContainer';
 
-        let submissionMessageId = `submissionMessage-${i}`; // use loop index to generate unique ID
+          let submissionMessageId = `submissionMessage-${i}`; // use loop index to generate unique ID
 
-        let submissionMessage = document.createElement('p');
-        submissionMessage.id = submissionMessageId;
-        submissionMessage.textContent = 'Submitted successfully, please wait for the response';
-        submissionMessage.style.display = 'none'; // Initially hidden
-        submissionMessage.className = 'text-sm text-blue-500 mt-2'; // Some styling, adjust as needed
-        aiQuestionFormContainer.appendChild(submissionMessage);
-        
-        let label = document.createElement('label');
-        label.setAttribute('for', 'hs-trailing-button-add-on');
-        label.className = 'sr-only';
-        label.textContent = 'Label';
-        aiQuestionFormContainer.appendChild(label);
+          let submissionMessage = document.createElement('p');
+          submissionMessage.id = submissionMessageId;
+          submissionMessage.textContent = 'Submitted successfully, please wait for the response';
+          submissionMessage.style.display = 'none'; // Initially hidden
+          submissionMessage.className = 'text-sm text-blue-500 mt-2'; // Some styling, adjust as needed
+          aiQuestionFormContainer.appendChild(submissionMessage);
+          
+          let label = document.createElement('label');
+          label.setAttribute('for', 'hs-trailing-button-add-on');
+          label.className = 'sr-only';
+          label.textContent = 'Label';
+          aiQuestionFormContainer.appendChild(label);
 
-        let flexContainer = document.createElement('div');
-        flexContainer.className = 'flex rounded-md shadow-sm';
+          let flexContainer = document.createElement('div');
+          flexContainer.className = 'flex rounded-md shadow-sm';
 
-        let aiQuestionInput = document.createElement('input');
-        aiQuestionInput.type = 'text';
-        aiQuestionInput.id = 'hs-trailing-button-add-on';
-        aiQuestionInput.name = 'hs-trailing-button-add-on';
-        aiQuestionInput.placeholder = 'Ask AI anything about this document';
-        aiQuestionInput.className = 'py-3 px-4 block w-full border-gray-200 shadow-sm rounded-l-md text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 bg-gray-100';
-        flexContainer.appendChild(aiQuestionInput);
+          let aiQuestionInput = document.createElement('input');
+          aiQuestionInput.type = 'text';
+          aiQuestionInput.id = 'hs-trailing-button-add-on';
+          aiQuestionInput.name = 'hs-trailing-button-add-on';
+          aiQuestionInput.placeholder = 'Ask AI anything about this document';
+          aiQuestionInput.className = 'py-3 px-4 block w-full border-gray-200 shadow-sm rounded-l-md text-sm focus:z-10 focus:border-blue-500 focus:ring-blue-500 bg-gray-100';
+          flexContainer.appendChild(aiQuestionInput);
 
-        let sendButton = document.createElement('button');
-        sendButton.type = 'button';
-        sendButton.textContent = 'Ask';
-        sendButton.className = 'py-3 px-4 inline-flex flex-shrink-0 justify-center items-center gap-2 rounded-r-md rounded-l-none border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm';
-        sendButton.addEventListener('click', function () {
+          let sendButton = document.createElement('button');
+          sendButton.type = 'button';
+          sendButton.textContent = 'Ask';
+          sendButton.className = 'py-3 px-4 inline-flex flex-shrink-0 justify-center items-center gap-2 rounded-r-md rounded-l-none border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm';
+          sendButton.addEventListener('click', function () {
 
           let userQuestion = aiQuestionInput.value;
           aiQuestionInput.value = '';
