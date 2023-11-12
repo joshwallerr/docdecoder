@@ -856,6 +856,10 @@ video {
   height: 2rem;
 }
 
+.max-h-\[28rem\] {
+  max-height: 28rem;
+}
+
 .max-h-full {
   max-height: 100%;
 }
@@ -987,6 +991,10 @@ video {
   --tw-space-y-reverse: 0;
   margin-top: calc(2rem * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(2rem * var(--tw-space-y-reverse));
+}
+
+.overflow-auto {
+  overflow: auto;
 }
 
 .overflow-y-auto {
