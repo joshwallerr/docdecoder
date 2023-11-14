@@ -261,9 +261,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('exit-premium-container-toacct').style.display = 'block';
 
     var aiGif = document.getElementById('ai-gif');
-    var customGif = document.getElementById('custom-gif');
     aiGif.src = aiGif.dataset.src;
-    customGif.src = customGif.dataset.src;
   });
 
   document.getElementById("exit-premium-container-toacct").addEventListener("click", function () {
@@ -271,9 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('premium-container').style.display = 'none';
 
     var aiGif = document.getElementById('ai-gif');
-    var customGif = document.getElementById('custom-gif');
     aiGif.removeAttribute('src');
-    customGif.removeAttribute('src');
   });
 
   document.getElementById("monthly").addEventListener("click", function () {
@@ -325,9 +321,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('exit-premium-container-toacct').style.display = 'none';
 
         var aiGif = document.getElementById('ai-gif');
-        var customGif = document.getElementById('custom-gif');
         aiGif.src = aiGif.dataset.src;
-        customGif.src = customGif.dataset.src;
       });    
     }
   });
@@ -339,9 +333,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('exit-premium-container-toacct').style.display = 'none';
 
     var aiGif = document.getElementById('ai-gif');
-    var customGif = document.getElementById('custom-gif');
     aiGif.src = aiGif.dataset.src;
-    customGif.src = customGif.dataset.src;
   });
   
   document.getElementById('exit-premium-container-tomain').addEventListener('click', function () {
@@ -349,9 +341,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('main-extension-content').style.display = 'block';
 
     var aiGif = document.getElementById('ai-gif');
-    var customGif = document.getElementById('custom-gif');
     aiGif.removeAttribute('src');
-    customGif.removeAttribute('src');
   });
 
 
@@ -364,9 +354,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('exit-premium-container-toacct').style.display = 'block';
 
     var aiGif = document.getElementById('ai-gif');
-    var customGif = document.getElementById('custom-gif');
     aiGif.src = aiGif.dataset.src;
-    customGif.src = customGif.dataset.src;
   });
 
   document.getElementById('premium-subscribe-txt').addEventListener('click', function () {
@@ -376,9 +364,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('exit-premium-container-toacct').style.display = 'none';
 
     var aiGif = document.getElementById('ai-gif');
-    var customGif = document.getElementById('custom-gif');
     aiGif.src = aiGif.dataset.src;
-    customGif.src = customGif.dataset.src;
   });
 
   document.getElementById('close-intro').addEventListener('click', function () {
@@ -755,9 +741,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       document.getElementById('exit-premium-container-toacct').style.display = 'none';
 
       var aiGif = document.getElementById('ai-gif');
-      var customGif = document.getElementById('custom-gif');
       aiGif.src = aiGif.dataset.src;
-      customGif.src = customGif.dataset.src;
     });
   }
 });
