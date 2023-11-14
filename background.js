@@ -275,9 +275,12 @@ function summarizeDocument(document, url, sectionTitle) {
             } else {
               message = "Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@docdecoder.app.";
             }
-            chrome.storage.local.set({ rateLimitExceeded: message });
-            chrome.runtime.sendMessage({ type: 'showRateLimitMsg', rateLimitExceeded: message });
+            // chrome.storage.local.set({ rateLimitExceeded: message });
+            // chrome.runtime.sendMessage({ type: 'showRateLimitMsg', rateLimitExceeded: message });
           } else if (response.status === 403) {
+            if (data.error) {
+              message = `We couldn't authenticate your request, please log in again.`;
+            }
             chrome.runtime.sendMessage({ type: "logUserOut" });
           } else if (response.status === 400) {
             if (data.error === "Sorry, this policy was too large for our servers to handle. We're working on a solution for this.") {
