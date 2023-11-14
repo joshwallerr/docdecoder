@@ -821,13 +821,13 @@ function initPopup() {
             // Optionally, remove the error and summary from storage
             delete domainErrors[termType];
             delete domainSummaries[termType];
+          
+            // Update storage after removing errors and summaries
+            chrome.storage.local.set({ summaryErrors: summaryErrors, summaries: summaries }, function() {
+              console.log('Storage updated after removing errors and summaries');
+            });
           }
         }
-
-        // Update storage after removing errors and summaries
-        chrome.storage.local.set({ summaryErrors: summaryErrors, summaries: summaries }, function() {
-          console.log('Storage updated after removing errors and summaries');
-        });
 
         const blockPatterns = [
           /javascript.+required/i,
