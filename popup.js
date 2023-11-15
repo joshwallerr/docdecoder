@@ -643,7 +643,7 @@ function updateUserAccountInfo() {
 
     document.getElementById('current-plan').innerText = data.plan;
     if (data.plan === "FREE") {
-      document.getElementById('usage-info').innerHTML = `You've used <span class="font-semibold">${data.summariesCount} of 2</span> summaries this month.`;
+      document.getElementById('usage-info').innerHTML = `You've used <span class="font-semibold">${data.summariesCount} of 2</span> summary tokens this month.`;
       if (data.summariesCount === 2) {
         document.getElementById('upgrade-premium-txt').style.display = 'block';
       }
