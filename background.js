@@ -25,14 +25,26 @@ chrome.runtime.onMessage.addListener(
           }
       });
     }
-
+       
     if (request.action === "pdf" && request.url) {
-      handlePDFLink(request.url, function(parsedText) {
-        let sectionTitle = request.policyName;
-        let domain = rootDomain(new URL(request.url).hostname);
+      handlePDFLink(request.url, function(error, parsedText) {
+        if (error) {
+          let sectionTitle = request.policyName;
+          let domain = rootDomain(new URL(request.url).hostname);
+        
+          chrome.runtime.sendMessage({ showForm: true });
+          chrome.storage.local.get(['loadingSummaries'], function (result) {
+            let loadingSummaries = result.loadingSummaries || [];
+            loadingSummaries = loadingSummaries.filter(summary => !(summary.title === sectionTitle && summary.domain === domain));
+            chrome.storage.local.set({ loadingSummaries: loadingSummaries });
+          });
+          sendResponse({ error: 'An error occurred' });        
+        } else {
+          let sectionTitle = request.policyName;
+          let domain = rootDomain(new URL(request.url).hostname);
 
-        // Send the content for summarization
-        summarizeDocument(parsedText, domain, sectionTitle)
+          // Send the content for summarization
+          summarizeDocument(parsedText, domain, sectionTitle)
           .then(summary => {
             sendResponse({ summary: summary });
             storeSummary(extractedURL, summary, sectionTitle);
@@ -52,6 +64,7 @@ chrome.runtime.onMessage.addListener(
             });
             sendResponse({ error: 'An error occurred', errorMessage: error.toString() });
           });
+        }
       });
     } else if (request.type === "updateBadge") {
       let tabId = parseInt(sender.tab.id, 10);
@@ -64,10 +77,9 @@ chrome.runtime.onMessage.addListener(
         chrome.action.setBadgeBackgroundColor({ color: '#22c55e' });
       }
     } else if (request.action === "generateSummary" && request.url) {
-      fetchPageHTML(request.url).then(pageContent => {
-        let sectionTitle = request.policyName;
-        let domain = rootDomain(new URL(request.url).hostname);
-
+      let sectionTitle = request.policyName;
+      let domain = rootDomain(new URL(request.url).hostname);
+      fetchPageHTML(request.url, domain, sectionTitle).then(pageContent => {
         // Send the content for summarization
         summarizeDocument(pageContent, domain, sectionTitle)
           .then(summary => {
@@ -88,7 +100,15 @@ chrome.runtime.onMessage.addListener(
             });
             sendResponse({ error: 'An error occurred' });
           });
-      });
+        }).catch(error => {
+          chrome.runtime.sendMessage({ showForm: true });
+          chrome.storage.local.get(['loadingSummaries'], function (result) {
+            let loadingSummaries = result.loadingSummaries || [];
+            loadingSummaries = loadingSummaries.filter(summary => !(summary.title === sectionTitle && summary.domain === domain));
+            chrome.storage.local.set({ loadingSummaries: loadingSummaries });
+          });
+          sendResponse({ error: 'An error occurred' });        
+        });
     } else if (request.url) {
       fetchPageHTML(request.url)
         .then(html => {
@@ -202,10 +222,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
 //   }
 // });
 
-function fetchPageHTML(url) {
-  return fetch(url)
-    .then(response => response.text());
-}
 
 
 function sendCheckboxNotification(domain) {
@@ -242,12 +258,32 @@ function handlePDFLink(pdfUrl, callback) {
   })
   .then(response => response.text())
   .then(parsedText => {
-      callback(parsedText);
+      callback(null, parsedText); // First argument is error, which is null in this case
   })
   .catch(error => {
-      console.warn("Error processing the PDF:", error);
+    handleSummaryError(domain, sectionTitle, error); // Store the error message
+    reject(error); // Continue with the existing flow
   });
 }
+
+
+function fetchPageHTML(url, domain, sectionTitle) {
+  return new Promise((resolve, reject) => {
+    fetch(url)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.text();
+      })
+      .then(text => resolve(text))
+      .catch(error => {
+        handleSummaryError(domain, sectionTitle, error.toString());
+        reject(error);
+      });
+  });
+}
+
 
 function summarizeDocument(document, url, sectionTitle) {
   let domain = url;
