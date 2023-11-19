@@ -272,7 +272,7 @@ function fetchPageHTML(url, domain, sectionTitle) {
     fetch(url)
       .then(response => {
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error('The URL you entered could not be found. Please check the URL and try again.');
         }
         return response.text();
       })

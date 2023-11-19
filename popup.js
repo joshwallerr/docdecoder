@@ -660,14 +660,18 @@ function updateUserAccountInfo() {
 
 
 // Function to display and store the preloader information
-function displayPreloader(sectionTitle) {
+function displayPreloader(sectionTitle, domain) {
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     let currentDomain = rootDomain(new URL(tabs[0].url).hostname);
+
+    if (domain !== currentDomain) {
+      document.getElementById('differentSitePrompt').style.display = 'block';
+    }
 
     // Get existing preloaders and add the new one
     chrome.storage.local.get(['loadingSummaries'], function (result) {
       let loadingSummaries = result.loadingSummaries || [];
-      loadingSummaries.push({ title: sectionTitle, domain: currentDomain });
+      loadingSummaries.push({ title: sectionTitle, domain: domain });
       chrome.storage.local.set({ loadingSummaries: loadingSummaries });
 
       updatePreloadersDisplay();

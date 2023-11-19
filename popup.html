@@ -54,6 +54,9 @@
       <div id="errorContainer" style="display: none;">
       </div>
 
+      <p id="differentSitePrompt" style="display: none;"
+        class="mt-2.5 p-3 border-l-4 border-blue-500 bg-blue-100 rounded-r-lg">The policy you just summarised is located on a different website. To see it, please open the extension on that website.</p>
+
       <p id="errorPrompt" style="display: none;"
         class="mt-2.5 p-3 border-l-4 border-yellow-500 bg-yellow-100 rounded-r-lg">We've detected a consent checkbox on this page. Before accepting, you can generate a summary using the form below.</p>
 
@@ -98,8 +101,8 @@
                   <div class="flex flex-col justify-center">
                     <p>If we haven't summarised a policy yet, you can create your own summary using the form below.</p>
                     <p class="font-semibold">Each summary you generate costs 1 summary token.</p>
-                    <input type="text" name="policyLink" id="policyLink" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 mx-auto rounded-t-2xl" placeholder="Link to policy (e.g. https://example.com/terms)" required="">
-                    <input type="text" id="policyName" class="bg-gray-50 border border-t-0 border-gray-300 text-gray-900 sm:text-sm focus:ring-primary-600 focus:border-primary-600 w-full p-2.5 mx-auto rounded-b-2xl" placeholder="Policy name (e.g. Terms and Conditions)" required="">
+                    <input type="url" name="policyLink" id="policyLink" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 mx-auto rounded-t-2xl" placeholder="Link to policy (e.g. https://example.com/terms)" required="">
+                    <input type="text" id="policyName" class="bg-gray-50 border border-t-0 border-gray-300 text-gray-900 sm:text-sm focus:ring-primary-600 focus:border-primary-600 w-full p-2.5 mx-auto rounded-b-2xl" placeholder="Policy name (e.g. Terms and Conditions)" required="" pattern="[A-Za-z&']*">
                   </div>
                   <div id="suggested-links" class="text-xs">
                     <p class="font-semibold text-sm mb-1">Suggested links:</p>
