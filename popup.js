@@ -734,19 +734,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   } else if (message.type === "logUserOut") {
     logUserOut();
   } else if (message.type === "showRateLimitMsg") {
-    const rateLimitMessage = document.getElementById('rateLimitMessage');
-    rateLimitMessage.style.display = 'block';
-    rateLimitMessage.querySelector('p').innerHTML = message.rateLimitExceeded;
-    chrome.storage.local.remove('rateLimitExceeded');
-    document.getElementById('premium-subscribe-txt-sums').addEventListener('click', function () {
-      document.getElementById('main-extension-content').style.display = 'none';
-      document.getElementById('premium-container').style.display = 'block';
-      document.getElementById('exit-premium-container-tomain').style.display = 'block';
-      document.getElementById('exit-premium-container-toacct').style.display = 'none';
 
-      var aiGif = document.getElementById('ai-gif');
-      aiGif.src = aiGif.dataset.src;
-    });
   }
 });
 
@@ -806,10 +794,25 @@ function initPopup() {
             errorDiv.appendChild(errorMsg);
             errorContainer.appendChild(errorDiv);
 
+            if (domainErrors[termType] && domainErrors[termType].includes("premium-subscribe-txt-sums")) {
+              document.getElementById('premium-subscribe-txt-sums').addEventListener('click', function () {
+                document.getElementById('main-extension-content').style.display = 'none';
+                document.getElementById('premium-container').style.display = 'block';
+                document.getElementById('exit-premium-container-tomain').style.display = 'block';
+                document.getElementById('exit-premium-container-toacct').style.display = 'none';
+            
+                var aiGif = document.getElementById('ai-gif');
+                aiGif.src = aiGif.dataset.src;
+              });
+            }
+            
             // Optionally, remove the error and summary from storage
             delete domainErrors[termType];
-            delete domainSummaries[termType];
-          
+
+            if (domainSummaries[termType] && !domainSummaries[termType].includes('<h4 id=')) {
+              delete domainSummaries[termType];
+            }            
+
             // Update storage after removing errors and summaries
             chrome.storage.local.set({ summaryErrors: summaryErrors, summaries: summaries }, function() {
               console.log('Storage updated after removing errors and summaries');
@@ -823,6 +826,7 @@ function initPopup() {
           /bot detected/i,
           /captcha/i,
           /blocked/i,
+          /javascript.+enable/i,
         ];
 
         let container = document.getElementById('summaries-container');
@@ -844,7 +848,7 @@ function initPopup() {
           if (blockPatterns.some(pattern => pattern.test(domainSummaries[termType]))) {
             let warningDiv = document.createElement('div');
             let warning = document.createElement('p');
-            warning.textContent = "Note: This summary may have failed due to the website's use of CAPTCHAs. If you cannot see the expected summary, please manually create one using the form above.";
+            warning.textContent = "Note: This summary may have failed due to the website's use of CAPTCHAs. We're working on a solution for this.";
             warningDiv.className = "mb-4 -mt-2 p-4 bg-red-100";
             warning.className = "m-0";
             warningDiv.appendChild(warning);
