@@ -409,6 +409,20 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById("notifs-toggle").addEventListener("change", function(e) {
     chrome.storage.local.set({ notificationsEnabled: e.target.checked });
   });
+
+  document.getElementById('policyName').addEventListener('input', function (e) {
+    if (!e.target.validity.valid) {
+        e.target.setCustomValidity("Policy names can only contain letters, apostrophes ('), numbers, spaces and ampersand symbols (&).");
+    } else {
+        e.target.setCustomValidity("");
+    }
+  });
+
+  document.getElementById('policyName').addEventListener('invalid', function (e) {
+      if (!e.target.validity.valid) {
+          e.target.setCustomValidity("Policy names can only contain letters, apostrophes ('), numbers, spaces and ampersand symbols (&).");
+      }
+  });
 });
 
 function redirectToLoginIfNotAuthenticated(planType) {
@@ -998,17 +1012,19 @@ function initPopup() {
 
             if (data.error) {
               alert(data.error);
-            } else {
+            } else if (data.answer) {
               // Update and show the AI response popup
               document.getElementById('aiResponseText').textContent = data.answer; // Assuming the AI response is in an 'answer' key.
               document.getElementById('aiResponsePopup').style.display = 'block';
+            } else {
+              alert('No answer found');
             }
+
+
           })
           .catch(error => {
             document.getElementById(submissionMessageId).style.display = 'none';
-
-            console.warn('Error asking AI:', error);
-          });
+        });
         });
         flexContainer.appendChild(sendButton);
 
@@ -1023,6 +1039,7 @@ function initPopup() {
         }
       }
     });
+    updatePremiumFeaturesVisibility();
   });
 }
 
