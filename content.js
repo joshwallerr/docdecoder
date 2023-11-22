@@ -89,7 +89,7 @@ function rootDomain(hostname) {
 // FOR SUGGESTED LINKS
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.action === "findLinks") {
-        const keywords = ['privacy', 'term', 'return', 'shipping']; // Add more keywords as needed
+        const keywords = ['privacy', 'term', 'return', 'shipping', 'legal', 'cookie']; // Add more keywords as needed
         let linksMap = {};
         const currentDomain = rootDomain(new URL(window.location.href).hostname);
 

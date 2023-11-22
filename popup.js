@@ -16,7 +16,7 @@ function checkLogin() {
 // todo
 // show how it works popup when installed _/
 // update summary count above _/
-// make sure preloaders work
+// make sure preloaders work _/
 // Support PDF with custom summaries _/
 // Take user to policy page when policy title clicked  X (later)
 // TEST tf out of everything
@@ -168,15 +168,24 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
+  document.getElementById('policyLink').addEventListener('change', saveFormData);
+  document.getElementById('policyName').addEventListener('change', saveFormData);
 
   document.getElementById('gensum-btn').addEventListener('click', function () {
     document.getElementById('gensum-container').style.display = 'flex';
     document.body.style.height = `600px`;
+    saveFormState();
+    // Store timestamp in local storage
+    localStorage.setItem('formOpenTimestamp', Date.now().toString());
   });
+  
 
   document.getElementById('exit-gensum-container').addEventListener('click', function () {
     document.getElementById('gensum-container').style.display = 'none';
     document.body.style.height = 'auto';
+    saveFormState();
+    // Clear inputs and local storage
+    clearFormData();
   });
 
   // document.getElementById('policyLink').addEventListener('input', function(e) {
@@ -396,16 +405,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }
   });
 
-
-  // DISABLE NOTIFICATIONS FOR FREE USERS!!!
-  // DISABLE NOTIFICATIONS FOR FREE USERS!!!
-  // DISABLE NOTIFICATIONS FOR FREE USERS!!!
-  // DISABLE NOTIFICATIONS FOR FREE USERS!!!
-  // DISABLE NOTIFICATIONS FOR FREE USERS!!!
-  // DISABLE NOTIFICATIONS FOR FREE USERS!!!
-  // DISABLE NOTIFICATIONS FOR FREE USERS!!!
-  // DISABLE NOTIFICATIONS FOR FREE USERS!!!
-
   document.getElementById("notifs-toggle").addEventListener("change", function(e) {
     chrome.storage.local.set({ notificationsEnabled: e.target.checked });
   });
@@ -423,7 +422,53 @@ document.addEventListener('DOMContentLoaded', function () {
           e.target.setCustomValidity("Policy names can only contain letters, apostrophes ('), numbers, spaces and ampersand symbols (&).");
       }
   });
+  
+  const isFormOpen = localStorage.getItem('isFormOpen') === 'true';
+  const formOpenTimestamp = parseInt(localStorage.getItem('formOpenTimestamp') || '0');
+  const currentTime = Date.now();
+
+  // Check if more than 1 minute has passed
+  if (isFormOpen && (currentTime - formOpenTimestamp > 60000)) { // 60000 ms = 1 minute
+    // Close the form and clear the data
+    document.getElementById('gensum-container').style.display = 'none';
+    document.body.style.height = 'auto';
+    clearFormData();
+    localStorage.setItem('isFormOpen', 'false');
+  } else if (isFormOpen) {
+    document.getElementById('gensum-container').style.display = 'flex';
+    document.body.style.height = `600px`;
+  }
+
+  const policyLink = localStorage.getItem('policyLink');
+  const policyName = localStorage.getItem('policyName');
+
+  if (policyLink !== null) {
+    document.getElementById('policyLink').value = policyLink;
+  }
+
+  if (policyName !== null) {
+    document.getElementById('policyName').value = policyName;
+  }
 });
+
+function saveFormData() {
+  const policyLink = document.getElementById('policyLink').value;
+  const policyName = document.getElementById('policyName').value;
+  localStorage.setItem('policyLink', policyLink);
+  localStorage.setItem('policyName', policyName);
+}
+
+function saveFormState() {
+  const isFormOpen = document.getElementById('gensum-container').style.display === 'flex';
+  localStorage.setItem('isFormOpen', isFormOpen);
+}
+
+function clearFormData() {
+  document.getElementById('policyLink').value = '';
+  document.getElementById('policyName').value = '';
+  localStorage.removeItem('policyLink');
+  localStorage.removeItem('policyName');
+}
 
 function redirectToLoginIfNotAuthenticated(planType) {
   isUserAuthenticated().then(isAuthenticated => {
