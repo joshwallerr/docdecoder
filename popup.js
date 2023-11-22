@@ -231,6 +231,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('policyName').value = '';
     document.getElementById('policyLink').value = '';
 
+    localStorage.removeItem('policyLink');
+    localStorage.removeItem('policyName');
+    localStorage.setItem('isFormOpen', 'false');
+
     document.getElementById('gensum-container').style.display = 'none';
     document.body.style.height = 'auto';
 
