@@ -27,7 +27,10 @@ chrome.runtime.onMessage.addListener(
     }
        
     if (request.action === "pdf" && request.url) {
-      handlePDFLink(request.url, function(error, parsedText) {
+      let sectionTitle = request.policyName;
+      let domain = rootDomain(new URL(request.url).hostname);
+
+      handlePDFLink(request.url, domain, sectionTitle, function(error, parsedText) {
         if (error) {
           let sectionTitle = request.policyName;
           let domain = rootDomain(new URL(request.url).hostname);
@@ -55,14 +58,13 @@ chrome.runtime.onMessage.addListener(
             });
           })
           .catch(error => {
-            console.warn('Error:', error);
             chrome.runtime.sendMessage({ showForm: true });
             chrome.storage.local.get(['loadingSummaries'], function (result) {
               let loadingSummaries = result.loadingSummaries || [];
               loadingSummaries = loadingSummaries.filter(summary => !(summary.title === sectionTitle && summary.domain === domain));
               chrome.storage.local.set({ loadingSummaries: loadingSummaries });
             });
-            sendResponse({ error: 'An error occurred', errorMessage: error.toString() });
+            sendResponse({ error: 'An error occurred' });
           });
         }
       });
@@ -248,7 +250,7 @@ function sendCheckboxNotification(domain) {
 //     .then(data => data.html);
 // }
 
-function handlePDFLink(pdfUrl, callback) {
+function handlePDFLink(pdfUrl, domain, sectionTitle, callback) {
   fetch('https://docdecoder.app/parsepdf', {
       method: 'POST',
       headers: {
@@ -256,15 +258,24 @@ function handlePDFLink(pdfUrl, callback) {
       },
       body: JSON.stringify({ url: pdfUrl })
   })
-  .then(response => response.text())
+  .then(response => {
+      if (!response.ok) {
+          throw new Error("We've temporarily disabled support for PDF summarisation whilst we work on a more efficient process for extracting PDF text. We're very sorry for the inconvenience, this feature will be back very soon.");
+      }
+      return response.text();
+  })
   .then(parsedText => {
+      console.log("Parsed text: " + parsedText);
       callback(null, parsedText); // First argument is error, which is null in this case
   })
   .catch(error => {
-    handleSummaryError(domain, sectionTitle, error); // Store the error message
-    reject(error); // Continue with the existing flow
+    console.log("Error: " + error);
+    handleSummaryError(domain, sectionTitle, error.toString()); // Store the error message
+    callback(error, null); // Pass the error to the callback
   });
 }
+
+
 
 
 function fetchPageHTML(url, domain, sectionTitle) {
