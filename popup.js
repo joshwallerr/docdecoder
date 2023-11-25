@@ -412,20 +412,23 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById("notifs-toggle").addEventListener("change", function(e) {
     chrome.storage.local.set({ notificationsEnabled: e.target.checked });
   });
+  
+  var policyInput = document.getElementById('policyName');
 
-  document.getElementById('policyName').addEventListener('input', function (e) {
-    if (!e.target.validity.valid) {
-        e.target.setCustomValidity("Policy names can only contain letters, apostrophes ('), numbers, spaces and ampersand symbols (&).");
-    } else {
-        e.target.setCustomValidity("");
-    }
+  policyInput.addEventListener('invalid', function(event) {
+      // Prevent the default browser tooltip
+      event.preventDefault();
+      // Set custom validation message
+      this.setCustomValidity("Policy names cannot contain periods (.) or dollar signs ($).");
+      // Report the validity state with the custom error message
+      this.reportValidity();
   });
 
-  document.getElementById('policyName').addEventListener('invalid', function (e) {
-      if (!e.target.validity.valid) {
-          e.target.setCustomValidity("Policy names can only contain letters, apostrophes ('), numbers, spaces and ampersand symbols (&).");
-      }
+  // Reset the custom validity message after the user starts modifying the input
+  policyInput.addEventListener('input', function() {
+      this.setCustomValidity('');
   });
+
   
   const isFormOpen = localStorage.getItem('isFormOpen') === 'true';
   const formOpenTimestamp = parseInt(localStorage.getItem('formOpenTimestamp') || '0');
@@ -612,11 +615,6 @@ function logUserOut() {
       console.warn('Error during logout:', error);
     });
 }
-
-
-
-
-
 
 chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
   chrome.storage.local.get(['domainSummaryCounts'], function(data) {
