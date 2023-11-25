@@ -1064,7 +1064,8 @@ function initPopup() {
               document.getElementById('aiResponseText').textContent = data.answer; // Assuming the AI response is in an 'answer' key.
               document.getElementById('aiResponsePopup').style.display = 'block';
             } else {
-              alert('No answer found');
+              console.log(data)
+              alert('You need to upgrade your plan to use this feature');
             }
 
 
