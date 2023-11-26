@@ -5,3 +5,5 @@ postcss.config.js
 tailwind.config.js
 build/
 .vscode
+dist/
+webpack.config.js
