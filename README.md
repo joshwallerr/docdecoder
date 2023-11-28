@@ -1,23 +1,25 @@
-# TermTrimmer
+# DocDecoder Chrome Extension 📜
 
-Source code for TermTrimmer chrome extension.
+This repo contains all source code and assets included in the DocDecoder Chrome Extension.
 
-## Deployment Architecture
+## What is DocDecoder?
 
-- 2x EC2 Servers
-- At least 4x cores per server
-- 9 Gunicorn workers per server: (2 x num_cores) + 1
-- Load balance traffic between the 2 servers
-- Setup autoscaling rules to account for usage spikes(?)
+DocDecoder is a free (no account required) browser extension that summarises web policies with GPT-4.
 
-## Release Plan
+**Our aim is to solve one of the internet's oldest problems - nobody reads the poicies they bind themselves to online.**
 
-Promote on Kickstarter and Indigogo first, offering free trial for supporters.
+![DocDecoder Extension Screenshot](https://cdn.shopify.com/s/files/1/0673/2005/4067/files/Capture_1.png?v=1701211750)
 
-Release for $1/month on Chrome Web Store.
+This extension takes the URL of any web/legal policy and 'summarises' it in a way that explains *exactly* what the user is agreeing to, at a glance.
 
-Offer free trial?
+Any potentiallly harmful/sinister terms are highlighted in red.
 
-### Notes
+## Project Links
 
-Need to make logo and sort branding.
+[Download (Chromium)](https://chromewebstore.google.com/u/8/detail/docdecoder-ai-powered-pol/pbcajhinmaijadgdofjohponnggbkjhh?hl=en)
+
+[Website](https://docdecoder.app)
+
+## Contact
+
+For all enquiries, please email support@docdecoder.app.

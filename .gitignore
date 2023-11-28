@@ -7,3 +7,10 @@ build/
 .vscode
 dist/
 webpack.config.js
+
+# for public repo
+detected.png
+loader-icon.png
+logo.png
+stripe-v3.js
+styles.css
