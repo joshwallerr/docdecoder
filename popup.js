@@ -912,14 +912,22 @@ function initPopup() {
           summaryMenu.appendChild(pillButton);
 
           pillButton.addEventListener('click', function() {
-            if (pillButton.classList.contains('toggle-on')) {
-              pillButton.classList.remove('toggle-on');
+            let toggledPill = summaryMenu.querySelector('.toggle-on');
 
-              pillButton.classList.remove('!bg-white', '!text-gray-700', '!border-black');
-            } else {
+            if (toggledPill && toggledPill !== pillButton) {
+              toggledPill.classList.remove('toggle-on');
+              toggledPill.classList.remove('!bg-white', '!text-gray-700', '!border-black');
+              toggledPill.innerHTML = toggledPill.innerHTML.replace(' <span style="vertical-align: middle; font-size: small;">\u00D7</span>', '');
+            }
+
+            if (!pillButton.classList.contains('toggle-on')) {
               pillButton.classList.add('toggle-on');
-
               pillButton.classList.add('!bg-white', '!text-gray-700', '!border-black');
+              pillButton.innerHTML += ' <span style="vertical-align: middle; font-size: small;">\u00D7</span>';
+            } else {
+              pillButton.classList.remove('toggle-on');
+              pillButton.classList.remove('!bg-white', '!text-gray-700', '!border-black');
+              pillButton.innerHTML = pillButton.innerHTML.replace(' <span style="vertical-align: middle; font-size: small;">\u00D7</span>', '');
             }
           });
 
