@@ -920,7 +920,6 @@ function initPopup() {
               pillButton.classList.add('toggle-on');
 
               pillButton.classList.add('!bg-white', '!text-gray-700', '!border-black');
-
             }
           });
 
