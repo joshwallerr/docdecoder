@@ -907,8 +907,22 @@ function initPopup() {
           pillButton.id = termType.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-menu';
           pillButton.className = "rounded-full px-3 py-1 text-xs font-semibold text-gray-300 mr-2 mb-1 mt-1 bg-slate-50 cursor-pointer border-solid border";
           pillButton.style.borderColor = "lightgray";
+          pillButton.title = "Show only " + termType;
           document.getElementById('summary-menu').style.display = "flex";
           summaryMenu.appendChild(pillButton);
+
+          pillButton.addEventListener('click', function() {
+            if (pillButton.classList.contains('toggle-on')) {
+              pillButton.classList.remove('toggle-on');
+
+              pillButton.classList.remove('!bg-white', '!text-gray-700', '!border-black');
+            } else {
+              pillButton.classList.add('toggle-on');
+
+              pillButton.classList.add('!bg-white', '!text-gray-700', '!border-black');
+
+            }
+          });
 
           let policyDiv = document.createElement('div');
           policyDiv.id = termType.toLowerCase().replace(/[^a-z0-9]/g, '-');
