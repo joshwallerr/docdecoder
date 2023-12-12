@@ -911,26 +911,6 @@ function initPopup() {
           document.getElementById('summary-menu').style.display = "flex";
           summaryMenu.appendChild(pillButton);
 
-          pillButton.addEventListener('click', function() {
-            let toggledPill = summaryMenu.querySelector('.toggle-on');
-
-            if (toggledPill && toggledPill !== pillButton) {
-              toggledPill.classList.remove('toggle-on');
-              toggledPill.classList.remove('!bg-white', '!text-gray-700', '!border-black');
-              toggledPill.innerHTML = toggledPill.innerHTML.replace(' <span style="vertical-align: middle; font-size: small;">\u00D7</span>', '');
-            }
-
-            if (!pillButton.classList.contains('toggle-on')) {
-              pillButton.classList.add('toggle-on');
-              pillButton.classList.add('!bg-white', '!text-gray-700', '!border-black');
-              pillButton.innerHTML += ' <span style="vertical-align: middle; font-size: small;">\u00D7</span>';
-            } else {
-              pillButton.classList.remove('toggle-on');
-              pillButton.classList.remove('!bg-white', '!text-gray-700', '!border-black');
-              pillButton.innerHTML = pillButton.innerHTML.replace(' <span style="vertical-align: middle; font-size: small;">\u00D7</span>', '');
-            }
-          });
-
           let policyDiv = document.createElement('div');
           policyDiv.id = termType.toLowerCase().replace(/[^a-z0-9]/g, '-');
 
@@ -1119,6 +1099,60 @@ function initPopup() {
           policyDiv.appendChild(horizontalLine);
         }
         container.appendChild(policyDiv); // append policyDiv to container
+
+        pillButton.addEventListener('click', function() {
+          let toggledPill = summaryMenu.querySelector('.toggle-on');
+      
+          if (toggledPill && toggledPill !== pillButton) {
+              toggledPill.classList.remove('toggle-on');
+              toggledPill.classList.remove('!bg-white', '!text-gray-700', '!border-black');
+              toggledPill.innerHTML = toggledPill.innerHTML.replace(' <span style="vertical-align: middle; font-size: small;">\u00D7</span>', '');
+              // Hide the policyDiv that corresponds to the untoggled pill
+              document.getElementById(toggledPill.id.replace('-menu', '')).style.display = 'none';
+          }
+      
+          if (!pillButton.classList.contains('toggle-on')) {
+              pillButton.classList.add('toggle-on');
+              pillButton.classList.add('!bg-white', '!text-gray-700', '!border-black');
+              pillButton.innerHTML += ' <span style="vertical-align: middle; font-size: small;">\u00D7</span>';
+              // Show the policyDiv that corresponds to the clicked pill
+              document.getElementById(pillButton.id.replace('-menu', '')).style.display = 'block';
+              
+              // get all elements that are immediate children of summaries-container
+              let summaryDivs = document.getElementById('summaries-container').children;
+
+              // loop through all summaryDivs
+              for (let i = 0; i < summaryDivs.length; i++) {
+                if (summaryDivs[i].id !== pillButton.id.replace('-menu', '') && summaryDivs[i].id !== 'summaries-container-placeholder') {
+                  summaryDivs[i].style.display = 'none';
+                }
+
+                let hrElements = summaryDivs[i].querySelectorAll('hr');
+                for (let j = 0; j < hrElements.length; j++) {
+                  hrElements[j].style.display = 'none';
+                }
+              }
+       
+          } else {
+              pillButton.classList.remove('toggle-on');
+              pillButton.classList.remove('!bg-white', '!text-gray-700', '!border-black');
+              pillButton.innerHTML = pillButton.innerHTML.replace(' <span style="vertical-align: middle; font-size: small;">\u00D7</span>', '');
+              // Show all policyDivs when a pill is untoggled
+              let policyDivs = document.querySelectorAll('div[id$="-menu"]');
+              console.log(policyDivs);
+              for (let i = 0; i < policyDivs.length; i++) {
+                if (policyDivs[i].id !== 'summary-menu') {
+                  document.getElementById(policyDivs[i].id.replace('-menu', '')).style.display = 'block';
+                }
+
+                // show all horizontal lines inside the #summaries-container when a pill is untoggled
+                let hrElements = document.getElementById('summaries-container').querySelectorAll('hr');
+                for (let j = 0; j < hrElements.length; j++) {
+                  hrElements[j].style.display = 'block';
+                }
+              }
+          }
+        });
       }
     });
     updatePremiumFeaturesVisibility();
