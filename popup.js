@@ -897,9 +897,18 @@ function initPopup() {
         container.appendChild(placeholder);
 
         let policyKeys = Object.keys(domainSummaries);
+        summaryMenu  = document.getElementById('summary-menu');
         for (let i = 0; i < policyKeys.length; i++) {
           document.getElementById('summary-section-main').style.borderLeft = "3px solid rgb(34 197 94)";
           let termType = policyKeys[i];
+
+          let pillButton = document.createElement('div');
+          pillButton.textContent = termType;
+          pillButton.id = termType.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-menu';
+          pillButton.className = "rounded-full px-3 py-1 text-xs font-semibold text-gray-300 mr-2 mb-1 mt-1 bg-slate-50 cursor-pointer border-solid border";
+          pillButton.style.borderColor = "lightgray";
+          document.getElementById('summary-menu').style.display = "flex";
+          summaryMenu.appendChild(pillButton);
 
           let policyDiv = document.createElement('div');
           policyDiv.id = termType.toLowerCase().replace(/[^a-z0-9]/g, '-');
