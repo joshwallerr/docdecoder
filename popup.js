@@ -901,10 +901,13 @@ function initPopup() {
           document.getElementById('summary-section-main').style.borderLeft = "3px solid rgb(34 197 94)";
           let termType = policyKeys[i];
 
+          let policyDiv = document.createElement('div');
+          policyDiv.id = termType.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
           let policyTitle = document.createElement('h3');
-          policyTitle.textContent = toCapitalizedCase(termType);
+          policyTitle.textContent = termType;
           policyTitle.className = "text-lg font-semibold mt-5 mb-4 font-mono";
-          container.appendChild(policyTitle);
+          policyDiv.appendChild(policyTitle);
 
           if (blockPatterns.some(pattern => pattern.test(domainSummaries[termType]))) {
             let warningDiv = document.createElement('div');
@@ -913,7 +916,7 @@ function initPopup() {
             warningDiv.className = "mb-4 -mt-2 p-4 bg-red-100";
             warning.className = "m-0";
             warningDiv.appendChild(warning);
-            container.appendChild(warningDiv);
+            policyDiv.appendChild(warningDiv);
           }
 
           if (domainSummaries[termType].includes("Sorry, this policy was too large for our servers to handle. We're working on a solution for this.")) {
@@ -923,7 +926,7 @@ function initPopup() {
             tooLargeDiv.className = "mb-4 -mt-2 p-4 bg-red-100";
             tooLarge.className = "m-0";
             tooLargeDiv.appendChild(tooLarge);
-            container.appendChild(tooLargeDiv);
+            policyDiv.appendChild(tooLargeDiv);
           }
 
           if (domainSummaries[termType].includes("Sorry, something went wrong. Please try summarising this policy again.")) {
@@ -933,7 +936,7 @@ function initPopup() {
             tooLargeDiv.className = "mb-4 -mt-2 p-4 bg-red-100";
             tooLarge.className = "m-0";
             tooLargeDiv.appendChild(tooLarge);
-            container.appendChild(tooLargeDiv);
+            policyDiv.appendChild(tooLargeDiv);
           }
           
           let summaryContent = formatSummaryText(domainSummaries[termType]);
@@ -964,7 +967,7 @@ function initPopup() {
               default:
                   break;
             }
-            container.appendChild(clonedHeader);
+            policyDiv.appendChild(clonedHeader);
 
             let sibling = header.nextElementSibling;
             while (sibling && sibling.tagName !== 'H4') {
@@ -995,7 +998,7 @@ function initPopup() {
                       li.insertBefore(iconImg, li.firstChild);
                   });
                 }
-                container.appendChild(clonedSibling);
+                policyDiv.appendChild(clonedSibling);
                 sibling = sibling.nextElementSibling;
               }
           });
@@ -1077,14 +1080,15 @@ function initPopup() {
         flexContainer.appendChild(sendButton);
 
         aiQuestionFormContainer.appendChild(flexContainer);
-        container.appendChild(aiQuestionFormContainer);
+        policyDiv.appendChild(aiQuestionFormContainer);
 
         // Add a horizontal line between policies, but not after the last one
         if (i < policyKeys.length - 1) {
           let horizontalLine = document.createElement('hr');
           horizontalLine.className = "my-4"; // Add some vertical margin for spacing. Adjust as needed.
-          container.appendChild(horizontalLine);
+          policyDiv.appendChild(horizontalLine);
         }
+        container.appendChild(policyDiv); // append policyDiv to container
       }
     });
     updatePremiumFeaturesVisibility();
