@@ -976,25 +976,38 @@ function initPopup() {
                 }
                 
                 if (clonedSibling.tagName === 'UL' && clonedHeader.id.includes("implications")) {
+                  const badItems = [];
+                  const neutralItems = [];
+                  const goodItems = [];          
+
                   Array.from(clonedSibling.children).forEach((li) => {
-                      let iconSrc;
-                      switch (li.className) {
-                          case 'good': 
-                              iconSrc = "good.png";
-                              break;
-                          case 'bad':
-                              iconSrc = "bad.png";
-                              break;
-                          default:
-                              iconSrc = "neutral.png";
-                              break;
-                      }
-                      let iconImg = document.createElement('img');
-                      iconImg.src = iconSrc;
-                      iconImg.alt = li.className;
-                      iconImg.style.marginRight = "8px";  // Add some spacing between icon and text
-                      iconImg.classList.add('w-5', 'h-5', 'mb-auto');  // Add the classes to the icon
-                      li.insertBefore(iconImg, li.firstChild);
+                    let iconSrc;
+                    switch (li.className) {
+                        case 'good': 
+                            iconSrc = "good.png";
+                            goodItems.push(li); // Add to good items
+                            break;
+                        case 'bad':
+                            iconSrc = "bad.png";
+                            badItems.push(li); // Add to bad items
+                            break;
+                        default:
+                            iconSrc = "neutral.png";
+                            neutralItems.push(li); // Add to neutral items
+                            break;
+                    }
+                    let iconImg = document.createElement('img');
+                    iconImg.src = iconSrc;
+                    iconImg.alt = li.className;
+                    iconImg.style.marginRight = "8px"; // Add some spacing between icon and text
+                    iconImg.classList.add('w-5', 'h-5', 'mb-auto'); // Add the classes to the icon
+                    li.insertBefore(iconImg, li.firstChild);
+                  });
+
+                  clonedSibling.innerHTML = '';
+
+                  [...badItems, ...neutralItems, ...goodItems].forEach(item => {
+                      clonedSibling.appendChild(item);
                   });
                 }
                 policyDiv.appendChild(clonedSibling);
