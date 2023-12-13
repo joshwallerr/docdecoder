@@ -167,31 +167,32 @@ button:hover {
 }
 
 .tooltip .tooltiptext {
-    visibility: hidden;
-    width: 150px;
-    background-color: black;
-    opacity: 0.85;
-    color: white;
-    text-align: left;
-    border-radius: 6px;
-    padding: 5px 7px;
-    position: absolute;
-    z-index: 1;
-    top: -5px;
-    left: 120%;
-    border: 1px solid black;
-    font-family: Arial, Helvetica, sans-serif !important;
+  visibility: hidden;
+  width: 150px;
+  background-color: black;
+  opacity: 0.85;
+  color: white;
+  text-align: left;
+  border-radius: 6px;
+  padding: 5px 7px;
+  position: absolute;
+  z-index: 1;
+  top: 150%; /* tooltip appears below the text */
+  left: 50%; /* center the tooltip */
+  transform: translateX(-50%); /* ensure the tooltip is centered */
+  border: 1px solid black;
+  font-family: Arial, Helvetica, sans-serif !important;
 }
 
 .tooltip .tooltiptext::after {
-    content: "";
-    position: absolute;
-    top: 10%;
-    right: 100%;
-    margin-top: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: transparent black transparent transparent;
+  content: "";
+  position: absolute;
+  bottom: 100%; /* arrow is at the top of the tooltip box */
+  left: 50%; /* center the arrow */
+  transform: translateX(-50%); /* ensure the arrow is centered */
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent black transparent;
 }
 
 .tooltip:hover .tooltiptext {

@@ -922,7 +922,7 @@ function initPopup() {
           if (blockPatterns.some(pattern => pattern.test(domainSummaries[termType]))) {
             let warningDiv = document.createElement('div');
             let warning = document.createElement('p');
-            warning.textContent = "Note: This summary may have failed due to the website's use of CAPTCHAs. We're working on a solution for this.";
+            warning.innerHTML = `Note: This summary may have failed due to the website's use of CAPTCHAs. <span class="tooltip"><span id="captchaexplainer-${termType.toLowerCase().replace(/[^a-z0-9]/g, '-')}">We're working on a solution for this.</span><span class="tooltiptext">In the meantime, we'll manually summarise this policy. Check back tomorrow to see it.</span></span>`;
             warningDiv.className = "mb-4 -mt-2 p-4 bg-yellow-100 border-yellow-500";
             warning.className = "m-0";
             warningDiv.appendChild(warning);
