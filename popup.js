@@ -923,7 +923,7 @@ function initPopup() {
             let warningDiv = document.createElement('div');
             let warning = document.createElement('p');
             warning.textContent = "Note: This summary may have failed due to the website's use of CAPTCHAs. We're working on a solution for this.";
-            warningDiv.className = "mb-4 -mt-2 p-4 bg-red-100";
+            warningDiv.className = "mb-4 -mt-2 p-4 bg-yellow-100 border-yellow-500";
             warning.className = "m-0";
             warningDiv.appendChild(warning);
             policyDiv.appendChild(warningDiv);
