@@ -758,7 +758,7 @@ function updatePreloadersDisplay() {
         relevantSummaries.forEach(summary => {
           let summaryElement = document.createElement('div');
           summaryElement.className = 'mt-2';
-          summaryElement.textContent = `Generating summary for ${summary.title}. This could take up to 30 seconds. Feel free to close the extension whilst you wait.`;
+          summaryElement.textContent = `Generating summary for ${summary.title}. This could take up to a minute for longer policies. Feel free to close the extension whilst you wait.`;
           preloaderContainer.appendChild(summaryElement);
         });
 
@@ -905,7 +905,7 @@ function initPopup() {
           let pillButton = document.createElement('div');
           pillButton.textContent = termType;
           pillButton.id = termType.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-menu';
-          pillButton.className = "rounded-full px-3 py-1 text-xs font-semibold text-gray-300 mr-2 mb-1 mt-1 bg-slate-50 cursor-pointer border-solid border";
+          pillButton.className = "rounded-full px-3 py-1 text-xs font-semibold text-gray-300 mr-2 mb-1 mt-1 bg-slate-50 cursor-pointer border-solid border max-w-fit";
           pillButton.style.borderColor = "lightgray";
           pillButton.title = "Show only " + termType;
           document.getElementById('summary-menu').style.display = "flex";
