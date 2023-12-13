@@ -1172,6 +1172,15 @@ function initPopup() {
             createdPills[pillId] = true;
           });
         }
+        // count the number of immediate div elements inside the #summaries-container, excluding any divs with class .aiQuestionFormContainer
+        var summariesContainer = document.querySelector('#summaries-container');
+        var divCount = Array.from(summariesContainer.children).filter(child => child.tagName === 'DIV' && !child.classList.contains('aiQuestionFormContainer')).length;
+
+        console.log("divCount: " + divCount);
+        // if there is less than 2 div elements inside the #summaries-container, hide the summary menu
+        if (divCount < 2) {
+            document.querySelector('#summary-menu').style.display = 'none';
+        }      
       }
     });
     updatePremiumFeaturesVisibility();
