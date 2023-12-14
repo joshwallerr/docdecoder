@@ -758,7 +758,7 @@ function updatePreloadersDisplay() {
         relevantSummaries.forEach(summary => {
           let summaryElement = document.createElement('div');
           summaryElement.className = 'mt-2';
-          summaryElement.textContent = `Generating summary for ${summary.title}. This could take up to a minute for longer policies. Feel free to close the extension whilst you wait.`;
+          summaryElement.textContent = `Generating summary for ${summary.title}. This could take up to 2 minutes for longer policies. Feel free to close the extension whilst you wait.`;
           preloaderContainer.appendChild(summaryElement);
         });
 
@@ -1104,7 +1104,6 @@ function initPopup() {
 
         let pillId = termType.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-menu';
         let pillElement = document.getElementById(`${pillId}`);
-        console.log(pillElement);
 
         if (!pillElement) {
           console.log("creating pill: " + pillId);
@@ -1156,7 +1155,6 @@ function initPopup() {
                 pillButton.innerHTML = pillButton.innerHTML.replace(' <span style="vertical-align: middle; font-size: small;">\u00D7</span>', '');
                 // Show all policyDivs when a pill is untoggled
                 let policyDivs = document.querySelectorAll('div[id$="-menu"]');
-                console.log(policyDivs);
                 for (let i = 0; i < policyDivs.length; i++) {
                   if (policyDivs[i].id !== 'summary-menu') {
                     document.getElementById(policyDivs[i].id.replace('-menu', '')).style.display = 'block';
@@ -1169,7 +1167,6 @@ function initPopup() {
                   }
                 }
             }
-            createdPills[pillId] = true;
           });
         }
         // count the number of immediate div elements inside the #summaries-container, excluding any divs with class .aiQuestionFormContainer
@@ -1180,7 +1177,9 @@ function initPopup() {
         // if there is less than 2 div elements inside the #summaries-container, hide the summary menu
         if (divCount < 2) {
             document.querySelector('#summary-menu').style.display = 'none';
-        }      
+        } else {
+            document.querySelector('#summary-menu').style.display = 'flex';
+        }
       }
     });
     updatePremiumFeaturesVisibility();
