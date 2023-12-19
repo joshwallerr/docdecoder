@@ -1,3 +1,23 @@
+let keepAliveTimer = null;
+
+function setWaitState() {
+    // Check if the timer is already running
+    if (keepAliveTimer !== null) return;
+
+    keepAliveTimer = setInterval(() => {
+        console.log('Keeping background script active...');
+        chrome.runtime.sendMessage({ action: 'heartbeat' });
+      }, 10000); // Run every 10 seconds
+}
+
+function clearWaitState() {
+    if (keepAliveTimer !== null) {
+        clearInterval(keepAliveTimer);
+        keepAliveTimer = null;
+        console.log('Background script can go inactive now.');
+    }
+}
+
 chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
     let extractedURL;
@@ -83,9 +103,16 @@ chrome.runtime.onMessage.addListener(
       let domain = rootDomain(new URL(request.url).hostname);
       fetchPageHTML(request.url, domain, sectionTitle).then(pageContent => {
         // Send the content for summarization
+        setWaitState();
         summarizeDocument(pageContent, domain, sectionTitle)
           .then(summary => {
+            clearWaitState();
+            logMessage(`Summary returning for ${sectionTitle} on ${domain}`);
+
             sendResponse({ summary: summary });
+
+            logMessage(`Summary returned for ${sectionTitle} on ${domain}`);
+
             storeSummary(extractedURL, summary, sectionTitle);
             chrome.storage.local.get(['loadingSummaries'], function (result) {
               let loadingSummaries = result.loadingSummaries || [];
@@ -94,6 +121,7 @@ chrome.runtime.onMessage.addListener(
             });
           })
           .catch(error => {
+            clearWaitState();
             chrome.runtime.sendMessage({ showForm: true });
             chrome.storage.local.get(['loadingSummaries'], function (result) {
               let loadingSummaries = result.loadingSummaries || [];
@@ -103,6 +131,7 @@ chrome.runtime.onMessage.addListener(
             sendResponse({ error: 'An error occurred' });
           });
         }).catch(error => {
+          clearWaitState();
           chrome.runtime.sendMessage({ showForm: true });
           chrome.storage.local.get(['loadingSummaries'], function (result) {
             let loadingSummaries = result.loadingSummaries || [];
@@ -189,6 +218,27 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
+
+// TESTS
+// Popup open, tabbed in [PASSED]
+// Popup open, tabbed out [PASSED]
+// Popup closed, tabbed in, inactive [FAILED] [PASSED] [PASSED] [PASSED] [FAILED]
+
+function logMessage(message) {
+  const timestamp = new Date().toISOString();
+  const logEntry = `${timestamp}: ${message}`;
+
+  // Retrieve existing logs
+  chrome.storage.local.get({ logs: [] }, function(result) {
+      const logs = result.logs;
+      logs.push(logEntry);
+
+      // Store updated logs
+      chrome.storage.local.set({ logs: logs }, function() {
+          console.log("Log entry added.");
+      });
+  });
+}
 
 
 chrome.runtime.onInstalled.addListener(() => {
@@ -298,6 +348,7 @@ function fetchPageHTML(url, domain, sectionTitle) {
 
 function summarizeDocument(document, url, sectionTitle) {
   let domain = url;
+  logMessage(`Sending summary request for ${sectionTitle} on ${domain}`);
 
   return new Promise((resolve, reject) => {
     fetch('https://docdecoder.app/summarize', {
@@ -313,6 +364,7 @@ function summarizeDocument(document, url, sectionTitle) {
       }),
     })
     .then(response => {
+      logMessage(`Summary response received for ${sectionTitle} on ${domain}`);
       if (response.status === 429 || response.status === 403 || response.status === 400 || response.status === 500 || response.status === 502) {
         return response.json().then(data => {
           let message;
