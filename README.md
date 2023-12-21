@@ -18,7 +18,7 @@ Any potentiallly harmful/sinister terms are highlighted in red.
 
 [Download (Chromium)](https://chromewebstore.google.com/u/8/detail/docdecoder-ai-powered-pol/pbcajhinmaijadgdofjohponnggbkjhh?hl=en)
 
-[Website](https://docdecoder.app)
+[Project Whitepaper](https://docdecoder.app/whitepaper)
 
 ## Contact
 
