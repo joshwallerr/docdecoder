@@ -268,13 +268,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById('upgrade-btn').addEventListener('click', function () {
-    document.getElementById('plan-info').style.display = 'none';
-    document.getElementById('premium-container').style.display = 'block';
-    document.getElementById('exit-premium-container-tomain').style.display = 'none';
-    document.getElementById('exit-premium-container-toacct').style.display = 'block';
-
-    var aiGif = document.getElementById('ai-gif');
-    aiGif.src = aiGif.dataset.src;
+    // open a new tab for the pricing page
+    chrome.tabs.create({ url: 'https://docdecoder.app/pricing' });
   });
 
   document.getElementById("exit-premium-container-toacct").addEventListener("click", function () {
@@ -328,25 +323,15 @@ document.addEventListener('DOMContentLoaded', function () {
       rateLimitMessage.querySelector('p').innerHTML = data.rateLimitExceeded;
       chrome.storage.local.remove('rateLimitExceeded');
       document.getElementById('premium-subscribe-txt-sums').addEventListener('click', function () {
-        document.getElementById('main-extension-content').style.display = 'none';
-        document.getElementById('premium-container').style.display = 'block';
-        document.getElementById('exit-premium-container-tomain').style.display = 'block';
-        document.getElementById('exit-premium-container-toacct').style.display = 'none';
-
-        var aiGif = document.getElementById('ai-gif');
-        aiGif.src = aiGif.dataset.src;
+        // open a new tab for the pricing page
+        chrome.tabs.create({ url: 'https://docdecoder.app/pricing' });
       });    
     }
   });
 
   document.getElementById('premium-button').addEventListener('click', function() {
-    document.getElementById('main-extension-content').style.display = 'none';
-    document.getElementById('premium-container').style.display = 'block';
-    document.getElementById('exit-premium-container-tomain').style.display = 'block';
-    document.getElementById('exit-premium-container-toacct').style.display = 'none';
-
-    var aiGif = document.getElementById('ai-gif');
-    aiGif.src = aiGif.dataset.src;
+    // open a new tab for the pricing page
+    chrome.tabs.create({ url: 'https://docdecoder.app/pricing' });
   });
   
   document.getElementById('exit-premium-container-tomain').addEventListener('click', function () {
@@ -361,23 +346,13 @@ document.addEventListener('DOMContentLoaded', function () {
   const upgradePremiumTxt = document.getElementById('upgrade-premium-txt');
   const upgradePremiumLink = upgradePremiumTxt.querySelector('a');
   upgradePremiumLink.addEventListener('click', function () {
-    document.getElementById('plan-info').style.display = 'none';
-    document.getElementById('premium-container').style.display = 'block';
-    document.getElementById('exit-premium-container-tomain').style.display = 'none';
-    document.getElementById('exit-premium-container-toacct').style.display = 'block';
-
-    var aiGif = document.getElementById('ai-gif');
-    aiGif.src = aiGif.dataset.src;
+    // open a new tab for the pricing page
+    chrome.tabs.create({ url: 'https://docdecoder.app/pricing' });
   });
 
   document.getElementById('premium-subscribe-txt').addEventListener('click', function () {
-    document.getElementById('main-extension-content').style.display = 'none';
-    document.getElementById('premium-container').style.display = 'block';
-    document.getElementById('exit-premium-container-tomain').style.display = 'block';
-    document.getElementById('exit-premium-container-toacct').style.display = 'none';
-
-    var aiGif = document.getElementById('ai-gif');
-    aiGif.src = aiGif.dataset.src;
+    // open a new tab for the pricing page
+    chrome.tabs.create({ url: 'https://docdecoder.app/pricing' });
   });
 
   document.getElementById('close-intro').addEventListener('click', function () {
@@ -857,13 +832,8 @@ function initPopup() {
 
             if (domainErrors[termType] && domainErrors[termType].includes("premium-subscribe-txt-sums")) {
               document.getElementById('premium-subscribe-txt-sums').addEventListener('click', function () {
-                document.getElementById('main-extension-content').style.display = 'none';
-                document.getElementById('premium-container').style.display = 'block';
-                document.getElementById('exit-premium-container-tomain').style.display = 'block';
-                document.getElementById('exit-premium-container-toacct').style.display = 'none';
-            
-                var aiGif = document.getElementById('ai-gif');
-                aiGif.src = aiGif.dataset.src;
+                // open a new tab for the pricing page
+                chrome.tabs.create({ url: 'https://docdecoder.app/pricing' });
               });
             }
             
