@@ -933,6 +933,9 @@ function initPopup() {
               case 'faqs':
                   clonedHeader.innerHTML = '&#x1F9E0; Predicted ' + clonedHeader.textContent;
                   break;
+              case 'data collection':
+                  clonedHeader.innerHTML = '&#x1F50D; ' + clonedHeader.textContent;
+                  break;
               default:
                   break;
             }
