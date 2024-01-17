@@ -104,7 +104,7 @@ chrome.runtime.onMessage.addListener(
       fetchPageHTML(request.url, domain, sectionTitle).then(pageContent => {
         // Send the content for summarization
         setWaitState();
-        summarizeDocument(pageContent, domain, sectionTitle)
+        summarizeDocument(pageContent, domain, sectionTitle, request.url)
           .then(summary => {
             clearWaitState();
             logMessage(`Summary returning for ${sectionTitle} on ${domain}`);
@@ -346,7 +346,33 @@ function fetchPageHTML(url, domain, sectionTitle) {
 }
 
 
-function summarizeDocument(document, url, sectionTitle) {
+
+// function fetchPageHTML(url, domain, sectionTitle) {
+//   return new Promise((resolve, reject) => {
+//     fetch('https://docdecoder.app/fetch_html', { // Replace with your Flask server URL
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json'
+//       },
+//       body: JSON.stringify({ url: url })
+//     })
+//     .then(response => {
+//       if (!response.ok) {
+//         throw new Error('Failed to fetch page HTML. Please check the URL and try again.');
+//       }
+//       return response.text();
+//     })
+//     .then(text => resolve(text))
+//     .catch(error => {
+//       handleSummaryError(domain, sectionTitle, error.toString());
+//       reject(error);
+//     });
+//   });
+// }
+
+
+
+function summarizeDocument(document, url, sectionTitle, pageURL) {
   let domain = url;
   logMessage(`Sending summary request for ${sectionTitle} on ${domain}`);
 
@@ -360,7 +386,8 @@ function summarizeDocument(document, url, sectionTitle) {
       body: JSON.stringify({
         document: document,
         domain: domain,
-        document_type: sectionTitle
+        document_type: sectionTitle,
+        url: pageURL,
       }),
     })
     .then(response => {
