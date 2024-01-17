@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "DocDecoder - Summarize Web Policies With AI",
   "description": "DocDecoder uses GPT-4 to generate clear, concise summaries of any site's legal policies for you to skim over before you accept them.",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
