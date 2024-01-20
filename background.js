@@ -328,47 +328,47 @@ function handlePDFLink(pdfUrl, domain, sectionTitle, callback) {
 
 
 
-function fetchPageHTML(url, domain, sectionTitle) {
-  return new Promise((resolve, reject) => {
-    fetch(url)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('The URL you entered could not be found. Please check the URL and try again.');
-        }
-        return response.text();
-      })
-      .then(text => resolve(text))
-      .catch(error => {
-        handleSummaryError(domain, sectionTitle, error.toString());
-        reject(error);
-      });
-  });
-}
-
-
-
 // function fetchPageHTML(url, domain, sectionTitle) {
 //   return new Promise((resolve, reject) => {
-//     fetch('https://docdecoder.app/fetch_html', { // Replace with your Flask server URL
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json'
-//       },
-//       body: JSON.stringify({ url: url })
-//     })
-//     .then(response => {
-//       if (!response.ok) {
-//         throw new Error('Failed to fetch page HTML. Please check the URL and try again.');
-//       }
-//       return response.text();
-//     })
-//     .then(text => resolve(text))
-//     .catch(error => {
-//       handleSummaryError(domain, sectionTitle, error.toString());
-//       reject(error);
-//     });
+//     fetch(url)
+//       .then(response => {
+//         if (!response.ok) {
+//           throw new Error('The URL you entered could not be found. Please check the URL and try again.');
+//         }
+//         return response.text();
+//       })
+//       .then(text => resolve(text))
+//       .catch(error => {
+//         handleSummaryError(domain, sectionTitle, error.toString());
+//         reject(error);
+//       });
 //   });
 // }
+
+
+
+function fetchPageHTML(url, domain, sectionTitle) {
+  return new Promise((resolve, reject) => {
+    fetch('https://docdecoder.app/fetch_html', { // Replace with your Flask server URL
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ url: url })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch page HTML. Please check the URL and try again.');
+      }
+      return response.text();
+    })
+    .then(text => resolve(text))
+    .catch(error => {
+      handleSummaryError(domain, sectionTitle, error.toString());
+      reject(error);
+    });
+  });
+}
 
 
 
