@@ -513,7 +513,8 @@ function initiateStripeCheckout(plan_type) {
 function updatePremiumFeaturesVisibility() {
   chrome.storage.local.get(['userPlan'], function (result) {
     const userPlan = result.userPlan;
-    const isPremiumUser = userPlan === 'MONTHLY' || userPlan === 'YEARLY';
+    console.log('User plan:', userPlan);
+    const isPremiumUser = userPlan === 'MONTHLY' || userPlan === 'YEARLY' || userPlan === 'premium' || userPlan === 'premium-plus';
 
     // Get all AI question form containers by class name
     let aiQuestionFormContainers = document.getElementsByClassName('aiQuestionFormContainer');
