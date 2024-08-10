@@ -551,7 +551,13 @@ function updatePremiumFeaturesVisibility() {
       document.getElementById('notifs-container').removeAttribute('title');
 
       document.getElementById('upgrade-btn').style.display = 'none';
-      document.getElementById('manage-subscription-btn').style.display = 'block';
+
+      if (userPlan === 'premium' || userPlan === 'premium-plus') {
+        document.getElementById('manage-subscription-btn').style.display = 'none';
+      } else {
+        document.getElementById('manage-subscription-btn').style.display = 'block';
+      }
+
       document.getElementById('premium-button').style.display = 'none';
       document.getElementById('upgrade-premium-txt').style.display = 'none';
     } else {

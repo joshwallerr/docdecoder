@@ -7,6 +7,7 @@ build/
 .vscode
 dist/
 webpack.config.js
+zip.py
 
 # for public repo
 detected.png
