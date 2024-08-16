@@ -532,8 +532,10 @@ function updatePremiumFeaturesVisibility() {
     chrome.storage.local.get(['summariesCount'], function (result) {
       console.log(result.summariesCount);
       if (result.summariesCount >= 0) {
-        if (isPremiumUser) {
+        if (isPremiumUser && userPlan != 'premium') {
           document.getElementById('welcomeContainer').innerHTML = `You've used <span class="font-semibold">${result.summariesCount}</span> <span class="tooltip"><span id="sumtokenexplainer">summary tokens</span><span class="tooltiptext">Summary tokens can be spent on generating your own summaries for policies that we've not yet summarised. One token is worth one summary.</span></span> so far this month!`;
+        } else if (isPremiumUser && userPlan === 'premium') {
+          document.getElementById('welcomeContainer').innerHTML = `You've used <span class="font-semibold">${result.summariesCount}/15</span> <span class="tooltip"><span id="sumtokenexplainer">summary tokens</span><span class="tooltiptext">Summary tokens can be spent on generating your own summaries for policies that we've not yet summarised. One token is worth one summary.</span></span> this month!`;
         } else if (!isPremiumUser) {
           document.getElementById('welcomeContainer').innerHTML = `You've used <span class="font-semibold">${result.summariesCount}/2</span> <span class="tooltip"><span id="sumtokenexplainer">summary tokens</span><span class="tooltiptext">Summary tokens can be spent on generating your own summaries for policies that we've not yet summarised. One token is worth one summary.</span></span> this month.`;
         }

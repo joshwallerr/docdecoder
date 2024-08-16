@@ -398,6 +398,8 @@ function summarizeDocument(document, url, sectionTitle, pageURL) {
           if (response.status === 429) {
             if (data.error === "You've exceeded your monthly summary limit for the FREE plan") {
               message = `You've exceeded your monthly summary limit for the FREE plan. Please <a id="premium-subscribe-txt-sums" href="#" class="underline">subscribe</a> for unlimited summaries.`;
+            } else if (data.error === "You've exceeded your monthly summary limit for the PREMIUM plan") {
+              message = `You've exceeded your monthly summary limit of 15 for the premium plan.`;
             } else {
               message = "Please slow down, you've made too many requests in a short amount of time. Please wait an hour and try again. If you're still seeing this message, please contact us at support@docdecoder.app.";
             }

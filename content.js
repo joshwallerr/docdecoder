@@ -21,17 +21,14 @@ function findPotentialLabelForCheckbox(checkbox) {
 }
 
 function detectCheckboxes() {
-  // Select all checkboxes on the page.
   let checkboxes = document.querySelectorAll('input[type="checkbox"]');
-
-  // Check if at least one checkbox is present on the page.
   if (checkboxes.length > 0) {
     for (let checkbox of checkboxes) {
       if (!checkbox.checked) {
         let label = document.querySelector(`label[for="${checkbox.id}"]`) || findPotentialLabelForCheckbox(checkbox);
         if (label) {
           sendNotification();
-          break; // Exit after finding the first unlabeled checkbox
+          break;
         }
       }
     }
@@ -39,7 +36,6 @@ function detectCheckboxes() {
 }
 
 function detectTextConsent() {
-  // Scan the page for text containing "by" and "agree".
   const bodyText = document.body.textContent || "";
   const consentPattern = /\bby\b.*?\bagree\b/;
   if (consentPattern.test(bodyText)) {
@@ -47,11 +43,77 @@ function detectTextConsent() {
   }
 }
 
-// Run immediately on page load
+
+function displayPreloader(sectionTitle, domain) {
+  chrome.storage.local.get(['loadingSummaries'], function (result) {
+    let loadingSummaries = result.loadingSummaries || [];
+    loadingSummaries.push({ title: sectionTitle, domain: domain });
+    chrome.storage.local.set({ loadingSummaries: loadingSummaries });
+
+    console.log("Displaying preloader for " + sectionTitle);
+  });
+}
+
+
+
+function handlePolicyLinks() {
+  const keywords = ['privacy', 'terms', 'return', 'shipping', 'legal', 'cookie'];
+  const currentDomain = rootDomain(new URL(window.location.href).hostname);
+  let linksMap = {};
+  let summarizedLinks = JSON.parse(localStorage.getItem('summarizedLinks') || '{}');
+
+  keywords.forEach(keyword => {
+    const foundLinks = Array.from(document.querySelectorAll('a')).filter(link => {
+      return (link.href.toLowerCase().includes(keyword) || link.innerText.toLowerCase().includes(keyword));
+    });
+
+    foundLinks.forEach(link => {
+      const linkDomain = rootDomain(new URL(link.href, window.location.origin).hostname);
+      if (linkDomain === currentDomain) {
+        if (!linksMap[keyword]) { // Ensure only the first match for each keyword is used
+          linksMap[keyword] = { href: link.href, text: link.innerText.trim() };
+
+          // Check if not already summarized
+          if (!summarizedLinks[link.href] && link.innerText.trim() !== "") {
+            const summaryRequestData = {
+              action: "generateSummary",
+              url: link.href,
+              policyName: link.innerText.trim()
+            };
+            chrome.runtime.sendMessage(summaryRequestData);
+            displayPreloader(link.innerText.trim(), currentDomain);
+            console.log("Sent summary request for " + link.innerText.trim());
+            summarizedLinks[link.href] = true; // Mark as summarized
+            localStorage.setItem('summarizedLinks', JSON.stringify(summarizedLinks)); // Save to local storage
+          }
+        }
+      }
+    });
+  });
+
+  // Always return links that match the keywords, regardless of whether they've been summarized
+  if (Object.keys(linksMap).length > 0) {
+    return Object.values(linksMap); // Return the links found for use in popup.js
+  } else {
+    return [];
+  }
+}
+
+// This function is called from popup.js to fetch links
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  if (request.action === "findLinks") {
+    const links = handlePolicyLinks(); // Assume this function is synchronous, adjust if not
+    sendResponse({ links: links });
+    return true; // Indicates an asynchronous response is expected
+  }
+});
+
+// Run initial detection on page load
 detectCheckboxes();
 detectTextConsent();
+handlePolicyLinks();
 
-// Set up an interval to run the function every 5 seconds
+// Periodically check for updates without resending notifications or summary requests unnecessarily
 let consentCheckInterval = setInterval(() => {
   if (!notificationSent) {
     detectCheckboxes();
@@ -59,23 +121,19 @@ let consentCheckInterval = setInterval(() => {
   }
 }, 5000);
 
-// Clear the interval after 30 seconds to stop checking
+// Cleanup
 setTimeout(() => {
   clearInterval(consentCheckInterval);
 }, 30000);
 
-
-
-
 function rootDomain(hostname) {
-  // this function was copied from Aaron Peterson on GitHub: https://gist.github.com/aaronpeterson/8c481deafa549b3614d3d8c9192e3908
   let parts = hostname.split(".");
   if (parts.length <= 2)
-      return hostname;
+    return hostname;
 
   parts = parts.slice(-3);
   if (['co', 'com'].indexOf(parts[1]) > -1)
-      return parts.join('.');
+    return parts.join('.');
 
   return parts.slice(-2).join('.');
 }
@@ -83,42 +141,4 @@ function rootDomain(hostname) {
 
 
 
-
-
-
-// FOR SUGGESTED LINKS
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.action === "findLinks") {
-        const keywords = ['privacy', 'term', 'return', 'shipping', 'legal', 'cookie']; // Add more keywords as needed
-        let linksMap = {};
-        const currentDomain = rootDomain(new URL(window.location.href).hostname);
-
-        // Helper function to check if domains match considering subdomains
-        const isDomainMatch = (linkDomain, currentDomain) => {
-            return linkDomain.includes(currentDomain) || currentDomain.includes(linkDomain);
-        };
-
-        keywords.forEach(keyword => {
-            const foundLinks = Array.from(document.querySelectorAll('a')).filter(link => {
-                return (link.href.toLowerCase().includes(keyword) || link.innerText.toLowerCase().includes(keyword));
-            });
-
-            for (let i = foundLinks.length - 1; i >= 0; i--) {
-                const linkDomain = rootDomain(new URL(foundLinks[i].href, window.location.origin).hostname);
-                if (isDomainMatch(linkDomain, currentDomain)) {
-                    // Store the first link found that matches the domain condition
-                    linksMap[keyword] = { href: foundLinks[i].href, text: foundLinks[i].innerText.trim() };
-                    break; // Exit the loop once a match is found
-                }
-            }
-        });
-
-        let links = Object.keys(linksMap).map(keyword => ({
-            keyword: keyword,
-            href: linksMap[keyword].href,
-            text: linksMap[keyword].text
-        }));
-        sendResponse({links: links});
-    }
-});
-
+// works now, but why suggested links are not showing up in the popup???? cry face emoji
