@@ -8,6 +8,11 @@ function checkLogin() {
     document.getElementById('nameDisplay').textContent = firstName;
     document.getElementById('welcomeName').textContent = firstName;
     
+    // set chrome storage of auto_summaries: true if the user plan is premium-plus
+    if (data.plan === 'premium-plus') {
+      chrome.storage.local.set({ auto_summaries: true });
+    }
+
     chrome.storage.local.set({ first_name: data.first_name, userPlan: data.plan, summariesCount: data.summariesCount });
     updatePremiumFeaturesVisibility();
   });

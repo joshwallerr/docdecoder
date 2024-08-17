@@ -3,7 +3,7 @@ let notificationSent = false;
 function sendNotification() {
   if (!notificationSent) {
     chrome.runtime.sendMessage({ type: "checkboxDetected" });
-    notificationSent = true; // Ensure notification is only sent once
+    notificationSent = true;
   }
 }
 
@@ -62,58 +62,60 @@ function handlePolicyLinks() {
   let linksMap = {};
   let summarizedLinks = JSON.parse(localStorage.getItem('summarizedLinks') || '{}');
 
-  keywords.forEach(keyword => {
-    const foundLinks = Array.from(document.querySelectorAll('a')).filter(link => {
-      return (link.href.toLowerCase().includes(keyword) || link.innerText.toLowerCase().includes(keyword));
-    });
+  // get chrome.storage.local of auto_summaries, and if it exists, set it to autoSummaries, else set to false
+  chrome.storage.local.get(['autoSummaries'], function (result) {
+    let autoSummaries = result.autoSummaries || false;
+    if (autoSummaries) {
+      keywords.forEach(keyword => {
+        const foundLinks = Array.from(document.querySelectorAll('a')).filter(link => {
+          return (link.href.toLowerCase().includes(keyword) || link.innerText.toLowerCase().includes(keyword));
+        });
 
-    foundLinks.forEach(link => {
-      const linkDomain = rootDomain(new URL(link.href, window.location.origin).hostname);
-      if (linkDomain === currentDomain) {
-        if (!linksMap[keyword]) { // Ensure only the first match for each keyword is used
-          linksMap[keyword] = { href: link.href, text: link.innerText.trim() };
+        foundLinks.forEach(link => {
+          const linkDomain = rootDomain(new URL(link.href, window.location.origin).hostname);
+          if (linkDomain === currentDomain) {
+            if (!linksMap[keyword]) {
+              linksMap[keyword] = { href: link.href, text: link.innerText.trim() };
 
-          // Check if not already summarized
-          if (!summarizedLinks[link.href] && link.innerText.trim() !== "") {
-            const summaryRequestData = {
-              action: "generateSummary",
-              url: link.href,
-              policyName: link.innerText.trim()
-            };
-            chrome.runtime.sendMessage(summaryRequestData);
-            displayPreloader(link.innerText.trim(), currentDomain);
-            console.log("Sent summary request for " + link.innerText.trim());
-            summarizedLinks[link.href] = true; // Mark as summarized
-            localStorage.setItem('summarizedLinks', JSON.stringify(summarizedLinks)); // Save to local storage
+              if (!summarizedLinks[link.href] && link.innerText.trim() !== "") {
+                const summaryRequestData = {
+                  action: "generateSummary",
+                  url: link.href,
+                  policyName: link.innerText.trim()
+                };
+                chrome.runtime.sendMessage(summaryRequestData);
+                displayPreloader(link.innerText.trim(), currentDomain);
+                console.log("Sent summary request for " + link.innerText.trim());
+                summarizedLinks[link.href] = true;
+                localStorage.setItem('summarizedLinks', JSON.stringify(summarizedLinks));
+              }
+            }
           }
-        }
-      }
-    });
+        });
+      });
+    }
   });
 
-  // Always return links that match the keywords, regardless of whether they've been summarized
+
   if (Object.keys(linksMap).length > 0) {
-    return Object.values(linksMap); // Return the links found for use in popup.js
+    return Object.values(linksMap);
   } else {
     return [];
   }
 }
 
-// This function is called from popup.js to fetch links
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.action === "findLinks") {
-    const links = handlePolicyLinks(); // Assume this function is synchronous, adjust if not
+    const links = handlePolicyLinks();
     sendResponse({ links: links });
-    return true; // Indicates an asynchronous response is expected
+    return true;
   }
 });
 
-// Run initial detection on page load
 detectCheckboxes();
 detectTextConsent();
 handlePolicyLinks();
 
-// Periodically check for updates without resending notifications or summary requests unnecessarily
 let consentCheckInterval = setInterval(() => {
   if (!notificationSent) {
     detectCheckboxes();
@@ -121,7 +123,6 @@ let consentCheckInterval = setInterval(() => {
   }
 }, 5000);
 
-// Cleanup
 setTimeout(() => {
   clearInterval(consentCheckInterval);
 }, 30000);
@@ -141,4 +142,4 @@ function rootDomain(hostname) {
 
 
 
-// works now, but why suggested links are not showing up in the popup???? cry face emoji
+// works now, but only one preloader is showing at a time. Not huge deal, but should be fixed eventually
