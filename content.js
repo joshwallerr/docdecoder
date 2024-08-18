@@ -59,58 +59,75 @@ function displayPreloader(sectionTitle, domain) {
 function handlePolicyLinks() {
   const keywords = ['privacy', 'terms', 'return', 'shipping', 'legal', 'cookie'];
   const currentDomain = rootDomain(new URL(window.location.href).hostname);
-  let linksMap = {};
   let summarizedLinks = JSON.parse(localStorage.getItem('summarizedLinks') || '{}');
 
   // get chrome.storage.local of auto_summaries, and if it exists, set it to autoSummaries, else set to false
   chrome.storage.local.get(['autoSummaries'], function (result) {
     let autoSummaries = result.autoSummaries || false;
-    if (autoSummaries) {
-      keywords.forEach(keyword => {
-        const foundLinks = Array.from(document.querySelectorAll('a')).filter(link => {
-          return (link.href.toLowerCase().includes(keyword) || link.innerText.toLowerCase().includes(keyword));
-        });
-
-        foundLinks.forEach(link => {
-          const linkDomain = rootDomain(new URL(link.href, window.location.origin).hostname);
-          if (linkDomain === currentDomain) {
-            if (!linksMap[keyword]) {
-              linksMap[keyword] = { href: link.href, text: link.innerText.trim() };
-
-              if (!summarizedLinks[link.href] && link.innerText.trim() !== "") {
-                const summaryRequestData = {
-                  action: "generateSummary",
-                  url: link.href,
-                  policyName: link.innerText.trim()
-                };
-                chrome.runtime.sendMessage(summaryRequestData);
-                displayPreloader(link.innerText.trim(), currentDomain);
-                console.log("Sent summary request for " + link.innerText.trim());
-                summarizedLinks[link.href] = true;
-                localStorage.setItem('summarizedLinks', JSON.stringify(summarizedLinks));
-              }
-            }
-          }
-        });
+    console.log("Auto summaries: " + autoSummaries);
+    keywords.forEach(keyword => {
+      const foundLinks = Array.from(document.querySelectorAll('a')).filter(link => {
+        return (link.href.toLowerCase().includes(keyword) || link.innerText.toLowerCase().includes(keyword));
       });
-    }
+
+      foundLinks.forEach(link => {
+        const linkDomain = rootDomain(new URL(link.href, window.location.origin).hostname);
+        if (linkDomain === currentDomain) {
+          if (!summarizedLinks[link.href] && link.innerText.trim() !== "" && autoSummaries) {
+            const summaryRequestData = {
+              action: "generateSummary",
+              url: link.href,
+              policyName: link.innerText.trim()
+            };
+            chrome.runtime.sendMessage(summaryRequestData);
+            displayPreloader(link.innerText.trim(), currentDomain);
+            console.log("Sent summary request for " + link.innerText.trim());
+            summarizedLinks[link.href] = true;
+            localStorage.setItem('summarizedLinks', JSON.stringify(summarizedLinks));
+          }
+        }
+      });
+    });
   });
-
-
-  if (Object.keys(linksMap).length > 0) {
-    return Object.values(linksMap);
-  } else {
-    return [];
-  }
 }
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.action === "findLinks") {
-    const links = handlePolicyLinks();
-    sendResponse({ links: links });
-    return true;
+      const keywords = ['privacy', 'term', 'return', 'shipping', 'legal', 'cookie']; // Add more keywords as needed
+      let linksMap = {};
+      const currentDomain = rootDomain(new URL(window.location.href).hostname);
+
+      // Helper function to check if domains match considering subdomains
+      const isDomainMatch = (linkDomain, currentDomain) => {
+          return linkDomain.includes(currentDomain) || currentDomain.includes(linkDomain);
+      };
+
+      keywords.forEach(keyword => {
+          const foundLinks = Array.from(document.querySelectorAll('a')).filter(link => {
+              return (link.href.toLowerCase().includes(keyword) || link.innerText.toLowerCase().includes(keyword));
+          });
+
+          for (let i = foundLinks.length - 1; i >= 0; i--) {
+              const linkDomain = rootDomain(new URL(foundLinks[i].href, window.location.origin).hostname);
+              if (isDomainMatch(linkDomain, currentDomain)) {
+                  linksMap[keyword] = { href: foundLinks[i].href, text: foundLinks[i].innerText.trim() };
+                  break;
+              }
+          }
+      });
+
+      let links = Object.keys(linksMap).map(keyword => ({
+          keyword: keyword,
+          href: linksMap[keyword].href,
+          text: linksMap[keyword].text
+      }));
+      sendResponse({links: links});
   }
 });
+
+
+
 
 detectCheckboxes();
 detectTextConsent();
