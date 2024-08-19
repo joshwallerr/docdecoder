@@ -198,8 +198,6 @@ chrome.runtime.onMessage.addListener(
             }
           });
         });
-    } else if (request.showForm) {
-      // console.log("Received message to show form");
     } else if (request.type === "showPreloader") {
       console.log("RECIEVED showPreloader message for" + request.summaryName + " on " + request.domain);
       // Add the link to loadingSummaries
@@ -510,4 +508,82 @@ function rootDomain(hostname) {
       return parts.join('.');
 
   return parts.slice(-2).join('.');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+chrome.tabs.onActivated.addListener(activeInfo => {
+  updateBadgeOnTab(activeInfo.tabId);
+});
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && tab.active) {
+    updateBadgeOnTab(tabId);
+  }
+});
+
+function updateBadgeOnTab(tabId) {
+  chrome.tabs.get(tabId, (tab) => {
+    if (chrome.runtime.lastError || !tab || !tab.url) {
+      console.log(chrome.runtime.lastError ? chrome.runtime.lastError.message : 'No tab or URL found');
+      return;
+    }
+    const url = new URL(tab.url);
+    const domain = rootDomain(url.hostname);
+    checkAndFetchSummaryCount(domain, tabId);
+  });
+}
+
+function checkAndFetchSummaryCount(domain, tabId) {
+  chrome.storage.local.get([domain], function(result) {
+    if (result[domain] && new Date().getTime() - result[domain].timestamp < 86400000) { // 86400000 ms = 1 day
+      // Data is still valid
+      chrome.action.setBadgeText({text: result[domain].count.toString(), tabId: tabId});
+      chrome.action.setBadgeBackgroundColor({color: '#22c55e', tabId: tabId});
+    } else {
+      // Data is outdated or not present, fetch new data
+      fetchSummaryCount(domain, tabId);
+    }
+  });
+}
+
+function fetchSummaryCount(domain, tabId) {
+  fetch('https://docdecoder.app/getsumcount', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ domain: domain })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data && data.summariesCount) {
+      chrome.storage.local.set({[domain]: {count: data.summariesCount, timestamp: new Date().getTime()}});
+      chrome.action.setBadgeText({text: data.summariesCount.toString(), tabId: tabId});
+      chrome.action.setBadgeBackgroundColor({color: '#22c55e', tabId: tabId});
+    } else {
+      chrome.action.setBadgeText({text: '', tabId: tabId});
+    }
+  })
+  .catch(error => console.error('Error fetching summary count:', error));
 }

@@ -160,3 +160,36 @@ function rootDomain(hostname) {
 
 
 // works now, but only one preloader is showing at a time. Not huge deal, but should be fixed eventually
+
+
+
+
+
+
+
+
+// Add a route that just takes the domain and returns the summary count for that domain. Then display a badge on the extension icon with the number of summaries for that domain.
+
+// call to docdecoder.app/getsumcount with post and send the domain as the json body
+// response will be the number of summaries for that domain, as count
+// set the badge text to count
+
+// const currentDomain = rootDomain(new URL(window.location.href).hostname);
+// const summaryCountRequestData = {
+//   action: "getSummaryCount",
+//   domain: currentDomain
+// };
+// fetch('https://docdecoder.app/getsumcount', {
+//   method: 'POST',
+//   headers: {
+//     'Content-Type': 'application/json'
+//   },
+//   body: JSON.stringify(summaryCountRequestData)
+// })
+// .then(response => response.json())
+// .then(data => {
+//   console.log(data.summariesCount);
+//   if (data.summariesCount > 0) {
+//     chrome.runtime.sendMessage({badgeText: data.summariesCount.toString()});
+//   }
+// });
