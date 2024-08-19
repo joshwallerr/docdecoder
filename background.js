@@ -558,8 +558,12 @@ function checkAndFetchSummaryCount(domain, tabId) {
   chrome.storage.local.get([domain], function(result) {
     if (result[domain] && new Date().getTime() - result[domain].timestamp < 86400000) { // 86400000 ms = 1 day
       // Data is still valid
-      chrome.action.setBadgeText({text: result[domain].count.toString(), tabId: tabId});
-      chrome.action.setBadgeBackgroundColor({color: '#22c55e', tabId: tabId});
+      if (result[domain].count > 0) {
+        chrome.action.setBadgeText({text: result[domain].count.toString(), tabId: tabId});
+        chrome.action.setBadgeBackgroundColor({color: '#22c55e', tabId: tabId});
+      } else {
+        chrome.action.setBadgeText({text: '', tabId: tabId});
+      }
     } else {
       // Data is outdated or not present, fetch new data
       fetchSummaryCount(domain, tabId);
@@ -577,13 +581,21 @@ function fetchSummaryCount(domain, tabId) {
   })
   .then(response => response.json())
   .then(data => {
-    if (data && data.summariesCount) {
+    if (data.summariesCount !== undefined) {
       chrome.storage.local.set({[domain]: {count: data.summariesCount, timestamp: new Date().getTime()}});
-      chrome.action.setBadgeText({text: data.summariesCount.toString(), tabId: tabId});
-      chrome.action.setBadgeBackgroundColor({color: '#22c55e', tabId: tabId});
+      if (data.summariesCount > 0) {
+        chrome.action.setBadgeText({text: data.summariesCount.toString(), tabId: tabId});
+        chrome.action.setBadgeBackgroundColor({color: '#22c55e', tabId: tabId});
+      } else {
+        chrome.action.setBadgeText({text: '', tabId: tabId});
+      }
     } else {
       chrome.action.setBadgeText({text: '', tabId: tabId});
     }
   })
-  .catch(error => console.error('Error fetching summary count:', error));
+  .catch(error => {
+    console.error('Error fetching summary count:', error);
+    chrome.action.setBadgeText({text: '', tabId: tabId});
+  });
 }
+
